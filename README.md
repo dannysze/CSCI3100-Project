@@ -25,7 +25,7 @@ User
 	- account_balance -> float(default 0)
 Password_Recovery
 	- user_id -> int (primary key, foreign key -> Users.user_id)
-    - token (hash()) -> varchar(60)
+    	- token (hash()) -> varchar(60)
 	- starting_time -> datetime
 	
 Event
