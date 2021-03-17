@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../navbar.css';
+import './navbar.css';
 
 const navItems = [
     {
@@ -20,7 +20,7 @@ const navItems = [
 ]
 
 
-function navbar() {
+function Navbar() {
     const [currentState, setCount] = useState(0)
 
      
@@ -28,14 +28,12 @@ function navbar() {
         <div className="navbar">
             {navItems.map((item, index) => {
                 return(
-                    <a className={item.cName} href={item.url}></a>
+                    <a className={item.cName} href={item.url}>{item.title}</a>
                 )
             })}
         </div>
 
-
-
-
-
     )
 }
+
+export default Navbar

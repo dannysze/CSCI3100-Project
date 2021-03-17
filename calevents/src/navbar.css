@@ -12,7 +12,7 @@
   font-size: 17px;
 }
 
-.navbar a.active {
+.navbar a:hover {
   background-color: #e6e6e6;
   color: #000000;
 }
