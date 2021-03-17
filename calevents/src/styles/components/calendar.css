@@ -1,0 +1,16 @@
+#calendar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 1em auto;
+}
+
+.calendar-items {
+  flex: 0 0 13.5%;
+  height: 90px;
+  border: 1px solid #000000;
+}
+
+.calendar-items {
+
+}
