@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
+import Navbar from '../components/Navbar';
 import Calendar from '../components/Calendar';
 import UpcomingEvents from '../components/UpcomingEvents'
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -10,8 +11,8 @@ export default function Home() {
       <div className="row">
         {/* <Header /> */}
       </div>
-      <div className="navbar">
-        {/* <Navbar /> */}
+      <div>
+        <Navbar />
       </div>
       <div className="row">
         <div className="col-9">
