@@ -1,9 +1,9 @@
-.navbar {
+.navbar-n {
   background-color: #1aa3ff;
   overflow: hidden;
 }
 
-.navbar a {
+.navbar-n a {
   float: left;
   color: #ffffff;
   text-align: center;
@@ -12,7 +12,7 @@
   font-size: 17px;
 }
 
-.navbar a:hover {
+.navbar-n a:hover {
   background-color: #e6e6e6;
   color: #000000;
 }

@@ -9,6 +9,7 @@
     "bootstrap": "^4.6.0",
     "mysql": "^2.18.1",
     "react": "^17.0.1",
+    "react-bootstrap-icons": "^1.4.0",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
@@ -37,5 +38,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {}
 }

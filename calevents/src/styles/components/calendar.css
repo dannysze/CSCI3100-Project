@@ -1,16 +1,31 @@
 #calendar {
+  height: 100%;
+  padding: 1% 0;
+  /* margin: 1em auto; */
+}
+
+.calendar-header, .calendar-body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 1em auto;
 }
 
-.calendar-items {
+.calendar-header {
+  text-align: center;
+  height: fit-content;
+  height: auto;
+}
+
+.calendar-body {
+  height: 94%;
+}
+
+.calendar-items, .calendar-header-items {
   flex: 0 0 13.5%;
-  height: 90px;
-  border: 1px solid #000000;
+  /* height: 90px; */
+  border: 1px solid #DEDEDE;
 }
 
-.calendar-items {
-
+.calendar-header-items {
+  height: fit-content;
 }

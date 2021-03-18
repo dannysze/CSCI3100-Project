@@ -22,7 +22,7 @@ const navItems = [
 
 function Navbar() {     
   return(
-    <div className="navbar">
+    <div className="navbar-n">
       {navItems.map((item, index) => {
         return(
           <a className={item.cName} href={item.url}>{item.title}</a>

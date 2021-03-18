@@ -8,8 +8,20 @@ const days = [...Array(35).keys()];
 const Calendar = () => {
   return (
     <div id="calendar">
-      {head.map((item) => <CalendarItems name={item} />)}
-      {days.map((item) => <CalendarItems name={item+1} />)}
+      <div className="calendar-header">
+        {head.map((item) => <CalendarHeader name={item} />)}
+      </div>
+      <div className="calendar-body">
+        {days.map((item) => <CalendarItems name={item+1} />)}
+      </div>
+    </div>
+  )
+}
+
+const CalendarHeader = (props) => {
+  return (
+    <div className="calendar-header-items">
+      <h3>{props.name}</h3>
     </div>
   )
 }
