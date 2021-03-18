@@ -93,6 +93,6 @@ app.get('/', function(req, res) {
     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
 });
 
-var server = app.listen(8000);
+var server = app.listen(3000);
 
 module.exports = app
