@@ -5,7 +5,7 @@
 }
 
 .events{
-  height:80vh;
+  height:80vh; /* scroll */
   overflow-y:scroll;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
@@ -14,8 +14,6 @@
 .events::-webkit-scrollbar {
     display: none;
 }
-
-
 
 /* customize modal */
 .custom-modal{

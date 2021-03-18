@@ -1,31 +1,31 @@
 import React, { useState } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import Calendar from '../components/Calendar';
 import UpcomingEvents from '../components/UpcomingEvents'
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/pages/home.css';
 
 const Home = () => {
   return (
-    <div className="container-fluid home">
+    <Container className="home" fluid>
       <Header />
       <Navbar />
-      <div className="row main-content">
-        <div className="col-9">
+      <Row className="main-content">
+        <Col sm={9}>
           <Calendar />
-        </div>
-        <div className="col-3">
+        </Col>
+        <Col sm={3}>
           <UpcomingEvents />
           {/* <h1>EventCard</h1> */}
           {/* <EventCard /> */}
-        </div>
-      </div>
+        </Col>
+      </Row>
       <div className="bg-danger">
         <h1>Footer</h1>
         {/* <Footer /> */}
       </div>
-    </div>
+    </Container>
   )
 }
 

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import * as Icon from 'react-bootstrap-icons';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/components/header.css';
 
 const headerItems = [
