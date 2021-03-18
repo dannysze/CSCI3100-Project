@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/components/upcomingEvents.css';
+import Events from './Event/Events'
 
 const UpcomingEvents = () => {
   return (
-    <div className="upcoming-events">
-      <h1>Upcoming Events</h1>
+    <div className="upcoming-events" style={{width:"100%"}}>
+      <Events/>
     </div>
   )
 }

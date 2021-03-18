@@ -17,7 +17,7 @@ const Home = () => {
         </div>
         <div className="col-3">
           <UpcomingEvents />
-          <h1>EventCard</h1>
+          {/* <h1>EventCard</h1> */}
           {/* <EventCard /> */}
         </div>
       </div>
