@@ -13,11 +13,10 @@ const navItems = [
         cName: 'drop'
     },
     {
-        title:'Search',
-        url: '#',
-        cName: 'navi'
+      title:'Search',
+      url: '#',
+      cName: 'navi'
     },
-    
 ]
 const dropItems = [
   {
@@ -41,28 +40,25 @@ cName: 'drop-c'
 
 function Navbar() {     
   return(
-    <div className="navbar-n">
-      {navItems.map((item, index) => {
-        return(
-          item.cName === 'drop' ?
-          <>
-          <a className={item.cName} href={item.url}>{item.title}</a>
-          <div className="dropcontent">
+    
+    <div className='navbar-n'>
+        <a className='navi' herf='#'>Main</a>
+        <div className='dropdown'>
+          <button className='dropbtn'>My Calendar</button>
+          <div className='dropcontent'>
             {dropItems.map((item, index) => {
               return(
                 <a className={item.cName} herf={item.url}>{item.title}</a>
-
-              )
-            })}
-        
+                )
+              })}
           </div>
-          </>
-          :<a className={item.cName} href={item.url}>{item.title}</a>
-            
-          
-        )
-      })}
+        </div>
+        <a className='navi' herf='#'>Search</a>
+        
+        
     </div>
+    
+
 
   )
 }

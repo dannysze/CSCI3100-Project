@@ -1,6 +1,6 @@
 .navbar-n {
   background-color: #1aa3ff;
-  /* overflow: hidden; */
+  /*overflow: hidden;*/
 }
 
 .navbar-n a {
@@ -12,7 +12,21 @@
   font-size: 17px;
 }
 
-.navbar-n a:hover {
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background-color: #1aa3ff;
+  color: #ffffff;
+  padding: 14px 16px;
+  font-size: 17px;
+  border: none;
+}
+
+.navbar-n a:hover,
+.dropdown:hover .dropbtn {
   background-color: #e6e6e6;
   color: #000000;
 }
@@ -21,7 +35,7 @@
   display: none;
   position: absolute;
   background-color: #1aa3ff;
-  min-width: 160px;
+  min-width: 14px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
 }
@@ -38,9 +52,13 @@
 
 .dropcontent a:hover {
   background-color: #ddd;
+}
+
+.dropdown:hover .dropcontent {
+  background-color: #6666ff;
   display: block;
 }
 
-.drop:hover .dropcontent {
-  display: block;
+.dropdown:hover .dropbtn {
+  background-attachment: #6666ff;
 }
