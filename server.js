@@ -34,6 +34,7 @@ con.connect(function(err) {
 // insert user
 // password hashing, img_loc and type to be implement
 app.post('/create_user', function(req, res) {
+    // variables from the request
     var username = req.body['username'];
     var password = req.body['password'];
     var email = req.body['email'];
@@ -55,6 +56,7 @@ app.post('/create_user', function(req, res) {
 // First check if the user_id is valid
 // img_loc, date, time to be implemented
 app.post('/create_event', function(req, res) {
+    // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
     var visible = req.body['visible'];
@@ -65,9 +67,6 @@ app.post('/create_event', function(req, res) {
     var ticket = req.body['ticket'];
     var refund = req.body['refund'];
     var refund_days = req.body['refund_days'];
-
-    // var email = req.body['email'];
-    // var type = req.body['type'];
 
     var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
     con.query(sql, function (err, result) {
@@ -89,8 +88,102 @@ app.post('/create_event', function(req, res) {
     });
 });
 
+
+// Join Event
+app.post('/join_event', function(req, res){
+    // variables from the request
+    var user_id = req.body['user_id'];
+    var event_id = req.body['event_id'];
+
+    // store intermediate query attributes
+    var usr_bal;
+    var cost;
+    var old_capacity;    
+    var org_id;
+    var org_bal;
+
+    // check if user exit
+    var sql = `SELECT account_balance FROM csci3100.User where user_id = `+ user_id +`;`;
+    con.query(sql, function (err, result){
+        if (err) throw err;
+
+        // check if the event exist and obtain event and organizer data 
+        if(result.length > 0){
+            usr_bal = result[0].account_balance;
+            sql = `SELECT ticket, capacity, organizer FROM csci3100.Event where event_id = `+ event_id +`;`;
+            con.query(sql, function (err, result){
+                if (err) throw err;
+
+                // obtain organizer account_balance
+                if(result.length > 0){
+                    cost = result[0].ticket;
+                    old_capacity = result[0].capacity;
+                    org_id = result[0].organizer;
+                    sql = `SELECT account_balance FROM csci3100.User where user_id = `+ org_id +`;`;
+                    con.query(sql, function (err, result){
+                        if (err) throw err;
+
+                        // check if the user had already enrolled in the event before
+                        if(result.length > 0){
+                            org_bal = result[0].account_balance;
+
+                            sql = `SELECT * FROM csci3100.Event_Join WHERE user_id = `+ user_id +` AND event_id = `+ event_id +`;`;
+
+                            con.query(sql, function (err, result){
+                                if (err) throw err;
+
+                                // check if the user has already enrolled in the same event
+                                if(result.length == 0){
+
+
+                                    // if the user has enough money and the event is not full yet
+                                    // transfer money from user to organizer and reduce the capacity of event by 1
+                                    // Add enrollment record
+                                    if(usr_bal >= cost && old_capacity > 0){
+                                        sql = `UPDATE csci3100.Event SET capacity = `+ (old_capacity - 1) +` WHERE event_id = `+ event_id +`;
+                                        UPDATE csci3100.User SET account_balance = `+ (usr_bal - cost) +` WHERE user_id = `+ user_id +`;
+                                        UPDATE csci3100.User SET account_balance = `+ (org_bal + cost) +` WHERE user_id = `+ org_id +`;
+                                        INSERT INTO csci3100.Event_Join (user_id, event_id) VALUES(`+ user_id +`, `+ event_id +`);`;
+                                        con.query(sql, function (err, result){
+                                            if (err) throw err;
+                                            res.send("Joined Activity, transaction done");
+                                            console.log("Joined Activity, transaction done");
+                                        });
+                                    }
+                                    else{
+                                        res.send("Cannot join activity");
+                                        console.log("Cannot join activity");                        
+                                    }
+                                }
+                                else{
+                                    res.send("You have already enrolled in this event");
+                                    console.log("Cannot join You have already enrolled in this event"); 
+                                }
+                            });
+                        }
+                        else{
+                            res.send("Invalid organizer");
+                            console.log("Invalid organizer");
+                        }
+                    });
+                }
+                else{
+                    res.send("No such event");
+                    console.log("No such event");
+                } 
+            });
+        }
+        else{
+            res.send("Invalid User");
+            console.log("Invalid User");
+        }
+    });    
+})
+
+
 // Add value to user balance
 app.post('/add_value', function(req, res) {
+    // variables from the request
     var user_id = req.body['user_id'];
     var card_id = req.body['card_id'];
     var input_pw = req.body['card_pw'];
@@ -138,8 +231,13 @@ app.post('/add_value', function(req, res) {
                 }
             });
         }
+        else{
+            res.send("Invalid User");
+            console.log("Invalid User");
+        }
     });
 });
+
 
 
 app.get('/', function(req, res) {
