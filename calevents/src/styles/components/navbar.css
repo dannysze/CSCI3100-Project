@@ -20,7 +20,7 @@
 .dropcontent {
   display: none;
   position: absolute;
-  blackground-color: #1aa3ff;
+  background-color: #1aa3ff;
   min-width: 160px;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
@@ -38,4 +38,9 @@
 
 .dropcontent a:hover {
   background-color: #ddd;
+  display: block;
+}
+
+.drop:hover .dropcontent {
+  display: block;
 }
