@@ -55,3 +55,6 @@ pre_paid_card
 	- user_id (foreign key User.user_id)
 
 ```
+## JSON server
+Run JSON server by typing npm run server in the folder **Calevant**. The server runs on port 5000. Data is stored in **db.json**.
+
