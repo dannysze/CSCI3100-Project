@@ -2,7 +2,7 @@ import {useState, useEffect} from 'react'
 import {Container, Row, Col, Modal, ListGroup, Button, ListGroupItem} from 'react-bootstrap'
 import EventCard from './EventCard'
 import getaddr from '../getaddr'
-import './Events.css'
+import '../../styles/components/Event/Events.css'
 
 function Events() {
   const [events, setEvents] = useState([]);

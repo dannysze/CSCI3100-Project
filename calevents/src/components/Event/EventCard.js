@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
-import "./EventCard.css"
+import "../../styles/components/Event/EventCard.css"
+
 const EventCard = ({event, onClick}) => {
     return (
         <div className='eventCard' onClick={() => {onClick()}}>

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/components/upcomingEvents.css';
 import Events from './Event/Events'
 
