@@ -16,3 +16,26 @@
   background-color: #e6e6e6;
   color: #000000;
 }
+
+.dropcontent {
+  display: none;
+  position: absolute;
+  blackground-color: #1aa3ff;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropcontent a {
+  float: left;
+  color: #ffffff;
+  text-align: center;
+  padding: 14px 16px;
+  font-size: 17px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropcontent a:hover {
+  background-color: #ddd;
+}
