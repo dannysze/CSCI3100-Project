@@ -4,8 +4,8 @@ import '../styles/components/upcomingEvents.css';
 
 const UpcomingEvents = () => {
   return (
-    <div>
-      
+    <div className="upcoming-events">
+      <h1>Upcoming Events</h1>
     </div>
   )
 }

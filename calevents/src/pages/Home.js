@@ -6,7 +6,7 @@ import UpcomingEvents from '../components/UpcomingEvents'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/pages/home.css';
 
-export default function Home() {
+const Home = () => {
   return (
     <div className="container-fluid home">
       <Header />
@@ -17,6 +17,7 @@ export default function Home() {
         </div>
         <div className="col-3">
           <UpcomingEvents />
+          <h1>EventCard</h1>
           {/* <EventCard /> */}
         </div>
       </div>
@@ -27,3 +28,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default Home
