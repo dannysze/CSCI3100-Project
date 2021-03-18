@@ -17,7 +17,8 @@ var con = mysql.createConnection({
     host: host,
     user: user,
     password: pw,
-    database: db
+    database: db,
+    multipleStatements: true
 });
 
 con.connect(function(err) {
@@ -84,6 +85,58 @@ app.post('/create_event', function(req, res) {
         }
         else{
             res.send("The user id is invalid");
+        }
+    });
+});
+
+// Add value to user balance
+app.post('/add_value', function(req, res) {
+    var user_id = req.body['user_id'];
+    var card_id = req.body['card_id'];
+    var input_pw = req.body['card_pw'];
+    
+    // store intermediate query attributes
+    var old_bal;
+    var actual_pw;
+    var card_val;
+    // check if the user id is valid
+    var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+
+        // if the user is valid
+        if(result.length > 0){
+            old_bal = result[0].account_balance;
+            // check if the card is valid
+            sql = `SELECT * FROM csci3100.Prepaid_Card where card_id = `+ card_id +`;`;
+            con.query(sql, function (err, result) {
+                if (err) throw err;
+
+                // if the user is valid
+                if(result.length > 0){
+
+                    // console.log(result[0]);
+                    actual_pw = result[0].card_password;
+                    card_val = result[0].value;
+
+                    // if the card is used or the password is incorrect
+                    if(result[0].user_id == null && actual_pw == input_pw){
+
+                        // Set the card as used and add value to the user's account
+                        sql = `UPDATE csci3100.Prepaid_Card SET user_id = `+ user_id +` WHERE card_id = `+ card_id +`;
+                        UPDATE csci3100.User SET account_balance = `+ (card_val + old_bal) +` WHERE user_id = `+ user_id +`;`;
+                        con.query(sql, function (err, result) {
+                            if (err) throw err;
+                            res.send("Add value successful, new balance: " + (card_val + old_bal));
+                            console.log("Add value successful, new balance: " + (card_val + old_bal));
+                        });
+                    }
+                    else{
+                        res.send("Failed to add value")
+                        console.log("Failed to add value");
+                    }
+                }
+            });
         }
     });
 });
