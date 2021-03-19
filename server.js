@@ -181,6 +181,68 @@ app.post('/join_event', function(req, res){
 })
 
 
+// Changes needed
+// Compromise with frontend
+// Only update capacity is OK
+app.post('/edit_event', function(req, res) {
+    // variables from the request
+    var field = req.body['field'];
+    var user_id = req.body['user_id'];
+    var new_val = req.body['new_val'];
+    var event_id = req.body['event_id'];
+
+    // store intermediate query attributes
+    var org_id;
+    var old_capacity;
+
+    if(field == 'ticket' || field == 'organizer'){
+        res.send("You cannot change this information");
+        console.log("You cannot change this information");
+    }
+
+    if(field == 'capacity'){
+        
+    }
+    else{
+        var sql = `SELECT user_id FROM csci3100.User where user_id = `+ user_id +`;`;
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+
+            // if the user is valid
+            if(result.length > 0){
+                sql = `SELECT organizer, capacity FROM csci3100.Event where event_id = `+ event_id +`;`;
+                con.query(sql, function (err, result){
+                    if (err) throw err;
+                    
+                    if(result.length > 0){
+                        org_id = result[0].organizer;
+                        old_capacity = result[0].capacity;
+                        if(org_id == user_id){
+                            // May need to handle different data type here and not OK after here
+                            sql = `UPDATE csci3100.Event SET `+ field +` = '`+ new_val +`' WHERE event_id = `+ event_id + `;`;
+                            console.log(sql);
+                            if (err) throw err;
+                            res.send(result);
+                            console.log(result);
+                        }
+                        else{
+                            res.send("You are not allowed to edit this event");
+                            console.log("You are not allowed to edit this event");                            
+                        }
+                    }
+                    else{
+                        res.send("This event does not exist");
+                        console.log("This event does not exist");
+                    }
+                });
+            }
+            else{
+                res.send("The user id is invalid");
+            }
+        });
+    }
+});
+
 // Add value to user balance
 app.post('/add_value', function(req, res) {
     // variables from the request
