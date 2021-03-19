@@ -1,9 +1,14 @@
-import '../styles/components/footer.css';
+import { Github } from 'react-bootstrap-icons'
+import '../styles/components/Footer.css';
 
 const Footer = () => {
   return (
-    <div>
-      <p>CSCI 3100 Group E1 &copy; 2021</p>
+    <div className="footer">
+      <p>CSCI 3100 Group E1 &copy; 2021&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="https://github.com/dannysze/CSCI3100-Project" target="_blank">
+          <Github />
+        </a>
+      </p>
     </div>
   )
 }

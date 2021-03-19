@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import '../styles/components/calendar.css';
+import { HandIndex } from 'react-bootstrap-icons';
+import '../styles/components/Calendar.css';
 
 const head = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const days = [...Array(35).keys()];
@@ -8,10 +9,10 @@ const Calendar = () => {
   return (
     <div id="calendar">
       <div className="calendar-header">
-        {head.map((item) => <CalendarHeader name={item} />)}
+        {head.map((item, index) => <CalendarHeader name={item} key={index} />)}
       </div>
       <div className="calendar-body">
-        {days.map((item) => <CalendarItems name={item+1} />)}
+        {days.map((item, index) => <CalendarItems name={(item)%31+1} key={index} />)}
       </div>
     </div>
   )

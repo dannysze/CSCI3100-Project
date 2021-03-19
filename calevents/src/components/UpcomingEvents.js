@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/components/upcomingEvents.css';
+import '../styles/components/UpcomingEvents.css';
 import Events from './Event/Events'
 
 const UpcomingEvents = () => {

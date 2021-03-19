@@ -1,15 +1,3 @@
-.nav__submenu {
-  display: none;
-}
-
-.nav__submenu-items:hover {
-  display: block;
-}
-
-.nav__menu-item:hover  .nav__submenu {
-  display: block;
-}
-
 nav ul {
   list-style: none;
   padding-left: 0;
@@ -29,11 +17,17 @@ nav a {
   padding: 0 16px;
   line-height: inherit;
   cursor: pointer;
+  color: #000000;
+}
+
+nav a:hover {
+  color: #000000;
+  text-decoration: none;
 }
 
 .nav__menu {
   line-height: 45px;
-  font-weight: 700;
+  font-weight: 400;
   text-transform: uppercase;
 }
   
@@ -42,7 +36,7 @@ nav a {
   position: relative;
 
 }
-.nav__menu-item:hover {
+.nav__menu-item:hover, .nav__submenu-items:hover {
   background-color: cyan;
   text-decoration: none;
 }
@@ -50,9 +44,33 @@ nav a {
 .nav__submenu {
   font-weight: 300;
   text-transform: none;
-  display: none;
   position: absolute;
-  width: 160px;
+  width: 100%;
+  height: 0;
   background-color: red;
   margin-top: 0px;
+  overflow: hidden;
+}
+
+/* Dropdow Menu animation */
+.dropdown-enter, .dropdown-appear, .dropdown-exit-done {
+  height: 0;
+}
+
+.dropdown-enter-active {
+  height: 135px;
+  transition: height 0.3s;
+}
+
+.dropdown-enter-done {
+  height: 135px !important;
+}
+
+.dropdown-exit {
+  height: 135px;
+}
+
+.dropdown-exit-active {
+  height: 0;
+  transition: height 0.3s;
 }

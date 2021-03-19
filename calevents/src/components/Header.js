@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as Icon from 'react-bootstrap-icons';
-import '../styles/components/header.css';
+import '../styles/components/Header.css';
 
 const headerItems = [
   {
@@ -26,6 +26,7 @@ const headerItems = [
 const Header = () => {
   return (
     <div className="header">
+      <h1 style={{left: '0', position: 'absolute'}}>CalEvent</h1>
       {headerItems.map((item, index) => <a href={item.url} className={item.cName} key={index}>{item.title}{item.icon}</a>)}
     </div>
   )

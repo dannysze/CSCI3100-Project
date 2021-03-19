@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../styles/pages/login.css';
+import '../styles/pages/Login.css';
 
 const Login = () => {
 

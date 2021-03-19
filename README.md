@@ -58,3 +58,6 @@ pre_paid_card
 ## JSON server
 Run JSON server by typing **npm run server** in the folder **calevent**. The server runs on port 5000. Data is stored in **db.json**.
 
+## Color Scheme
+Reference: https://codepen.io/Zaku/pen/vzBKWe
+
