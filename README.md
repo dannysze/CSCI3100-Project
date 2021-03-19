@@ -61,3 +61,12 @@ Run JSON server by typing **npm run server** in the folder **calevent**. The ser
 ## Color Scheme
 Reference: https://codepen.io/Zaku/pen/vzBKWe
 
+## Routes (Temporary)
+```
+'/' 		// Home Page (imcompleted)
+'/login' 	// Login Page (CSS added)
+'/events'	// GET events 
+'/myCalendar'	// My Calendar Page (imcomplete)
+'/saerch'	// Search Page (imcomplete)
+'/signup'	// Signup Page (imcomplete)
+```
