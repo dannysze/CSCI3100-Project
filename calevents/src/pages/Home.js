@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
@@ -8,6 +8,11 @@ import Footer from '../components/Footer';
 import '../styles/pages/Home.css';
 
 const Home = () => {
+
+  useEffect(() => {
+    document.title = 'Home Page';
+  })
+
   return (
     <Container className="home" fluid>
       <Header />

@@ -4,11 +4,10 @@ import '../styles/components/Footer.css';
 const Footer = () => {
   return (
     <div className="footer">
-      <p>CSCI 3100 Group E1 &copy; 2021&nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="https://github.com/dannysze/CSCI3100-Project" target="_blank">
-          <Github />
-        </a>
-      </p>
+      <p>Copyright &copy; All right reserved by CSCI 3100 Group E1 2021 </p>
+      <a href="https://github.com/dannysze/CSCI3100-Project" target="_blank">
+        <Github />
+      </a>
     </div>
   )
 }
