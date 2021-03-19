@@ -50,8 +50,8 @@ Event_Join
 	- event_id -> int (primary key, foreign key Event.event_id)
 pre_paid_card
 	- card_id -> int (primary key)
-	- card_password
-	- value
+	- card_password -> varchar(30)
+	- value	-> int
 	- user_id (foreign key User.user_id)
 
 ```
