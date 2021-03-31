@@ -1,12 +1,7 @@
 .login {
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   color: #222222;
-  /* background-image: url(../../img/bg.png); */
   min-width: auto;
-  /* background-color: lightblue; */
 }
 
 .login form {
@@ -14,50 +9,219 @@
 } 
 
 .login-form-container {
-  border-radius: 15px;
   box-shadow: 0 8px 14px rgba(0, 0, 0, 0.4);
   display: flex;
   text-align: center;
   flex: none;
+  overflow: hidden;
+  height: 75vh;
+  width: 60vw;
 }
 
-.login-form {
-  flex: 1 1 70%;
-  padding: 100px 15px;
+.login-form, .signup-form, .reset-form {
+  flex: 0 0 50%;
+  padding: 100px 0;
   background-color: #FFFFFF;
-  border-radius: 15px 0 0 15px;
+  z-index: 5;
+}
+
+.signup-form {
+  transform: translateX(24%);
 }
 
 .login-overlay {
-  border-radius: 0 15px 15px 0;
-  flex: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  height: 75vh;
+  width: 30vw;
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
   padding: 100px 15px;
   background-image: linear-gradient(to bottom right, #FDEB82, #F78FAD);
   color: #FFFFFF;
+  z-index: 10;
   overflow: hidden;
+  -moz-transition: transform 0.7s ease-in-out;
+  -webkit-transition: transform 0.7s ease-in-out;
+  -ms-transition: transform 0.7s ease-in-out;
+  transition: transform 0.7s ease-in-out;
 }
 
+.signup-show {
+  transform: translateX(200%);
+}
+
+.login-show, .signup-show, .login-form, .signup-form {
+  opacity: 1;
+  transition: transform 0.7s ease-in-out, opacity 0.7s ease-in-out;
+}
+
+.login-show, .signup-show {
+  flex-direction: column;
+  position: absolute;
+}
+
+.login-overlay-enter-active, .login-overlay-enter-done {
+  -moz-transform: translateX(100%) scale(1.1);
+  -webkit-transform: translateX(100%) scale(1.1);
+  -ms-transform: translateX(100%) scale(1.1);
+  transform: translateX(100%) scale(1.1);
+}
+
+.login-overlay-exit-active, .login-overlay-exit-done {
+  -moz-transform: translateX(0%) scale(1.1);
+  -webkit-transform: translateX(0%) scale(1.1);
+  -ms-transform: translateX(0%) scale(1.1);
+  transform: translateX(0%) scale(1.1);
+}
+
+.login-overlay-enter-active .login-show , .login-overlay-enter-done .login-show , .login-overlay-exit-active .signup-show , .login-overlay-exit-done .signup-show, .login-overlay-exit-done ~ .signup-form, .login-overlay-enter-done ~ .login-form {
+  opacity: 0;
+}
+
+.login-overlay-exit-active .login-show , .login-overlay-exit-done .login-show  {
+  /* transform: translateX(0%); */
+}
+
+.login-overlay-enter-active .login-show , .login-overlay-enter-done .login-show  {
+  transform: translateX(-200%);
+}
+
+.login-overlay-exit-active .signup-show , .login-overlay-exit-done .signup-show  {
+  /* transform: translateX(200%); */
+}
+
+.login-overlay-enter-active .signup-show , .login-overlay-enter-done .signup-show  {
+  transform: translateX(0%);
+}
+
+/* .login-overlay-enter-done .login-show , .login-overlay-exit-done .signup-show { visibility: hidden; } */
+
+.login-overlay-enter-active ~ .signup-form, .login-overlay-enter-done ~ .signup-form {
+  transform: translateX(0%);
+  z-index: 1;
+}
+
+.login-overlay-enter-active ~ .login-form, .login-overlay-enter-done ~ .login-form {
+  transform: translateX(-24%);
+  z-index: 1;
+}
+
+/* Customized <input />  */
 .login input {
   width: 80%;
   border: none;
   background-color: #EFEFEF;
   padding: 14px 16px;
-  margin: 10px 0;
-}
-
-.login input:focus {
-  border: none;
+  margin: 5px 0;
 }
 
 .reset-password {
   text-decoration: none;
   color: #222222;
+  cursor: pointer;
 }
 
 .reset-password:hover {
   color: #222222;
+}
+
+.alert-box {
+  text-align: left;
+  width: 80%;
+  margin: -6px auto;
+  visibility: hidden;
+  /* position: absolute; */
+  color: #FF0000;
+  /* left: 0; */
+  font-size: .8em;
+}
+
+.note {
+  width: 80%;
+  margin: 10px auto;
+  text-align: left;
+  font-size: .8em;
+  font-weight: 400;
+  color: #222222;
+  line-height: 1em
+}
+
+/* Customized radio button */
+.radio-group {  
+  display: flex;
+  justify-content: space-around;
+  width: 80%;
+  margin: auto;
+}
+
+.radio-container {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  cursor: pointer;
+}
+
+.radio-container input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  height: 16px;
+  width: 16px;
+  background-color: #F78FAD;
+  border-radius: 50%;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.radio-container:hover .checkmark {
+  background-color: #cc7890;
+}
+
+.radio-container input:checked ~ .checkmark::after { display: block; }
+
+.checkmark::after {
+  content: "";
+  position: absolute;
+  display: none;
+  top: 8px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
+.reset-login-form-exit-active, .reset-login-form-exit-done {
+  transform: translateY(-40%);
+  transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out !important;
+  opacity: 0;
+}
+
+.reset-form {
+  /* position: absolute; */
+  margin: auto;
+  transform: translateX(-100%) translateY(50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out;
+}
+
+.reset-form-enter-active, .reset-form-enter-done {
+  transform: translateX(-100%);
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.35s !important;
+  /* transition: transform 0.35s ease-in-out, opacity 0.35s ease-in-out; */
+}
+
+.reset-form-exit-active {
+  visibility: visible;
 }

@@ -22,8 +22,11 @@
 
 .calendar-items, .calendar-header-items {
   flex: 0 0 13.5%;
+  /* margin: 4px; */
   /* height: 90px; */
   border: 1px solid #DEDEDE;
+  /* border-radius: 50%; */
+  cursor: pointer;
 }
 
 .calendar-header-items {

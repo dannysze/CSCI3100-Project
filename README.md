@@ -64,9 +64,8 @@ Reference: https://codepen.io/Zaku/pen/vzBKWe
 ## Routes (Temporary)
 ```
 '/' 		// Home Page (imcompleted)
-'/login' 	// Login Page (CSS added)
+'/login' 	// Login Page (included Login, Sign up and reset password) (CSS added)
 '/events'	// GET events 
 '/myCalendar'	// My Calendar Page (imcomplete)
 '/saerch'	// Search Page (imcomplete)
-'/signup'	// Signup Page (imcomplete)
 ```
