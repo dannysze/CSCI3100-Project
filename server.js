@@ -6,6 +6,7 @@ const pwd = require('path');
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 var mysql = require('./node_modules/mysql');
+var nodemailer = require('nodemailer');
 
 // Database Credentials
 var host = "csci3100-proj.cobhjw2xjj8l.us-east-1.rds.amazonaws.com";
@@ -28,7 +29,37 @@ con.connect(function(err) {
     console.log("Connected!");
 });
 
+// Configure Mailer for email notification
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'calevents3100@gmail.com',
+      pass: 'csci3100'
+    }
+});
 
+// Call this functon and customize it for different notifications
+// Sample: send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
+function send_email(receiver, subject, content){
+    // The content is set to html format for better appearance
+    // If there is no need to change the appearance, we can change html into text instead
+
+    var mailOptions = {
+        from: 'calevents3100@gmail.com',
+        to: receiver,
+        subject: subject,
+        html: content
+    };
+
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+        console.log(error);
+        } else {
+        console.log('Email sent to ' + mailOptions.receiver + "with response " + info.response);
+        }
+    });
+}
 
 
 // insert user
