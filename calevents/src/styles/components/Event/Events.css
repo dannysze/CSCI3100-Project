@@ -1,0 +1,41 @@
+.outer{
+    background: #f4f4f4;
+    padding:5px;
+    width:100%;
+}
+
+.events{
+  height:75vh; /* scroll */
+  overflow-y:scroll;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.events::-webkit-scrollbar {
+    display: none;
+}
+
+/* customize modal */
+.custom-modal{
+    min-width:70vw;
+    padding:0px;
+}
+
+.custom-modal h1{
+    font-size: 30px;
+}
+
+.custom-modal Button{
+    margin-right:10px;
+    height:60px;
+}
+
+.custom-modal Container{
+    margin:10px 5px;
+}
+
+.custom-modal .title{
+    margin: 15px 0px;
+    font-size:18px;
+    font-style: italic;
+}

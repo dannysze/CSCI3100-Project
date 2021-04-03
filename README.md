@@ -55,3 +55,17 @@ pre_paid_card
 	- user_id (foreign key User.user_id)
 
 ```
+## JSON server
+Run JSON server by typing **npm run server** in the folder **calevent**. The server runs on port 5000. Data is stored in **db.json**.
+
+## Color Scheme
+Reference: https://codepen.io/Zaku/pen/vzBKWe
+
+## Routes (Temporary)
+```
+'/' 		// Home Page (imcompleted)
+'/login' 	// Login Page (included Login, Sign up and reset password) (CSS added)
+'/events'	// GET events 
+'/myCalendar'	// My Calendar Page (imcomplete)
+'/saerch'	// Search Page (imcomplete)
+```
