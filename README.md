@@ -19,7 +19,7 @@ User
 	- type (normal / organizers) -> tinyint
 	- user_id -> int (primary key, auto increment)
 	- username -> varchar(30) 
-	- password -> binary(60)
+	- password -> varchar(60)
 	- email -> varchar(255)
 	- img_loc -> varchar(60)
 	- account_balance -> float(default 0)

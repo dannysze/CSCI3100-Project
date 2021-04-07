@@ -1,34 +1,43 @@
 // Node server
-// import {con} from './calevents/src/db';
+const con = require('./calevents/src/db');
 var express = require('express');
 var app = express();
 const pwd = require('path');
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
-var mysql = require('./node_modules/mysql');
+var nodemailer = require('nodemailer');
 
-// Database Credentials
-var host = "csci3100-proj.cobhjw2xjj8l.us-east-1.rds.amazonaws.com";
-var user = "root";
-var pw = "csci3100";
-var db = "csci3100";
-
-var con = mysql.createConnection({
-    host: host,
-    user: user,
-    password: pw,
-    database: db,
-    multipleStatements: true
-});
-
-con.connect(function(err) {
-    if (err){
-        console.log(err);
+// Configure Mailer for email notification
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'calevents3100@gmail.com',
+      pass: 'csci3100'
     }
-    console.log("Connected!");
 });
 
+// Call this functon and customize it for different notifications
+// Sample: send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
+function send_email(receiver, subject, content){
+    // The content is set to html format for better appearance
+    // If there is no need to change the appearance, we can change html into text instead
 
+    var mailOptions = {
+        from: 'calevents3100@gmail.com',
+        to: receiver,
+        subject: subject,
+        html: content
+    };
+
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+        console.log(error);
+        } else {
+        console.log('Email sent to ' + mailOptions.receiver + "with response " + info.response);
+        }
+    });
+}
 
 
 // insert user
@@ -241,6 +250,29 @@ app.post('/edit_event', function(req, res) {
             }
         });
     }
+});
+
+// Retrieve all public events
+app.get('/search_events', function(req, res){
+    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1;`;
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+
+        res.send(result);
+        console.log(result);
+    });
+});
+
+// Retrieve event with given ID
+app.get('/event/:eID',function(req, res){
+    var eID = req.params['eID'];
+    var sql = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
+    con.query(sql, [eID],function (err, result) {
+        if (err) throw err;
+
+        res.send(result);
+        console.log(result);
+    });
 });
 
 // Add value to user balance
