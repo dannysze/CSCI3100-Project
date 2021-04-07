@@ -345,6 +345,28 @@ app.post('/add_value', function(req, res) {
     });
 });
 
+// Retrieve all public events
+app.get('/search_events', function(req, res){
+    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1;`;
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+
+        res.send(result);
+        console.log(result);
+    });
+});
+
+// Retrieve event with given ID
+app.get('/event/:eID',function(req, res){
+    var eID = req.params['eID'];
+    var sql = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
+    con.query(sql, [eID],function (err, result) {
+        if (err) throw err;
+
+        res.send(result);
+        console.log(result);
+    });
+});
 
 
 app.get('/', function(req, res) {
