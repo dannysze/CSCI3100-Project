@@ -27,7 +27,7 @@ function Events({ height }) {
   return (
     <div className='Events' >
       <div className="outer" style={{width:"100%"}}>
-        <h1>Upcoming Events</h1>
+        <h1>Upcoming</h1>
         <div className='events' style={{height:`${height-61}px`}}>
         {events.map((event, idx)=> (
             <EventCard key={idx} event={event} onClick={() => setShow({toggle:true, event:event})}/>

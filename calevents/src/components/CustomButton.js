@@ -1,4 +1,4 @@
-import { ArrowRightCircle, X } from 'react-bootstrap-icons'
+import { ArrowRightCircle, X, CaretLeftFill, CaretRightFill } from 'react-bootstrap-icons'
 import { Link } from 'react-router-dom'
 import '../styles/components/CustomButton.css'
 
@@ -38,3 +38,11 @@ const CloseButton = ({ onClick, style }) => {
 }
 
 export { CloseButton }
+
+const CalendarButton = ({ classes, clickHandler }) => {
+  return (
+    <button className={`calendar-button ${classes} flex-center`} onClick={clickHandler}>{classes === "calendar-button-left" ? <CaretLeftFill /> : <CaretRightFill />}</button>
+  )
+}
+
+export { CalendarButton }

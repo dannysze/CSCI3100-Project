@@ -1,10 +1,12 @@
 
 .eventCard{
     background-color: white;
-    margin: 20px 5px;
+    margin: 20px auto;
     padding: 25px;
     cursor: pointer;
-    box-shadow: 3px 3px 5px grey;
+    color: #282828;
+    border: 1px solid #282828;
+    /* box-shadow: 3px 3px 5px grey; */
 }
 
 .datetime{

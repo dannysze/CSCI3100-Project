@@ -4,6 +4,12 @@ import '../styles/components/Header.css';
 
 const headerItems = [
   {
+      title: '$0.00 ',
+      url: '#',
+      icon: <></>,
+      cName: 'header-items'
+  },
+  {
       title: 'Username ',
       url: '#',
       icon: <Icon.PersonCircle />,
@@ -26,7 +32,7 @@ const headerItems = [
 const Header = () => {
   return (
     <div className="header">
-      <h1 style={{left: '0', position: 'absolute'}}>CalEvent</h1>
+      <h1 style={{left: '10px', position: 'absolute'}}>CalEvent</h1>
       {headerItems.map((item, index) => <a href={item.url} className={item.cName} key={index}>{item.title}{item.icon}</a>)}
     </div>
   )
