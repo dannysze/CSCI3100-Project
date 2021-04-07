@@ -45,6 +45,19 @@ const Login = () => {
       setUserType(event.target.value);
     }
   }
+  
+  const forms = document.getElementsByTagName('form'); //
+
+  const clearForm = () => {
+    setUsername('');
+    setPassword('');
+    setEmail('');
+    setUserType('');
+    setValid(checkValid);
+    for (let i = 0; i < forms.length; i++) {
+      forms[i].reset();
+    }
+  }
 
   const resetPasswordHandler = (event) => {
     event.preventDefault();
@@ -64,21 +77,6 @@ const Login = () => {
     event.preventDefault();
   }
 
-  const forms = document.getElementsByTagName('form'); //
-
-  const clearForm = () => {
-    setUsername('');
-    setPassword('');
-    for (let i = 0; i < forms.length; i++) {
-      forms[i].reset();
-    }
-    setUsername('');
-    setPassword('');
-    setEmail('');
-    setUserType('');
-    setValid(checkValid);
-  }
-  
   const signUpFields = [{ 
     'name': 'username_register',
     'placeholder': 'Username',
@@ -158,10 +156,10 @@ const Login = () => {
             <h2>Sign Up</h2>
             <form action="auth" nethod="POST">
               {signUpFields.map((item, index) => (
-                <>
-                  <input type={item.type} name={item.name} placeholder={item.placeholder} onChange={signUpChangeHandler} key={index} required/>
-                  {<div className="alert-box" style={item.alert ? {visibility: 'hidden'} : {visibility: 'visible'}}>{item.errorMsg}</div>}
-                </>
+                <div key={index} >
+                  <input type={item.type} name={item.name} placeholder={item.placeholder} onChange={signUpChangeHandler} required/>
+                  <div className="alert-box" style={item.alert ? {visibility: 'hidden'} : {visibility: 'visible'}}>{item.errorMsg}</div>
+                </div>
                 ))}
               <div className="note">Note<span style={{color: 'red'}}> * </span>: Users cannot create public events. Organisers cannot join events</div>
               <div className="radio-group">

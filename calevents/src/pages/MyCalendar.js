@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import Header from '../components/Header';
+import Navbar from '../components/Navbar';
+import Schedule from '../components/Calendars/Schedule';
+import Footer from '../components/Footer';
 import '../styles/pages/MyCalendar.css'
 
 const MyCalendar = () => {
@@ -8,9 +13,16 @@ const MyCalendar = () => {
   })
 
   return (
-    <h1>
-      My Calendar Page
-    </h1>
+    <Container className="home" fluid>
+      <Header />
+      <Navbar />
+      <Row className="main-content">
+        <Col>
+          <Schedule />
+        </Col>
+      </Row>
+      <Footer />
+    </Container>
   )
 }
 
