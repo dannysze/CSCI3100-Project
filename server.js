@@ -9,6 +9,7 @@ const cors = require('cors');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
+
 var nodemailer = require('nodemailer');
 
 // Configure Mailer for email notification
@@ -20,6 +21,27 @@ var transporter = nodemailer.createTransport({
     }
 });
 
+send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
+function send_email(receiver, subject, content){
+    // The content is set to html format for better appearance
+    // If there is no need to change the appearance, we can change html into text instead
+
+    var mailOptions = {
+        from: 'calevents3100@gmail.com',
+        to: receiver,
+        subject: subject,
+        html: content
+    };
+
+
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+        console.log(error);
+        } else {
+        console.log('Email sent to ' + mailOptions.receiver + "with response " + info.response);
+        }
+    });
+}
 //for login
 app.post('/login', function(req, res) {
     console.log(req.body);
@@ -66,7 +88,7 @@ app.post('/signup', function(req, res) {
             ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
             con.query(sql, function (err, result) {
                 if (err) throw err;
-
+                
                 console.log("1 record inserted");
                 //return user id for now later might switch to token instead
                 res.status(200).send({user_id:result[0].insertId});
@@ -345,7 +367,51 @@ app.post('/add_value', function(req, res) {
     });
 });
 
+// Retrieve all public events
+app.get('/search_events', function(req, res){
+    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1;`;
+    con.query(sql, function (err, result) {
+        if (err) throw err;
 
+        res.send(result);
+        console.log(result);
+    });
+});
+
+// Retrieve event with given ID
+app.get('/event/:eID',function(req, res){
+    var eID = req.params['eID'];
+    var sql = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
+    con.query(sql, [eID],function (err, result) {
+        if (err) throw err;
+
+        res.send(result);
+        console.log(result);
+    });
+});
+
+// Retrieve user private events
+app.get('/user_events/:uID', function(req, res){
+    var u_ID = req.params['uID'];
+    var sql = `SELECT * FROM csci3100.Event WHERE organizer = ? AND visible = 0;`
+    con.query(sql, [u_ID], function(err, result){
+        if (err) throw err;
+
+        res.send(result);
+        console.log(result);
+    });
+});
+// Retrieve user information
+app.get('/user_info/:uID', function(req, res){
+    var u_ID = req.params['uID'];
+    var sql = `SELECT username, email, type, account_balance FROM csci3100.User WHERE user_id = ?;`;
+    con.query(sql, [u_ID], function(err, result){
+        if (err) throw err;
+
+        res.send(result);
+        console.log(result);
+    });
+});
 
 app.get('/', function(req, res) {
     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
