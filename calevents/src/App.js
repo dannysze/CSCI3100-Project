@@ -6,17 +6,18 @@ import MyCalendar from './pages/MyCalendar';
 import SearchPage from './pages/SearchPage';
 import Events from './components/Event/Events';
 import './styles/App.css';
-
+import useToken from './useToken';
+import ProtectedRoute from './ProtectedRoute'
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Route path="/" exact component={Home} />
         <Route path="/login" exact component={Login} />
-        <Route path="/events" exact component={Events}/>
-        <Route path="/myCalendar" exact component={MyCalendar} />
-        <Route path="/search" exact component={SearchPage} />
+        <ProtectedRoute path="/" exact component={Home} />
+        <ProtectedRoute path="/events" exact component={Events}/>
+        <ProtectedRoute path="/myCalendar" exact component={MyCalendar} />
+        <ProtectedRoute path="/search" exact component={SearchPage} />
       </Router>
     </div>
   );
