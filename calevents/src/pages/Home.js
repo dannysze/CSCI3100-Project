@@ -9,9 +9,16 @@ import '../styles/pages/Home.css';
 
 const Home = () => {
 
+  const [height, setHeight] = useState(796);
+
   useEffect(() => {
     document.title = 'Home Page';
   })
+
+  const heightHandler = () => {
+    const viewHeight = document.getElementsByClassName('calendar-container')[0].clientHeight;
+    setHeight(viewHeight);
+  }
 
   return (
     <Container className="home" fluid>
@@ -19,12 +26,10 @@ const Home = () => {
       <Navbar />
       <Row className="main-content">
         <Col sm={9}>
-          <Calendar />
+          <Calendar heightHandler={heightHandler}/>
         </Col>
         <Col sm={3}>
-          <UpcomingEvents />
-          {/* <h1>EventCard</h1> */}
-          {/* <EventCard /> */}
+          <UpcomingEvents height={height}/>
         </Col>
       </Row>
       <Footer />

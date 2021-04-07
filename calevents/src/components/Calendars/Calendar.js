@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { startOfMonth, startOfWeek, endOfMonth, endOfWeek, startOfDay, addDays, getDate, getMonth, getYear, addMonths, subMonths } from 'date-fns';
 import '../../styles/components/Calendars/Calendar.css';
 
@@ -29,11 +29,15 @@ const takeMonth = (date = new Date()) => {
 
 // takeMonth();
 
-const Calendar = () => {
+const Calendar = ({ heightHandler }) => {
 
   const today = startOfDay(new Date());
   const initialInfo = { 'calendarStart': startOfMonth(today), 'calendarArr': takeMonth(today) };
   const [calendarInfo, setCalendarInfo] = useState(initialInfo);
+
+  useEffect(() => {
+    heightHandler();
+  })
 
   const previousMonth = () => {
     let newMonth = subMonths(calendarInfo['calendarStart'], 1);

@@ -4,7 +4,7 @@ import EventCard from './EventCard'
 import getaddr from '../getaddr'
 import '../../styles/components/Event/Events.css'
 
-function Events() {
+function Events({ height }) {
   const [events, setEvents] = useState([]);
   const [showEvent, setShow] = useState({toggle:false, event:{}});
 
@@ -25,10 +25,10 @@ function Events() {
   }
 
   return (
-    <div className='Events'>
+    <div className='Events' >
       <div className="outer" style={{width:"100%"}}>
         <h1>Upcoming Events</h1>
-        <div className='events'>
+        <div className='events' style={{height:`${height-61}px`}}>
         {events.map((event, idx)=> (
             <EventCard key={idx} event={event} onClick={() => setShow({toggle:true, event:event})}/>
         ))}
