@@ -75,61 +75,6 @@ app.post('/signup', function(req, res) {
     });
 })
 
-//for login
-app.post('/login', function(req, res) {
-    console.log(req.body);
-    var username = req.body['username'];
-    var password = req.body['password'];
-
-    var sql = `SELECT user_id,password FROM csci3100.User where username = '`+ username +`';`;
-    con.query(sql, function(err, result){
-        if(err) throw err;
-        //check if user with the username exists
-        if(result.length > 0){
-            //check if password matches
-            //later may check salted password instead
-            if (result[0].password == password){
-                //return userid for now later might switch to token instead
-                res.status(200).send({user_id: result[0].user_id});
-            }else{
-                res.status(400).send({error: 'Incorrect password'});
-            }
-        }else{
-            res.status(400).send({error: 'User does not exist'});
-        }
-    });
-}
-);
-//for signup
-//modify from /createuser
-app.post('/signup', function(req, res) {
-    // variables from the request
-    var username = req.body['username'];
-    var password = req.body['password'];
-    var email = req.body['email'];
-    var type = req.body['type'];
-    
-    var sql = `SELECT * FROM csci3100.User where username = '`+ username +`';`;
-    con.query(sql, function (err, result) {
-        if (err) throw err;
-
-        if(result.length > 0){
-            res.status(400).send({'error':'username has been used'});
-        }else{
-            //no email verification for now
-            sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-            ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-            con.query(sql, function (err, result) {
-                if (err) throw err;
-
-                console.log("1 record inserted");
-                //return user id for now later might switch to token instead
-                res.status(200).send({user_id:result[0].insertId});
-            });
-        }
-    });
-})
-
 
 // insert user
 // password hashing, img_loc and type to be implement
