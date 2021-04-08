@@ -6,6 +6,7 @@ var app = express();
 const pwd = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
@@ -17,11 +18,11 @@ var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'calevents3100@gmail.com',
-      pass: 'csci3100'
+      pass: 'Calevents-csci3100'
     }
 });
 
-send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
+// send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
 function send_email(receiver, subject, content){
     // The content is set to html format for better appearance
     // If there is no need to change the appearance, we can change html into text instead
@@ -38,7 +39,7 @@ function send_email(receiver, subject, content){
         if (error) {
         console.log(error);
         } else {
-        console.log('Email sent to ' + mailOptions.receiver + "with response " + info.response);
+        console.log('Email sent to ' + receiver + " with response " + info.response);
         }
     });
 }
@@ -54,13 +55,14 @@ app.post('/login', function(req, res) {
         //check if user with the username exists
         if(result.length > 0){
             //check if password matches
-            //later may check salted password instead
-            if (result[0].password == password){
-                //return userid for now later might switch to token instead
-                res.status(200).send({user_id: result[0].user_id});
-            }else{
-                res.status(400).send({error: 'Incorrect password'});
-            }
+            bcrypt.compare(password, result[0].password, function(err, match){
+                if (match){
+                    //return userid for now later might switch to token instead
+                    res.status(200).send({user_id: result[0].user_id});
+                }else{
+                    res.status(400).send({error: 'Incorrect password'});
+                }
+            })
         }else{
             res.status(400).send({error: 'User does not exist'});
         }
@@ -72,7 +74,6 @@ app.post('/login', function(req, res) {
 app.post('/signup', function(req, res) {
     // variables from the request
     var username = req.body['username'];
-    var password = req.body['password'];
     var email = req.body['email'];
     var type = req.body['type'];
     
@@ -83,49 +84,59 @@ app.post('/signup', function(req, res) {
         if(result.length > 0){
             res.status(400).send({'error':'username has been used'});
         }else{
-            //no email verification for now
-            sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-            ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-            con.query(sql, function (err, result) {
-                if (err) throw err;
-                
-                console.log("1 record inserted");
-                //return user id for now later might switch to token instead
-                res.status(200).send({user_id:result[0].insertId});
-            });
+            // salt and hash password
+            const saltRounds = 10;
+            bcrypt.hash(req.body['password'], saltRounds, function(err, hash){
+                //no email verification for now
+                sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
+                ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
+                con.query(sql, function (err, result) {
+                    if (err) throw err;
+                    
+                    console.log("1 record inserted");
+                    //return user id for now later might switch to token instead
+                    res.status(200).send({user_id:result[0].insertId});
+                });
+            })
         }
     });
 })
 
 
-// insert user
-// password hashing, img_loc and type to be implement
-app.post('/create_user', function(req, res) {
-    // variables from the request
-    var username = req.body['username'];
-    var password = req.body['password'];
-    var email = req.body['email'];
-    var type = req.body['type'];
+// // insert user
+// // password hashing, img_loc and type to be implement
+// app.post('/create_user', function(req, res) {
+//     // variables from the request
+//     var username = req.body['username'];
+//     var password = req.body['password'];
+//     var email = req.body['email'];
+//     var type = req.body['type'];
     
   
-    var sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-    ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-    con.query(sql, function (err, result) {
-        if (err) throw err;
+//     var sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
+//     ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
+//     con.query(sql, function (err, result) {
+//         if (err) throw err;
 
-        console.log("1 record inserted");
-        res.send(result);
-    });
-});
+//         console.log("1 record inserted");
+//         res.send(result);
+//     });
+// });
 
 
 // Create Event
 // First check if the user_id is valid
-// img_loc, date, time to be implemented
+// img_loc to be implemented
+// date format: YYYY-MM-DD
+// time format: HH:MM:SS
 app.post('/create_event', function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
+    var start_date = req.body['start_date'];
+    var start_time = req.body['start_time'];
+    var end_date = req.body['end_date'];
+    var end_time = req.body['end_time'];
     var visible = req.body['visible'];
     var repeat = req.body['repeat'];
     var venue = req.body['venue'];
@@ -142,7 +153,7 @@ app.post('/create_event', function(req, res) {
         if(result.length > 0){
             // insert event
             sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
-                , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '2021-3-19', now(), '2021-3-19', now(),`+ 
+                , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
                 visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', 'NULL', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
             con.query(sql, function (err, result){
                 if (err) throw err;
@@ -369,7 +380,7 @@ app.post('/add_value', function(req, res) {
 
 // Retrieve all public events
 app.get('/search_events', function(req, res){
-    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1;`;
+    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1 ORDER BY start_date ASC;`;
     con.query(sql, function (err, result) {
         if (err) throw err;
 
@@ -393,7 +404,7 @@ app.get('/event/:eID',function(req, res){
 // Retrieve user private events
 app.get('/user_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
-    var sql = `SELECT * FROM csci3100.Event WHERE organizer = ? AND visible = 0;`
+    var sql = `SELECT * FROM csci3100.Event WHERE organizer = ? AND visible = 0 ORDER BY start_date ASC;`
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
 
