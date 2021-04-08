@@ -121,11 +121,17 @@ app.post('/create_user', function(req, res) {
 
 // Create Event
 // First check if the user_id is valid
-// img_loc, date, time to be implemented
+// img_loc to be implemented
+// date format: YYYY-MM-DD
+// time format: HH:MM:SS
 app.post('/create_event', function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
+    var start_date = req.body['start_date'];
+    var start_time = req.body['start_time'];
+    var end_date = req.body['end_date'];
+    var end_time = req.body['end_time'];
     var visible = req.body['visible'];
     var repeat = req.body['repeat'];
     var venue = req.body['venue'];
@@ -142,7 +148,7 @@ app.post('/create_event', function(req, res) {
         if(result.length > 0){
             // insert event
             sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
-                , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '2021-3-19', now(), '2021-3-19', now(),`+ 
+                , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
                 visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', 'NULL', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
             con.query(sql, function (err, result){
                 if (err) throw err;
@@ -369,7 +375,7 @@ app.post('/add_value', function(req, res) {
 
 // Retrieve all public events
 app.get('/search_events', function(req, res){
-    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1;`;
+    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1 ORDER BY start_date ASC;`;
     con.query(sql, function (err, result) {
         if (err) throw err;
 
@@ -393,7 +399,7 @@ app.get('/event/:eID',function(req, res){
 // Retrieve user private events
 app.get('/user_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
-    var sql = `SELECT * FROM csci3100.Event WHERE organizer = ? AND visible = 0;`
+    var sql = `SELECT * FROM csci3100.Event WHERE organizer = ? AND visible = 0 ORDER BY start_date ASC;`
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
 
