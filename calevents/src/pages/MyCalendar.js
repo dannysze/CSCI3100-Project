@@ -17,8 +17,11 @@ const MyCalendar = () => {
       <Header />
       <Navbar />
       <Row className="main-content">
-        <Col>
+        <Col sm={8}>
           <Schedule />
+        </Col>
+        <Col sm={4}>
+          <div>form</div>
         </Col>
       </Row>
       <Footer />
