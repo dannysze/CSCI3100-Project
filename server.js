@@ -17,7 +17,7 @@ var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'calevents3100@gmail.com',
-      pass: 'csci3100'
+      pass: 'Calevents-csci3100'
     }
 });
 
