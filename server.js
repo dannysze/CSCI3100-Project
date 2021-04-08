@@ -98,25 +98,25 @@ app.post('/signup', function(req, res) {
 })
 
 
-// insert user
-// password hashing, img_loc and type to be implement
-app.post('/create_user', function(req, res) {
-    // variables from the request
-    var username = req.body['username'];
-    var password = req.body['password'];
-    var email = req.body['email'];
-    var type = req.body['type'];
+// // insert user
+// // password hashing, img_loc and type to be implement
+// app.post('/create_user', function(req, res) {
+//     // variables from the request
+//     var username = req.body['username'];
+//     var password = req.body['password'];
+//     var email = req.body['email'];
+//     var type = req.body['type'];
     
   
-    var sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-    ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-    con.query(sql, function (err, result) {
-        if (err) throw err;
+//     var sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
+//     ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
+//     con.query(sql, function (err, result) {
+//         if (err) throw err;
 
-        console.log("1 record inserted");
-        res.send(result);
-    });
-});
+//         console.log("1 record inserted");
+//         res.send(result);
+//     });
+// });
 
 
 // Create Event
