@@ -126,8 +126,27 @@
 .day--disabled {
   color: rgba(152, 160, 166, 0.6);
   background-color: #ffffff;
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f9f9fa' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
-  /* cursor: not-allowed; */
+}
+
+.today {
+  background-color: red;
+  color: #fff;
+  font-weight: 600;
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  margin: -13px -13px 0 0;
+  text-align: center;
+  border-radius: 50%;
+}
+
+.tag {
+  position: relative;
+  color: #98a0a6;
+  font-size: .8em;
+  line-height: 1em;
+  padding: 16px 7px;
 }
 
 .task {
@@ -141,31 +160,20 @@
 
 .task--warning {
   border-left-color: #fdb44d;
-  grid-column: 4 / span 3;
-  grid-row: 3;
   background: #fef0db;
-  align-self: center;
   color: rgba(253, 180, 77, 0.88);
   margin-top: -5px;
 }
 
 .task--danger {
   border-left-color: #fa607e;
-  grid-column: 2 / span 3;
-  grid-row: 3;
-  margin-top: 15px;
   background: rgba(253, 197, 208, 0.7);
-  align-self: end;
   color: rgba(250, 96, 126, 0.88);
 }
 
 .task--info {
   border-left-color: #4786ff;
-  grid-column: 6 / span 2;
-  grid-row: 5;
-  margin-top: 15px;
   background: rgba(218, 231, 255, 0.7);
-  align-self: end;
   color: rgba(71, 134, 255, 0.88);
 }
 
@@ -173,8 +181,6 @@
   background: #4786ff;
   border: 0;
   border-radius: 4px;
-  grid-column: 3 / span 3;
-  grid-row: 4;
   align-self: end;
   color: #fff;
   box-shadow: 0 10px 14px rgba(71, 134, 255, 0.4);

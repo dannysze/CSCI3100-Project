@@ -22,7 +22,7 @@
   /* color: #FFFFFF; */
   color: #282828;
   /* background-color: #000000; */
-  box-shadow: 0 3px 2px rgba(109, 225, 149, 0.15);
+  box-shadow: 0 3px 2px rgba(0, 0, 0, 0.15);
   transform: translateY(-5px);
   text-decoration: none;
 }
