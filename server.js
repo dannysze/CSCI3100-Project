@@ -7,6 +7,7 @@ const pwd = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const saltRounds = 10;
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
@@ -85,7 +86,6 @@ app.post('/signup', function(req, res) {
             res.status(400).send({'error':'username has been used'});
         }else{
             // salt and hash password
-            const saltRounds = 10;
             bcrypt.hash(req.body['password'], saltRounds, function(err, hash){
                 //no email verification for now
                 sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
@@ -453,6 +453,7 @@ app.get('/user_events/:uID', function(req, res){
         console.log(result);
     });
 });
+
 // Retrieve user information
 app.get('/user_info/:uID', function(req, res){
     var u_ID = req.params['uID'];
@@ -462,6 +463,45 @@ app.get('/user_info/:uID', function(req, res){
 
         res.send(result);
         console.log(result);
+    });
+});
+
+// Reset password request
+app.post('/reset_password', function(req, res){
+    // use token
+    
+    var sql = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
+    con.query(sql, req.params['email'], function(err, result){
+        if(err) throw err;
+        if(result.length > 0){
+            // send email with link from generated token 
+        }else{
+            res.status(400).send({error: 'No users are related to this email address'});
+        }
+    });
+});
+
+// Reset password
+app.put('/reset_password', function(req, res){
+    bcrypt.hash(req.body['password'], saltRounds, function(err, hash){
+        //use token
+        var sql = `UPDATE csci3100.User SET password = ` + hash + ` WHERE usedID = ` + +`;`;
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            
+
+            res.status(200).send('Password changed.');
+        });
+    });
+});
+
+// Delete event
+app.delete('/user_events/:eID', function(req, res){
+    var sql = `DELETE FROM csci3100.Event where event_id = `+ req.params['eID'] +`;`;
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        // send email
+        res.send(result);
     });
 });
 
