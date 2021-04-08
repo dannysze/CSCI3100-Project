@@ -119,12 +119,52 @@ app.post('/signup', function(req, res) {
 // });
 
 
+// file uploading
+// https://www.youtube.com/watch?v=ysS4sL6lLDU
+// https://codingstatus.com/how-to-store-image-in-mysql-database-using-node-js/
+// middleware 
+const multer = require('multer');
+// for randomizing file name
+const uuid = require('uuid').v4;
+// customize file name
+const storage = multer.diskStorage({
+    // set destination of file upload
+    destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        // get original name of file
+        const {originalname} = file;
+        // customize file name from original name
+        cb(null, `${uuid()}-${originalname}`);
+    }
+});
+
+// Set destination of file
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb)=>{
+        //https://stackoverflow.com/questions/60408575/how-to-validate-file-extension-with-multer-middleware
+        // check if the file type is an image
+        var ext = (/jpg|jpeg|png/).test(pwd.extname(file.originalname).toLowerCase());
+        var mime = (/jpg|jpeg|png/).test(file.mimetype);
+        if(ext && mime){
+            console.log("Image");
+            return cb(null, true);
+        }
+        else{
+            console.log("not image");
+            cb('Error: Not an image');
+        }
+    },
+});
+
+
 // Create Event
 // First check if the user_id is valid
-// img_loc to be implemented
 // date format: YYYY-MM-DD
 // time format: HH:MM:SS
-app.post('/create_event', function(req, res) {
+app.post('/create_event', upload.single('img'), function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
@@ -137,6 +177,7 @@ app.post('/create_event', function(req, res) {
     var venue = req.body['venue'];
     var capacity = req.body['capacity'];
     var desc = req.body['description'];
+    var img_loc = req.file.filename;
     var ticket = req.body['ticket'];
     var refund = req.body['refund'];
     var refund_days = req.body['refund_days'];
@@ -149,7 +190,7 @@ app.post('/create_event', function(req, res) {
             // insert event
             sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
                 , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
-                visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', 'NULL', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
+                visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
             con.query(sql, function (err, result){
                 if (err) throw err;
                 res.send(result);
