@@ -21,7 +21,7 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
+// send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
 function send_email(receiver, subject, content){
     // The content is set to html format for better appearance
     // If there is no need to change the appearance, we can change html into text instead
@@ -38,7 +38,7 @@ function send_email(receiver, subject, content){
         if (error) {
         console.log(error);
         } else {
-        console.log('Email sent to ' + mailOptions.receiver + "with response " + info.response);
+        console.log('Email sent to ' + receiver + " with response " + info.response);
         }
     });
 }
