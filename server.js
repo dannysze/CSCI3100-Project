@@ -6,6 +6,7 @@ var app = express();
 const pwd = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
@@ -54,13 +55,14 @@ app.post('/login', function(req, res) {
         //check if user with the username exists
         if(result.length > 0){
             //check if password matches
-            //later may check salted password instead
-            if (result[0].password == password){
-                //return userid for now later might switch to token instead
-                res.status(200).send({user_id: result[0].user_id});
-            }else{
-                res.status(400).send({error: 'Incorrect password'});
-            }
+            bcrypt.compare(password, result[0].password, function(err, match){
+                if (match){
+                    //return userid for now later might switch to token instead
+                    res.status(200).send({user_id: result[0].user_id});
+                }else{
+                    res.status(400).send({error: 'Incorrect password'});
+                }
+            })
         }else{
             res.status(400).send({error: 'User does not exist'});
         }
@@ -72,7 +74,6 @@ app.post('/login', function(req, res) {
 app.post('/signup', function(req, res) {
     // variables from the request
     var username = req.body['username'];
-    var password = req.body['password'];
     var email = req.body['email'];
     var type = req.body['type'];
     
@@ -83,16 +84,20 @@ app.post('/signup', function(req, res) {
         if(result.length > 0){
             res.status(400).send({'error':'username has been used'});
         }else{
-            //no email verification for now
-            sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-            ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-            con.query(sql, function (err, result) {
-                if (err) throw err;
-                
-                console.log("1 record inserted");
-                //return user id for now later might switch to token instead
-                res.status(200).send({user_id:result[0].insertId});
-            });
+            // salt and hash password
+            const saltRounds = 10;
+            bcrypt.hash(req.body['password'], saltRounds, function(err, hash){
+                //no email verification for now
+                sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
+                ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
+                con.query(sql, function (err, result) {
+                    if (err) throw err;
+                    
+                    console.log("1 record inserted");
+                    //return user id for now later might switch to token instead
+                    res.status(200).send({user_id:result[0].insertId});
+                });
+            })
         }
     });
 })
