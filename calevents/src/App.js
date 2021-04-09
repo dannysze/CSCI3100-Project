@@ -7,7 +7,8 @@ import SearchPage from './pages/SearchPage';
 import Events from './components/Event/Events';
 import './styles/App.css';
 import useToken from './useToken';
-import ProtectedRoute from './ProtectedRoute'
+import ProtectedRoute from './ProtectedRoute';
+import User from './pages/User';
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
         <ProtectedRoute path="/events" exact component={Events}/>
         <ProtectedRoute path="/myCalendar" exact component={MyCalendar} />
         <ProtectedRoute path="/search" exact component={SearchPage} />
+
+        {/*The following links are for functional illustration purpose */}
+        <ProtectedRoute path="/user" exact component={User} />
       </Router>
     </div>
   );
