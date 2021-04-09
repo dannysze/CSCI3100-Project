@@ -54,6 +54,25 @@ function send_email(receiver, subject, content){
     });
 }
 
+//middleware for checking authentication
+const checkAuth = (req, res, next) => {
+    var token = req.headers['auth'];
+    if (!token) return res.status(401).send({error: 'No token provided.' });
+    jwt.verify(token, config.secret, function(err, decoded){
+        if (err) return res.status(500).send({error: 'Failed to authenticate token.' });
+        var u_ID = decoded.user_id;
+        var sql = `SELECT user_id,username,email,type,account_balance FROM csci3100.User where user_id = ?;`;
+        con.query(sql, [u_ID], function(err, result){
+            if(err) throw err;
+            //check if user with the user exists
+            if(result.length > 0){
+                next();
+            }else{
+                res.status(400).send({error: 'User does not exist'});
+            }
+        });
+    });
+};
 
 //for login.return jwt token with payload being userid after successful login.
 app.post('/login', function(req, res) {
@@ -189,42 +208,46 @@ const upload = multer({
 // First check if the user_id is valid
 // date format: YYYY-MM-DD
 // time format: HH:MM:SS
-app.post('/create_event', upload.single('img'), function(req, res) {
+app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
     // variables from the request
-    var user_id = req.body['user_id'];
-    var event_name = req.body['event_name'];
-    var start_date = req.body['start_date'];
-    var start_time = req.body['start_time'];
-    var end_date = req.body['end_date'];
-    var end_time = req.body['end_time'];
-    var visible = req.body['visible'];
-    var repeat = req.body['repeat'];
-    var venue = req.body['venue'];
-    var capacity = req.body['capacity'];
-    var desc = req.body['description'];
-    var img_loc = req.file.filename;
-    var ticket = req.body['ticket'];
-    var refund = req.body['refund'];
-    var refund_days = req.body['refund_days'];
-
-    var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
-    con.query(sql, function (err, result) {
-        if (err) throw err;
-        // if the user is valid
-        if(result.length > 0){
-            // insert event
-            sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
-                , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
-                visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
-            con.query(sql, function (err, result){
-                if (err) throw err;
-                res.send(result);
-            });
-        }
-        else{
-            res.send("The user id is invalid");
-        }
-    });
+    //var user_id = req.body['user_id'];
+    jwt.verify(token, config.secret, function(err, decoded){
+        var user_id = decoded.user_id;
+        var event_name = req.body['event_name'];
+        var start_date = req.body['start_date'];
+        var start_time = req.body['start_time'];
+        var end_date = req.body['end_date'];
+        var end_time = req.body['end_time'];
+        var visible = req.body['visible'];
+        var repeat = req.body['repeat'];
+        var venue = req.body['venue'];
+        var capacity = req.body['capacity'];
+        var desc = req.body['description'];
+        var img_loc = req.file.filename;
+        var ticket = req.body['ticket'];
+        var refund = req.body['refund'];
+        var refund_days = req.body['refund_days'];
+    
+        var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            // if the user is valid
+            if(result.length > 0){
+                // insert event
+                sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
+                    , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
+                    visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
+                con.query(sql, function (err, result){
+                    if (err) throw err;
+                    //res.send(result);
+                    res.status(200).send("ok");
+                });
+            }
+            else{
+                res.send("The user id is invalid");
+            }
+        });
+    })
 });
 
 
@@ -514,27 +537,6 @@ app.get('/user', function(req, res) {
     });
 });
 
-//middleware for checking auth
-const checkAuth = (req, res, next) => {
-    var token = req.headers['auth'];
-    if (!token) return res.status(401).send({error: 'No token provided.' });
-    jwt.verify(token, config.secret, function(err, decoded){
-        if (err) return res.status(500).send({error: 'Failed to authenticate token.' });
-        var u_ID = decoded.user_id;
-        var sql = `SELECT user_id,username,email,type,account_balance FROM csci3100.User where user_id = ?;`;
-        con.query(sql, [u_ID], function(err, result){
-            if(err) throw err;
-            //check if user with the user exists
-            if(result.length > 0){
-                next();
-            }else{
-                res.status(400).send({error: 'User does not exist'});
-            }
-        });
-    });
-};
-
-
 //update profile pic
 app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
     // console.log(req.body);
@@ -542,7 +544,6 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
     var token = req.headers['auth'];
     jwt.verify(token, config.secret, function(err, decoded){
         var u_ID = decoded.user_id;
-        var prefix = 'pfp' + u_ID + '-' + Date.now() + '-';
         sql = `SELECT img_loc from csci3100.User WHERE user_id = ?;`;
         con.query(sql, [u_ID], function(err, result){
             if (err) throw err;
@@ -552,9 +553,12 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
                 if (err) throw err;
                 res.status(200).send("ok");
                 //remove old file
-                fs.unlink(oldpath, (err) => {
+                if(oldpath){
+                    fs.unlink(oldpath, (err) => {
                     console.log(err);
-                });
+                    });
+                }
+ 
             });
         });
     })
