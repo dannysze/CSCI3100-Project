@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const saltedRounds = 10;
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 //secret key for jwt.sign
 const config = {
@@ -571,13 +572,33 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
 
 // Reset password request
 app.post('/reset_password', function(req, res){
-    // use token
-    
-    var sql = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
-    con.query(sql, req.params['email'], function(err, result){
+    var sql1 = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
+    var sql2 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = ?;`;
+    var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ?`;
+    con.query(sql1, req.params['email'], function(err, result1){
         if(err) throw err;
-        if(result.length == 1){
-            // send email with link from generated token 
+        if(result1.length > 0){
+            con.query(sql2, result1[0].user_id, function(err, result2){
+                if (err) throw err;
+                // delete token if it exists
+                if (result2.length > 0 )
+                    con.query(sql3, result2[0].user_id, function(err, result){if (err) throw err;});
+                let resetToken = crypto.randomBytes(32).toString("hex");
+                const hash = bcrypt.hash(resetToken, saltedRounds);
+                var sql4 = `INSERT INTO csci3100.Password_Recovery (user_id, token, expires_at) VALUES(?, ?, ?);`;
+                // token/reset password link expire in 10 minutes
+                let current_datetime = new Date();
+                let expire_datetime = new Date();
+                expire_datetime.setTime(current_datetime.getTime + 30 * 60000);
+                con.query(sql4, [result1[0].user_id, hash, expire_dateTime], function(err, result2){
+                    if (err) throw err;
+                    //reset password link
+                    const link = 'localhost:8080/reset_password?token=' + resetToken + '&id= ' + result1[0].user_id;
+                    // send email with link from generated token
+
+                    
+                });
+            })
         }else{
             res.status(400).send({error: 'No users are related to this email address'});
         }
@@ -600,7 +621,7 @@ app.put('/reset_password', function(req, res){
 
 // Delete event
 app.delete('/user_events/:eID', function(req, res){
-    var sql = `DELETE FROM csci3100.Event where event_id = `+ req.params['eID'] +`;`;
+    var sql = `DELETE FROM csci3100.Event WHERE event_id = `+ req.params['eID'] +`;`;
     con.query(sql, function (err, result) {
         if (err) throw err;
         // send email

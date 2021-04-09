@@ -26,8 +26,7 @@ User
 Password_Recovery
 	- user_id -> int (primary key, foreign key -> Users.user_id)
     	- token (hash()) -> varchar(60)
-	- starting_time -> datetime
-	
+	- expires_at -> datetime
 Event
 	- visible -> tinyint
 	- event_id -> int (primary key, auto increment)
@@ -48,7 +47,7 @@ Event
 Event_Join
 	- user_id -> int (primary key, foreign key User.user_id)
 	- event_id -> int (primary key, foreign key Event.event_id)
-pre_paid_card
+Prepaid_Card
 	- card_id -> int (primary key)
 	- card_password -> varchar(30)
 	- value	-> int
