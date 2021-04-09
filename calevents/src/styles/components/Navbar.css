@@ -7,22 +7,32 @@ nav ul {
 
 .nav {
   display: inline-block;
-  margin: 0;
+  margin: -15px auto 0;
+  padding-bottom: 10px;
   text-align: left;
   z-index: 8;
 }
 
 nav a {
   display: block;
-  padding: 0 16px;
+  padding: 0 2rem;
   line-height: inherit;
+  letter-spacing: .1rem;
   cursor: pointer;
   color: #000000;
+}
+
+nav a svg {
+  transition: transform 0.3s ease-in-out;
 }
 
 nav a:hover {
   color: #000000;
   text-decoration: none;
+}
+
+nav .drop:hover svg {
+  transform: rotate(180deg);
 }
 
 .nav__menu {
@@ -37,7 +47,7 @@ nav a:hover {
 
 }
 .nav__menu-item:hover, .nav__submenu-items:hover {
-  background-color: cyan;
+  background-color: rgba(166, 168, 179, 0.12);
   text-decoration: none;
 }
 
@@ -47,30 +57,21 @@ nav a:hover {
   position: absolute;
   width: 100%;
   height: 0;
-  background-color: red;
+  background-color: #fff;
   margin-top: 0px;
   overflow: hidden;
+  transition: height 0.3s ease-in-out;
 }
 
 /* Dropdow Menu animation */
-.dropdown-enter, .dropdown-appear, .dropdown-exit-done {
+.dropdown-enter, .dropdown-appear, .dropdown-exit-done, .dropdown-exit-active {
   height: 0;
 }
 
 .dropdown-enter-active {
   height: 135px;
-  transition: height 0.3s;
 }
 
 .dropdown-enter-done {
   height: 135px !important;
-}
-
-.dropdown-exit {
-  height: 135px;
-}
-
-.dropdown-exit-active {
-  height: 0;
-  transition: height 0.3s;
 }

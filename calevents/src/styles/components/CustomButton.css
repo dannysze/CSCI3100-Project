@@ -79,3 +79,21 @@
 .close-button:hover {
   transform: rotate(90deg);
 }
+
+.calendar-button {
+  border: none;
+  background: transparent;
+  transition: transform 0.3s ease-in-out;
+}
+
+.calendar-button:hover {
+  transform: translateY(-5px);
+}
+
+.calendar-button-left {
+
+}
+
+.calendar-button-right {
+
+}

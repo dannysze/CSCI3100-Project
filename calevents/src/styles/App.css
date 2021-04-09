@@ -7,3 +7,20 @@
   justify-content: center;
   align-items: center;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* border-radius: 5px; */
+  background: #ABABAB;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #797979;
+}

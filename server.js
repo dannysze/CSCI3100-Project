@@ -31,7 +31,8 @@ var transporter = nodemailer.createTransport({
       pass: 'Calevents-csci3100'
     }
 });
-//send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
+
+// send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
 function send_email(receiver, subject, content){
     // The content is set to html format for better appearance
     // If there is no need to change the appearance, we can change html into text instead
@@ -48,7 +49,7 @@ function send_email(receiver, subject, content){
         if (error) {
         console.log(error);
         } else {
-        console.log('Email sent to ' + mailOptions.receiver + "with response " + info.response);
+        console.log('Email sent to ' + receiver + " with response " + info.response);
         }
     });
 }
@@ -121,28 +122,6 @@ app.post('/signup', function(req, res) {
         }
     });
 })
-
-
-// insert user
-// password hashing, img_loc and type to be implement
-app.post('/create_user', function(req, res) {
-    // variables from the request
-    var username = req.body['username'];
-    var password = req.body['password'];
-    var email = req.body['email'];
-    var type = req.body['type'];
-    
-  
-    var sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-    ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-    con.query(sql, function (err, result) {
-        if (err) throw err;
-
-        console.log("1 record inserted");
-        res.send(result);
-    });
-});
-
 
 // // insert user
 // // password hashing, img_loc and type to be implement
@@ -555,22 +534,9 @@ const checkAuth = (req, res, next) => {
     });
 };
 
-//for storing PFP
-// customize file name
-const storePFP = multer.diskStorage({
-    destination: function (req, file, cb) {
-      //sample output directory
-      cb(null, 'uploads')
-    },
-    filename: function (req, file, cb) {
-        // customize file name from original name
-        cb(null, `${uuid()}-${file.originalname}`);
-    }
-});
-const uploadPFP = multer({storage: storePFP});
 
 //update profile pic
-app.post('/updatepfp', checkAuth, uploadPFP.single('pfp'),function(req, res){
+app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
     // console.log(req.body);
     // console.log(req.file.path);
     var token = req.headers['auth'];
@@ -623,27 +589,13 @@ app.put('/reset_password', function(req, res){
     });
 });
 
-// Retrieve event with given ID
-app.get('/event/:eID',function(req, res){
-    var eID = req.params['eID'];
-    var sql = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
-    con.query(sql, [eID],function (err, result) {
+// Delete event
+app.delete('/user_events/:eID', function(req, res){
+    var sql = `DELETE FROM csci3100.Event where event_id = `+ req.params['eID'] +`;`;
+    con.query(sql, function (err, result) {
         if (err) throw err;
-
+        // send email
         res.send(result);
-        console.log(result);
-    });
-});
-
-// Retrieve user private events
-app.get('/user_events/:uID', function(req, res){
-    var u_ID = req.params['uID'];
-    var sql = `SELECT * FROM csci3100.Event WHERE organizer = ? AND visible = 0;`
-    con.query(sql, [u_ID], function(err, result){
-        if (err) throw err;
-
-        res.send(result);
-        console.log(result);
     });
 });
 
