@@ -31,7 +31,6 @@ const User = () => {
 
     useEffect(() => {
       getUser();
-      console.log(reload);
     },[token,reload]);
 
     var pfp;
