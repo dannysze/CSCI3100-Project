@@ -6,6 +6,7 @@
     cursor: pointer;
     color: #282828;
     border: 1px solid #282828;
+    
     /* box-shadow: 3px 3px 5px grey; */
 }
 
@@ -32,4 +33,21 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+.card-container{
+    border-radius: 6px;
+    width: 300px;
+    overflow : hidden;
+
+}
+.image-container{
+    overflow: hidden;
+    border-bottom: rgb(217, 83, 79);
+    
+    display: grid;
+}
+
+.image-container img{
+    overflow: hidden;
+    height: 200px;
 }
