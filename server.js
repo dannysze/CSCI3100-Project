@@ -91,7 +91,7 @@ app.post('/login', function(req, res) {
                 if (match){
                     //return jwt token
                     var token = jwt.sign({user_id: result[0].user_id}, config.secret, {
-                        //expiresIn:86400
+                        expiresIn: 60*60*24
                     });
     
                     res.status(200).send({token: token});
@@ -116,29 +116,35 @@ app.post('/signup', function(req, res) {
     //hashedPassword = bcrypt.hashSync(req.body.password, 8);
     //password = hashPassword
 
-    var sql = `SELECT * FROM csci3100.User where username = '`+ username +`';`;
-    con.query(sql, function (err, result) {
+    var sql1 = `SELECT * FROM csci3100.User where username = '`+ username +`';`;
+    var sql2 = `SELECT * FROM csci3100.User where email = '`+ email +`';`;
+ 
+    con.query(sql1, function (err, result1) {
         if (err) throw err;
-
-        if(result.length > 0){
-            res.status(400).send({'error':'username has been used'});
-        }else{
-            bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
-                //no email verification for now
-                sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-                ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-                con.query(sql, function (err, result) {
-                    if (err) throw err;
-                    
-                    console.log("1 record inserted");
-                    //return jwt token
-                    var token = jwt.sign({user_id:result.insertId}, config.secret, {
-                    //     expiresIn: 86400
+        con.query(sql2, function (err, result2){
+            if (err) throw err;
+            if(result1.length > 0){
+                res.status(400).send({'error':'username has been used'});
+            }else if (result2.length > 0){
+                res.status(400).send({'error':'email has been used'});    
+            }else{
+                bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
+                    //no email verification for now
+                    sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
+                    ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
+                    con.query(sql, function (err, result) {
+                        if (err) throw err;
+                        
+                        console.log("1 record inserted");
+                        //return jwt token
+                        var token = jwt.sign({user_id:result.insertId}, config.secret, {
+                            expiresIn: 60*60*24
+                        });
+                        res.status(200).send({token: token});
                     });
-                    res.status(200).send({token: token});
-                });
-            })
-        }
+                })
+            }
+        });
     });
 })
 
@@ -344,7 +350,7 @@ app.post('/join_event', function(req, res){
 
 
 // Editing all information of an event except ticket and organizer
-// Chnage image location will be handled separately.
+// Change image location will be handled separately.
 app.post('/edit_event', function(req, res) {
     // variables from the request
     var field = req.body['field'];
@@ -570,7 +576,7 @@ app.post('/reset_password', function(req, res){
     var sql = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
     con.query(sql, req.params['email'], function(err, result){
         if(err) throw err;
-        if(result.length > 0){
+        if(result.length == 1){
             // send email with link from generated token 
         }else{
             res.status(400).send({error: 'No users are related to this email address'});
