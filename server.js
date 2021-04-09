@@ -104,7 +104,7 @@ app.post('/signup', function(req, res) {
         if(result.length > 0){
             res.status(400).send({'error':'username has been used'});
         }else{
-            bcrypt.hash(req.body['password'], saltRounds, function(err, hash){
+            bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
                 //no email verification for now
                 sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
                 ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
@@ -577,7 +577,7 @@ app.post('/reset_password', function(req, res){
 
 // Reset password
 app.put('/reset_password', function(req, res){
-    bcrypt.hash(req.body['password'], saltRounds, function(err, hash){
+    bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
         //use token
         var sql = `UPDATE csci3100.User SET password = ` + hash + ` WHERE usedID = ` + +`;`;
         con.query(sql, function (err, result) {
