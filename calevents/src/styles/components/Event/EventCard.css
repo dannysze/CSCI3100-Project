@@ -28,9 +28,6 @@
     display: -webkit-box;
     background-color: rgb(217, 83, 79);
     color:#fef0db; 
-    
-   
-    
 }
 
 /* multi-line truncate from web */
@@ -48,18 +45,18 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .card-container{
+    position: relative;
     border-radius: 11px;
-    width: 100%;
+    width: 95%;
     overflow : hidden;
     box-shadow : 0px 0px 15px -5px;
     background-color: white;
     margin: 20px auto;
     color: #282828;
     border: groove;
-    height: 430px;
-    
-
+    height: 435px;
 }
 
 .image-container{
@@ -88,7 +85,6 @@
     -webkit-line-clamp: 1;
     line-height: 100%;
     padding: 3px 3px 5px 5px;
-    
 }
 
 .datetime{
@@ -129,15 +125,11 @@
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 0;
-    
-    
+    margin-bottom: 0;
 }
 .btn{
-    display: flex;
-    position: relative;
-    left: 346px;
-    bottom: 20px;
-    
+    position: absolute;
+    right: 5px;
 }
 
 .btn button{

@@ -87,7 +87,7 @@ const Calendar = ({ heightHandler }) => {
       setEvents(eventsFromServer);
     }
     getEvents();
-  })
+  }, [calendarInfo]);
   
     const fetchEvents = async () => {
       const res = await fetch(getaddr()+'search_events', {

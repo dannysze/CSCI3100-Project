@@ -15,7 +15,7 @@ function Events({ height }) {
       setEvents(eventsFromServer)
     }
     getEvents()
-  })
+  }, [])
 
   const fetchEvents = async () => {
     const res = await fetch(getaddr()+'events', {

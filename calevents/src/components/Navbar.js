@@ -12,7 +12,7 @@ const navItems = [
       cName: 'nav__menu-item'
     },
     {
-      title:'My Calendar',
+      title:' My Page ',
       url: '/myCalendar',
       cName: 'drop nav__menu-item'
     },
@@ -25,7 +25,7 @@ const navItems = [
 ]
 const dropItems = [
   {
-    title:'Creat Event',
+    title:'My Schedule',
     url: '#',
     cName: 'nav__submenu-items'
   },

@@ -3,6 +3,7 @@ import { Container, Row, Col } from 'react-bootstrap';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
 import Schedule from '../components/Calendars/Schedule';
+import History from '../components/History';
 import Footer from '../components/Footer';
 import '../styles/pages/MyCalendar.css'
 
@@ -21,7 +22,7 @@ const MyCalendar = () => {
           <Schedule />
         </Col>
         <Col sm={4}>
-          <div>form</div>
+          <History />
         </Col>
       </Row>
       <Footer />

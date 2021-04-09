@@ -34,11 +34,7 @@ const EventCard = ({ event, onClick }) => {
 
             </div>
             <div className="btn">
-                <button>
-                    <a>
-                        More
-                    </a>
-                </button>
+                <button className="flex-center" onClick={onClick}>More</button>
             </div>
 
         </div>

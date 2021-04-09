@@ -1,6 +1,7 @@
 .header {
   display: flex;
   justify-content: flex-end;
+  position: relative;
 }
 
 .header h1 {
@@ -43,4 +44,8 @@
 
 .header-items:hover::after {
   transform: scaleX(1);
+}
+
+.add-value-box {
+  position: absolute;
 }

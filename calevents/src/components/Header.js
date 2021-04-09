@@ -6,7 +6,7 @@ const headerItems = [
   {
       title: '$0.00 ',
       url: '#',
-      icon: <></>,
+      icon: <Icon.Plus />,
       cName: 'header-items'
   },
   {
@@ -33,9 +33,19 @@ const Header = () => {
   return (
     <div className="header">
       <h1 style={{left: '10px', position: 'absolute'}}>CalEvent</h1>
-      {headerItems.map((item, index) => <a href={item.url} className={item.cName} key={index}>{item.title}{item.icon}</a>)}
+      {headerItems.map((item, index) => <a href={item.url} className={`flex-center ${item.cName}`} key={index}>{item.title}&nbsp;{item.icon}</a>)}
     </div>
   )
 }
 
-export default Header
+const addValueBox = () => {
+  
+  
+  return (
+      <div className="add-value-box">
+        
+      </div>
+    )
+  }
+  
+  export default Header
