@@ -4,14 +4,24 @@ const con = require('./calevents/src/db');
 var express = require('express');
 var app = express();
 const pwd = require('path');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const saltedRounds = 10;
+const jwt = require('jsonwebtoken');
+//secret key for jwt.sign
+const config = {
+    secret:'somerandomstuff',
+}
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
 
 var nodemailer = require('nodemailer');
+
+
+
 
 // Configure Mailer for email notification
 var transporter = nodemailer.createTransport({
@@ -43,7 +53,9 @@ function send_email(receiver, subject, content){
         }
     });
 }
-//for login
+
+
+//for login.return jwt token with payload being userid after successful login.
 app.post('/login', function(req, res) {
     console.log(req.body);
     var username = req.body['username'];
@@ -55,10 +67,15 @@ app.post('/login', function(req, res) {
         //check if user with the username exists
         if(result.length > 0){
             //check if password matches
+            //later may check salted password instead
             bcrypt.compare(password, result[0].password, function(err, match){
                 if (match){
-                    //return userid for now later might switch to token instead
-                    res.status(200).send({user_id: result[0].user_id});
+                    //return jwt token
+                    var token = jwt.sign({user_id: result[0].user_id}, config.secret, {
+                        //expiresIn:86400
+                    });
+    
+                    res.status(200).send({token: token});
                 }else{
                     res.status(400).send({error: 'Incorrect password'});
                 }
@@ -69,7 +86,7 @@ app.post('/login', function(req, res) {
     });
 }
 );
-//for signup
+//for signup. return jwt token with payload being userid after successful signup.
 //modify from /createuser
 app.post('/signup', function(req, res) {
     // variables from the request
@@ -77,6 +94,9 @@ app.post('/signup', function(req, res) {
     var email = req.body['email'];
     var type = req.body['type'];
     
+    //hashedPassword = bcrypt.hashSync(req.body.password, 8);
+    //password = hashPassword
+
     var sql = `SELECT * FROM csci3100.User where username = '`+ username +`';`;
     con.query(sql, function (err, result) {
         if (err) throw err;
@@ -84,9 +104,7 @@ app.post('/signup', function(req, res) {
         if(result.length > 0){
             res.status(400).send({'error':'username has been used'});
         }else{
-            // salt and hash password
-            const saltRounds = 10;
-            bcrypt.hash(req.body['password'], saltRounds, function(err, hash){
+            bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
                 //no email verification for now
                 sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
                 ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
@@ -94,14 +112,16 @@ app.post('/signup', function(req, res) {
                     if (err) throw err;
                     
                     console.log("1 record inserted");
-                    //return user id for now later might switch to token instead
-                    res.status(200).send({user_id:result[0].insertId});
+                    //return jwt token
+                    var token = jwt.sign({user_id:result.insertId}, config.secret, {
+                    //     expiresIn: 86400
+                    });
+                    res.status(200).send({token: token});
                 });
             })
         }
     });
 })
-
 
 // // insert user
 // // password hashing, img_loc and type to be implement
@@ -124,12 +144,52 @@ app.post('/signup', function(req, res) {
 // });
 
 
+// file uploading
+// https://www.youtube.com/watch?v=ysS4sL6lLDU
+// https://codingstatus.com/how-to-store-image-in-mysql-database-using-node-js/
+// middleware 
+const multer = require('multer');
+// for randomizing file name
+const uuid = require('uuid').v4;
+// customize file name
+const storage = multer.diskStorage({
+    // set destination of file upload
+    destination: (req, file, cb) => {
+        cb(null, 'uploads');
+    },
+    filename: (req, file, cb) => {
+        // get original name of file
+        const {originalname} = file;
+        // customize file name from original name
+        cb(null, `${uuid()}-${originalname}`);
+    }
+});
+
+// Set destination of file
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb)=>{
+        //https://stackoverflow.com/questions/60408575/how-to-validate-file-extension-with-multer-middleware
+        // check if the file type is an image
+        var ext = (/jpg|jpeg|png/).test(pwd.extname(file.originalname).toLowerCase());
+        var mime = (/jpg|jpeg|png/).test(file.mimetype);
+        if(ext && mime){
+            console.log("Image");
+            return cb(null, true);
+        }
+        else{
+            console.log("not image");
+            cb('Error: Not an image');
+        }
+    },
+});
+
+
 // Create Event
 // First check if the user_id is valid
-// img_loc to be implemented
 // date format: YYYY-MM-DD
 // time format: HH:MM:SS
-app.post('/create_event', function(req, res) {
+app.post('/create_event', upload.single('img'), function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
@@ -142,6 +202,7 @@ app.post('/create_event', function(req, res) {
     var venue = req.body['venue'];
     var capacity = req.body['capacity'];
     var desc = req.body['description'];
+    var img_loc = req.file.filename;
     var ticket = req.body['ticket'];
     var refund = req.body['refund'];
     var refund_days = req.body['refund_days'];
@@ -154,7 +215,7 @@ app.post('/create_event', function(req, res) {
             // insert event
             sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
                 , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
-                visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', 'NULL', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
+                visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
             con.query(sql, function (err, result){
                 if (err) throw err;
                 res.send(result);
@@ -412,6 +473,7 @@ app.get('/user_events/:uID', function(req, res){
         console.log(result);
     });
 });
+
 // Retrieve user information
 app.get('/user_info/:uID', function(req, res){
     var u_ID = req.params['uID'];
@@ -421,6 +483,119 @@ app.get('/user_info/:uID', function(req, res){
 
         res.send(result);
         console.log(result);
+    });
+});
+
+//token based version of retrieve user info. no need to replace the uid param ver. they serve different purpose.
+app.get('/user', function(req, res) {
+    var token = req.headers['auth'];
+    if (!token) return res.status(401).send({error: 'No token provided.' });
+    jwt.verify(token, config.secret, function(err, decoded){
+        if (err) return res.status(500).send({error: 'Failed to authenticate token.' });
+        var u_ID = decoded.user_id;
+        var sql = `SELECT user_id,username,img_loc, email,type,account_balance FROM csci3100.User where user_id = ?;`;
+        con.query(sql, [u_ID], function(err, result){
+            if(err) throw err;
+            //check if user with the user exists
+            if(result.length > 0){
+                var result = result[0];
+                //send base64 url for the image
+                try{
+                    var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
+                    result.img_loc = imageAsBase64;
+                }catch{
+                    result.img_loc = "";
+                }
+                res.status(200).send(result);
+            }else{
+                res.status(400).send({error: 'User does not exist'});
+            }
+        });
+    });
+});
+
+//middleware for checking auth
+const checkAuth = (req, res, next) => {
+    var token = req.headers['auth'];
+    if (!token) return res.status(401).send({error: 'No token provided.' });
+    jwt.verify(token, config.secret, function(err, decoded){
+        if (err) return res.status(500).send({error: 'Failed to authenticate token.' });
+        var u_ID = decoded.user_id;
+        var sql = `SELECT user_id,username,email,type,account_balance FROM csci3100.User where user_id = ?;`;
+        con.query(sql, [u_ID], function(err, result){
+            if(err) throw err;
+            //check if user with the user exists
+            if(result.length > 0){
+                next();
+            }else{
+                res.status(400).send({error: 'User does not exist'});
+            }
+        });
+    });
+};
+
+
+//update profile pic
+app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
+    // console.log(req.body);
+    // console.log(req.file.path);
+    var token = req.headers['auth'];
+    jwt.verify(token, config.secret, function(err, decoded){
+        var u_ID = decoded.user_id;
+        var prefix = 'pfp' + u_ID + '-' + Date.now() + '-';
+        sql = `SELECT img_loc from csci3100.User WHERE user_id = ?;`;
+        con.query(sql, [u_ID], function(err, result){
+            if (err) throw err;
+            var oldpath = result[0].img_loc;
+            sql = `UPDATE csci3100.User SET img_loc = ? WHERE user_id = ?;`;
+            con.query(sql, [req.file.path, u_ID], function(err, result){
+                if (err) throw err;
+                res.status(200).send("ok");
+                //remove old file
+                fs.unlink(oldpath, (err) => {
+                    console.log(err);
+                });
+            });
+        });
+    })
+});
+
+// Reset password request
+app.post('/reset_password', function(req, res){
+    // use token
+    
+    var sql = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
+    con.query(sql, req.params['email'], function(err, result){
+        if(err) throw err;
+        if(result.length > 0){
+            // send email with link from generated token 
+        }else{
+            res.status(400).send({error: 'No users are related to this email address'});
+        }
+    });
+});
+
+// Reset password
+app.put('/reset_password', function(req, res){
+    bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
+        //use token
+        var sql = `UPDATE csci3100.User SET password = ` + hash + ` WHERE usedID = ` + +`;`;
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            
+
+            res.status(200).send('Password changed.');
+        });
+    });
+});
+
+// Delete event
+app.delete('/user_events/:eID', function(req, res){
+    var sql = `DELETE FROM csci3100.Event where event_id = `+ req.params['eID'] +`;`;
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        // send email
+        res.send(result);
     });
 });
 

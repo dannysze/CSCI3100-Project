@@ -6,12 +6,10 @@ import getaddr from '../components/getaddr'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/pages/Login.css';
 import useToken from '../useToken'
-import { useHistory } from "react-router-dom";
 
 
 const Login = () => {
   const {token, setToken} = useToken();
-  const history = useHistory();
 
   useEffect(() => {
     document.title = showSignUp ? 'Login' : 'Sign Up';
@@ -100,9 +98,8 @@ const Login = () => {
             setLoginResult({'errorMsg':body['error'], 'alert':true});
       }else{
         //temporily use user_id as token
-        //setToken(body);
-        setToken({'token':body['user_id']});
-        history.push('/');
+        setToken({'token':body['token']});
+        window.location.replace("/");
         //console.log(token)
       }
     }catch(err){
@@ -134,8 +131,8 @@ const Login = () => {
             setSignupResult({'errorMsg':body['error'], 'alert':true});
       }else{
         //temporily use user_id as token
-        setToken({'token':body['user_id']});
-        history.push('/');
+        setToken({'token':body['token']});
+        window.location.replace("/");
         //console.log(token)
       }
     }catch(err){

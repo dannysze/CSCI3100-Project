@@ -3,7 +3,7 @@ import {Route, Redirect} from 'react-router-dom';
 import useToken from './useToken'
 
 const ProtectedRoute = ({ component: Component, ...rest }) => {
-    const {token, setToken} = useToken();
+    const {token} = useToken();
     return (
         <Route {...rest} render={(props) => (!token? <Redirect to='/login' />:<Component {...props} />)}/>
     )
