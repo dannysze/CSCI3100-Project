@@ -28,7 +28,8 @@ const EventCard = ({ event, onClick }) => {
             <div className="info-container">
 
                 <div className='organizer'>By {event.organizer}</div>
-                <div className='datetime'>{event.start_time}-{event.end_time}/{event.start_date}</div>
+                <div className='datetime'>Time:&nbsp;{event.start_time}-{event.end_time}/{event.start_date}</div>
+                <div className='venue'>Venue:&nbsp;{event.venue}</div>
                 <h3 className='description-head'>Description:</h3>
                 <p className='description-body'>{event.desc}</p>
 
