@@ -46,3 +46,13 @@ const CalendarButton = ({ classes, clickHandler }) => {
 }
 
 export { CalendarButton }
+
+const RedeemButton = ({ classes, clickHandler, content }) => {
+  return (
+    <button className={`redeem-button ${classes}`} onClick={clickHandler}>
+      {content}
+    </button>
+  )
+}
+
+export { RedeemButton }
