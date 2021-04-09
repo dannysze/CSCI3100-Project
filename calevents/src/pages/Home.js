@@ -25,10 +25,10 @@ const Home = () => {
       <Header />
       <Navbar />
       <Row className="main-content">
-        <Col sm={9}>
+        <Col md={9}>
           <Calendar heightHandler={heightHandler}/>
         </Col>
-        <Col sm={3}>
+        <Col md={3}>
           <UpcomingEvents height={height}/>
         </Col>
       </Row>

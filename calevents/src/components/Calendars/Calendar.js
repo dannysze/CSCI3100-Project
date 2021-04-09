@@ -68,7 +68,10 @@ const Calendar = ({ heightHandler }) => {
 
   // initial information of the calendar (day of visit)
   const today = startOfDay(new Date());
-  const initialInfo = { 'calendarStart': startOfMonth(today), 'calendarArr': takeMonth(today)};
+  const initialInfo = { 
+    'calendarStart': startOfMonth(today), 
+    'calendarArr': takeMonth(today)
+  };
   const [calendarInfo, setCalendarInfo] = useState(initialInfo);
   const [events, setEvents] = useState([]);
 
@@ -84,10 +87,15 @@ const Calendar = ({ heightHandler }) => {
       setEvents(eventsFromServer);
     }
     getEvents();
-  }, [])
+  })
   
     const fetchEvents = async () => {
-      const res = await fetch(getaddr()+'search_events')
+      const res = await fetch(getaddr()+'search_events', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        }
+      })
       const data = await res.json()
       return data
     }
@@ -135,7 +143,7 @@ const Calendar = ({ heightHandler }) => {
           } else {
             display = 'none';
             dayRecord[i]['hide']++;
-            return (<></>)
+            return
           }
         } else {
           dayRecord[i] = {
@@ -173,10 +181,10 @@ const Calendar = ({ heightHandler }) => {
         }
         // console.log(dayRecord[key]);
         return (
-          <CalendarTag styles={style} hide={dayRecord[key]['hide']}/>
+          <CalendarTag styles={style} hide={dayRecord[key]['hide']} key={key} />
         )
       } else {
-        return (<></>)
+        return
       }
     }
   }
@@ -236,7 +244,7 @@ const CalendarHeader = ({ month, year, previousMonth, nextMonth }) => {
 const CalendarItems = (props) => {
   return (
     <div className={`day ${props.disabled ? 'day--disabled' : ''}`} style={props.sunday ? {color: `rgba(217, 83, 79, ${props.disabled ? 0.6 : 1})`} : {}}>
-      <span className={props.today ? "today" : ""}>{props.name}</span>
+      <span className={props.today ? "calendar--today" : ""}>{props.name}</span>
     </div>
   )
 }
