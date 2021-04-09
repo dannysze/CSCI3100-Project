@@ -16,7 +16,21 @@
 }
 
 .title{
-    font-size: 18px;
+    font-size: 25px;
+    font-weight: 300;
+    word-break: break-word;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    max-width: 100%;
+    -webkit-box-orient: vertical;
+    display: block;
+    display: -webkit-box;
+    background-color: rgb(217, 83, 79);
+    color:#fef0db; 
+    
+   
+    
 }
 
 /* multi-line truncate from web */
@@ -35,19 +49,112 @@
     text-overflow: ellipsis;
 }
 .card-container{
-    border-radius: 6px;
-    width: 300px;
+    border-radius: 11px;
+    width: 100%;
     overflow : hidden;
+    box-shadow : 0px 0px 15px -5px;
+    background-color: white;
+    margin: 20px auto;
+    color: #282828;
+    border: groove;
+    height: 430px;
+    
 
 }
+
 .image-container{
     overflow: hidden;
-    border-bottom: rgb(217, 83, 79);
-    
     display: grid;
 }
 
 .image-container img{
     overflow: hidden;
-    height: 200px;
+    height: 170px;
 }
+
+.info-container{
+    overflow: hidden;
+    border-top-color: #d9534f;
+    display: grid;
+    padding-bottom: 5px;
+}
+
+.organizer{
+    font-size: 15px;
+    font-weight: 350;
+    text-align: left;
+    display: block;
+    display:-webkit-box;
+    -webkit-line-clamp: 1;
+    line-height: 100%;
+    padding: 3px 3px 5px 5px;
+    
+}
+
+.datetime{
+    font-size: 15px;
+    font-weight: 350;
+    text-align: left;
+    display: block;
+    display:-webkit-box;
+    -webkit-line-clamp: 1;
+    line-height: 100%;
+    padding: 3px 3px 5px 5px;
+    
+}
+
+.description-head{
+    font-size: 20px;
+    font-weight: 500;
+    text-align: left;
+    display: block;
+    display:-webkit-box;
+    -webkit-line-clamp: 1;
+    line-height: 100%;
+    padding-left: 3px;
+}
+
+.description-body{
+    font-size: 15px;
+    font-weight: 300;
+    text-align: left;
+    /* display: block; */
+    display:-webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    line-height: normal;
+    word-break: break-word;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0;
+    
+    
+}
+.btn{
+    display: flex;
+    position: relative;
+    left: 346px;
+    bottom: 20px;
+    
+}
+
+.btn button{
+    background-color: rgb(217, 83, 79);
+    border: none;
+    border-radius: 6px;
+    font-size: 25px;
+    font-weight: 300;
+    color:#fef0db;
+    cursor: pointer;
+    transition: 0.3s;
+    animation: ease-in-out;
+    
+}
+
+.btn button:hover{
+    transform: scale(1.1);
+    /* box-shadow : 0px 0px 20px -5px; */
+}
+
