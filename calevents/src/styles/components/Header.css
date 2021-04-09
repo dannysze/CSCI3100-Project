@@ -11,18 +11,36 @@
 }
 
 .header-items {
+  position: relative;
   color: #282828;
   text-decoration: none;
   padding: 1em;
   letter-spacing: .1rem;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.2s ease-in-out;
+}
+
+.header-items::after {
+  content: '';
+  position: absolute;
+  background-color: #282828;
+  bottom: 15%;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  transform: scaleX(0);
+  transition: transform 0.3s ease-in-out;
+
 }
 
 .header-items:hover {
   /* color: #FFFFFF; */
   color: #282828;
   /* background-color: #000000; */
-  box-shadow: 0 3px 2px rgba(0, 0, 0, 0.15);
-  transform: translateY(-5px);
+  /* box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.15); */
+  /* transform: translateY(-5px); */
   text-decoration: none;
+}
+
+.header-items:hover::after {
+  transform: scaleX(1);
 }

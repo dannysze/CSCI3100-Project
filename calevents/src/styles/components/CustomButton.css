@@ -84,10 +84,14 @@
   border: none;
   background: transparent;
   transition: transform 0.3s ease-in-out;
+  border-radius: 50%;
+  padding: .3em;
+  /* border: 1px solid black; */
 }
 
 .calendar-button:hover {
-  transform: translateY(-5px);
+  transform: translateY(-3px);
+  box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4);
 }
 
 .calendar-button-left {

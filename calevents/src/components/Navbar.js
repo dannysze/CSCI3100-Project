@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
-import { CaretDownFill } from 'react-bootstrap-icons';
+import { CaretDownFill, House,  Search } from 'react-bootstrap-icons';
 import '../styles/components/Navbar.css';
 
 const navItems = [
     {
       title:'Home',
       url: '/',
+      icon: <House />,
       cName: 'nav__menu-item'
     },
     {
@@ -18,6 +19,7 @@ const navItems = [
     {
       title:'Search',
       url: '/search',
+      icon: <Search />,
       cName: 'nav__menu-item'
     },
 ]
@@ -76,8 +78,8 @@ const Navbar = () => {
                   </ul>
                 </CSSTransition>
               </li>
-            : <li className={item.cName} key={index}>
-                <Link to={item.url} key={index}>{item.title}</Link>
+            : <li className={`${item.cName}`} key={index}>
+                <Link to={item.url} key={index} className={"flex-center"}>{item.title}&nbsp;{item.icon}</Link>
               </li>
           ) 
         })}

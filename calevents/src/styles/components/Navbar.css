@@ -19,7 +19,7 @@ nav a {
   line-height: inherit;
   letter-spacing: .1rem;
   cursor: pointer;
-  color: #000000;
+  color: #282828;
 }
 
 nav a svg {
@@ -27,7 +27,7 @@ nav a svg {
 }
 
 nav a:hover {
-  color: #000000;
+  color: #282828;
   text-decoration: none;
 }
 
@@ -44,11 +44,25 @@ nav .drop:hover svg {
 .nav__menu-item {
   display: inline-block;
   position: relative;
-
+  border-radius: 10px 10px 0 0;
+  box-sizing: border-box;
+  margin: 0 3px;
+  transition: transform 0.3s ease-in-out;
 }
-.nav__menu-item:hover, .nav__submenu-items:hover {
-  background-color: rgba(166, 168, 179, 0.12);
+.nav__menu-item:hover {
+  /* background-color: rgba(166, 168, 179, 0.12); */
   text-decoration: none;
+  transform: translateY(-5px);
+  box-shadow: 4px -4px 8px -4px rgba(0, 0, 0, 0.2), -4px -4px 8px -4px rgba(0, 0, 0, 0.2);
+}
+
+.nav__menu-item:hover > .nav__submenu {
+  transform: translateY(-5px);
+}
+
+.nav__submenu-items:hover {
+  text-decoration: none;
+  background-color: rgba(166, 168, 179, 0.12);
 }
 
 .nav__submenu {
@@ -60,7 +74,7 @@ nav .drop:hover svg {
   background-color: #fff;
   margin-top: 0px;
   overflow: hidden;
-  transition: height 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 /* Dropdow Menu animation */
@@ -69,9 +83,11 @@ nav .drop:hover svg {
 }
 
 .dropdown-enter-active {
+  box-shadow: 4px 4px 8px -4px rgba(0, 0, 0, 0.2), -4px 4px 8px -4px rgba(0, 0, 0, 0.2);
   height: 135px;
 }
 
 .dropdown-enter-done {
+  box-shadow: 4px 6px 10px -4px rgba(0, 0, 0, 0.2), -4px 6px 10px -4px rgba(0, 0, 0, 0.2);
   height: 135px !important;
 }

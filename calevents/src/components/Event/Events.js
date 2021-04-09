@@ -18,7 +18,12 @@ function Events({ height }) {
   })
 
   const fetchEvents = async () => {
-    const res = await fetch(getaddr()+'events')
+    const res = await fetch(getaddr()+'events', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    })
     const data = await res.json()
 
     return data
