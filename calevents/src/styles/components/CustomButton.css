@@ -94,10 +94,20 @@
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.4);
 }
 
-.calendar-button-left {
-
+.redeem-button {
+  border: none;
+  width: 100%;
+  border-radius: 5px;
+  margin: 5px 0 0;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: #ffffff;
+  /* background-color: #ffffff; */
+  border: 1px solid #54e38e;
+  transition: all 0.3s ease-in-out;
+  background-color: #54e38e;
 }
 
-.calendar-button-right {
+.redeem-button--clicked {
 
 }

@@ -46,6 +46,54 @@
   transform: scaleX(1);
 }
 
-.add-value-box {
+.add-value-box--enter-active .add-value--container,  .add-value-box--enter-done .add-value--container{
+  transform: translateY(0px);
+  opacity: 1;
+}
+
+.add-value--background {
   position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
+  /* background-color: rgba(0, 0, 0, 0.4); */
+  z-index: 100;
+}
+
+.add-value--container {
+  position: fixed;
+  padding: 1em;
+  background-color: #ffffff;
+  color: #282828;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  right: 230px;
+  top: 54px;
+  transition: all 0.5s ease-in-out;
+  transform: translateY(30px);
+  text-align: center;
+  opacity: 0;
+  /* z-index: 101; */
+}
+
+.redeem-form {
+  /* text-align: center; */
+  padding: 0 5px;
+}
+
+.add-value--container input {
+  /* width: 90%; */
+  border: none;
+  background-color: #EFEFEF;
+  padding: 5px 16px;
+  margin: 5px auto;
+}
+
+.add-value--container h2 {
+  font-weight: 400;
+  font-size: 20px;
+  text-align: left;
+  margin-left: 5px;
+  margin-bottom: 3px;
 }

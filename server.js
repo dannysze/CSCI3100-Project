@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const saltedRounds = 10;
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 //secret key for jwt.sign
 const config = {
@@ -91,7 +92,7 @@ app.post('/login', function(req, res) {
                 if (match){
                     //return jwt token
                     var token = jwt.sign({user_id: result[0].user_id}, config.secret, {
-                        //expiresIn:86400
+                        expiresIn: 60*60*24
                     });
     
                     res.status(200).send({token: token});
@@ -116,29 +117,35 @@ app.post('/signup', function(req, res) {
     //hashedPassword = bcrypt.hashSync(req.body.password, 8);
     //password = hashPassword
 
-    var sql = `SELECT * FROM csci3100.User where username = '`+ username +`';`;
-    con.query(sql, function (err, result) {
+    var sql1 = `SELECT * FROM csci3100.User where username = '`+ username +`';`;
+    var sql2 = `SELECT * FROM csci3100.User where email = '`+ email +`';`;
+ 
+    con.query(sql1, function (err, result1) {
         if (err) throw err;
-
-        if(result.length > 0){
-            res.status(400).send({'error':'username has been used'});
-        }else{
-            bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
-                //no email verification for now
-                sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-                ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-                con.query(sql, function (err, result) {
-                    if (err) throw err;
-                    
-                    console.log("1 record inserted");
-                    //return jwt token
-                    var token = jwt.sign({user_id:result.insertId}, config.secret, {
-                    //     expiresIn: 86400
+        con.query(sql2, function (err, result2){
+            if (err) throw err;
+            if(result1.length > 0){
+                res.status(400).send({'error':'username has been used'});
+            }else if (result2.length > 0){
+                res.status(400).send({'error':'email has been used'});    
+            }else{
+                bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
+                    //no email verification for now
+                    sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
+                    ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
+                    con.query(sql, function (err, result) {
+                        if (err) throw err;
+                        
+                        console.log("1 record inserted");
+                        //return jwt token
+                        var token = jwt.sign({user_id:result.insertId}, config.secret, {
+                            expiresIn: 60*60*24
+                        });
+                        res.status(200).send({token: token});
                     });
-                    res.status(200).send({token: token});
-                });
-            })
-        }
+                })
+            }
+        });
     });
 })
 
@@ -343,9 +350,8 @@ app.post('/join_event', function(req, res){
 })
 
 
-// Changes needed
-// Compromise with frontend
-// Only update capacity is OK
+// Editing all information of an event except ticket and organizer
+// Change image location will be handled separately.
 app.post('/edit_event', function(req, res) {
     // variables from the request
     var field = req.body['field'];
@@ -355,16 +361,13 @@ app.post('/edit_event', function(req, res) {
 
     // store intermediate query attributes
     var org_id;
-    var old_capacity;
+    // var old_capacity;
 
     if(field == 'ticket' || field == 'organizer'){
         res.send("You cannot change this information");
         console.log("You cannot change this information");
     }
 
-    if(field == 'capacity'){
-        
-    }
     else{
         var sql = `SELECT user_id FROM csci3100.User where user_id = `+ user_id +`;`;
         con.query(sql, function (err, result) {
@@ -378,14 +381,17 @@ app.post('/edit_event', function(req, res) {
                     
                     if(result.length > 0){
                         org_id = result[0].organizer;
-                        old_capacity = result[0].capacity;
+                        // old_capacity = result[0].capacity;
                         if(org_id == user_id){
-                            // May need to handle different data type here and not OK after here
-                            sql = `UPDATE csci3100.Event SET `+ field +` = '`+ new_val +`' WHERE event_id = `+ event_id + `;`;
+                            sql = `UPDATE csci3100.Event SET `+ field +` = ? WHERE event_id = ?;`;
+                            
                             console.log(sql);
-                            if (err) throw err;
-                            res.send(result);
-                            console.log(result);
+                            con.query(sql, [new_val, event_id], function (err, result){
+                                if (err) throw err;
+
+                                res.send(result);
+                                console.log(result);
+                            });
                         }
                         else{
                             res.send("You are not allowed to edit this event");
@@ -566,13 +572,33 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
 
 // Reset password request
 app.post('/reset_password', function(req, res){
-    // use token
-    
-    var sql = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
-    con.query(sql, req.params['email'], function(err, result){
+    var sql1 = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
+    var sql2 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = ?;`;
+    var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ?`;
+    con.query(sql1, req.params['email'], function(err, result1){
         if(err) throw err;
-        if(result.length > 0){
-            // send email with link from generated token 
+        if(result1.length > 0){
+            con.query(sql2, result1[0].user_id, function(err, result2){
+                if (err) throw err;
+                // delete token if it exists
+                if (result2.length > 0 )
+                    con.query(sql3, result2[0].user_id, function(err, result){if (err) throw err;});
+                let resetToken = crypto.randomBytes(32).toString("hex");
+                const hash = bcrypt.hash(resetToken, saltedRounds);
+                var sql4 = `INSERT INTO csci3100.Password_Recovery (user_id, token, expires_at) VALUES(?, ?, ?);`;
+                // token/reset password link expire in 10 minutes
+                let current_datetime = new Date();
+                let expire_datetime = new Date();
+                expire_datetime.setTime(current_datetime.getTime + 30 * 60000);
+                con.query(sql4, [result1[0].user_id, hash, expire_dateTime], function(err, result2){
+                    if (err) throw err;
+                    //reset password link
+                    const link = 'localhost:8080/reset_password?token=' + resetToken + '&id= ' + result1[0].user_id;
+                    // send email with link from generated token
+
+                    
+                });
+            })
         }else{
             res.status(400).send({error: 'No users are related to this email address'});
         }
@@ -595,7 +621,7 @@ app.put('/reset_password', function(req, res){
 
 // Delete event
 app.delete('/user_events/:eID', function(req, res){
-    var sql = `DELETE FROM csci3100.Event where event_id = `+ req.params['eID'] +`;`;
+    var sql = `DELETE FROM csci3100.Event WHERE event_id = `+ req.params['eID'] +`;`;
     con.query(sql, function (err, result) {
         if (err) throw err;
         // send email
