@@ -10,7 +10,8 @@ var con = mysql.createConnection({
     host: host,
     user: user,
     password: pw,
-    database: db
+    database: db,
+    multipleStatements: true
 });
 
 con.connect(function(err) {
