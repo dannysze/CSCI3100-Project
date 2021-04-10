@@ -570,6 +570,42 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
     })
 });
 
+// Refund
+app.post('/refund/:eID', function(req, res){
+    var sql1 = `SELECT * FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?;`;
+    var sql2 = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
+    con.query(sql1, [req.body['user_id'], req.params['eID']], function(err, result1){
+        if (err) throw err;
+        if (result1.length > 0)
+            con.query(sql2, [req.params['eID']], function(err, result2){
+                if (err) throw err;
+                if (result2.length > 0)
+                    if (result2[0].allow_refund && result2[0].allow_refund > 0){
+                        var sql3 = `DELETE FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?`;
+                        con.query(sql3, [req.body['user_id'], req.params['eID']], function(err, result3){
+                            if (err) throw err;
+                            var sql4 = `UPDATE csci3100.Event SET capacity = ? WHERE event_id = ?`;
+                            con.query(sql4, [(result2[0].capacity - 1), req.params['eID']], function(err, result4){
+                                if (err) throw err;
+                                var sql5 = `UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id = ?`;
+                                con.query(sql5, [result2[0].ticket, req.body['user_id']], function(err, result5){
+                                    if (err) throw err;
+                                    var sql6 = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = ?`;
+                                    con.query(sql6, [result2[0].ticket, result2[0].organizer], function(err, result6){
+                                        if (err) throw err;
+                                        res.status(200).send('Refunded. Your account balance has been updated.');
+                                    })
+                                })
+                            })
+                        })
+                    }else
+                        res.status(400).send({error: 'The event is not refundable.'});
+            })
+        else
+            res.status(400).send({error: 'You have not joined this event.'});
+    });
+});
+
 // Reset password request
 app.post('/reset_password', function(req, res){
     var sql1 = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
