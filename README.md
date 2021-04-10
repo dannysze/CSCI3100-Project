@@ -1,6 +1,6 @@
 # CalEvents
 
-CalEvnets is a web application that combiens schedule management and event ticketing service into one.
+CalEvnets is a web application that combines schedule management and event ticketing service into one.
 
 ## Database Information
 
@@ -43,7 +43,7 @@ Event
 	- organizers (forign key -> User.user_id)
 	- ticket -> int
 	- allow_refund -> tinyint
-	- days_for_refund -> int
+	- days_for_refund -> int (An event is scheduled to update the field at 00:00:00 every day.)
 Event_Join
 	- user_id -> int (primary key, foreign key User.user_id)
 	- event_id -> int (primary key, foreign key Event.event_id)
