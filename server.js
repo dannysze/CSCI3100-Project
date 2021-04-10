@@ -575,27 +575,27 @@ app.post('/reset_password', function(req, res){
     var sql1 = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
     var sql2 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = ?;`;
     var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ?`;
-    con.query(sql1, req.params['email'], function(err, result1){
+    con.query(sql1, [req.body['email']] , function(err, result1){
         if(err) throw err;
         if(result1.length > 0){
-            con.query(sql2, result1[0].user_id, function(err, result2){
+            con.query(sql2, [result1[0].user_id], function(err, result2){
                 if (err) throw err;
                 // delete token if it exists
                 if (result2.length > 0 )
-                    con.query(sql3, result2[0].user_id, function(err, result){if (err) throw err;});
+                    con.query(sql3, [result2[0].user_id], function(err, result){if (err) throw err;});
                 let resetToken = crypto.randomBytes(32).toString("hex");
-                const hash = bcrypt.hash(resetToken, saltedRounds);
+                const hash = bcrypt.hashSync(resetToken, saltedRounds);
                 var sql4 = `INSERT INTO csci3100.Password_Recovery (user_id, token, expires_at) VALUES(?, ?, ?);`;
                 // token/reset password link expire in 10 minutes
                 let current_datetime = new Date();
                 let expire_datetime = new Date();
-                expire_datetime.setTime(current_datetime.getTime + 30 * 60000);
-                con.query(sql4, [result1[0].user_id, hash, expire_dateTime], function(err, result2){
+                expire_datetime.setTime(current_datetime.getTime() + 10 * 60000);
+                con.query(sql4, [result1[0].user_id, hash, expire_datetime], function(err, result2){
                     if (err) throw err;
                     //reset password link
-                    const link = 'localhost:8080/reset_password?token=' + resetToken + '&id= ' + result1[0].user_id;
+                    const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
                     // send email with link from generated token
-
+                    res.send({link});
                     
                 });
             })
@@ -607,16 +607,27 @@ app.post('/reset_password', function(req, res){
 
 // Reset password
 app.put('/reset_password', function(req, res){
-    bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
-        //use token
-        var sql = `UPDATE csci3100.User SET password = ` + hash + ` WHERE usedID = ` + +`;`;
-        con.query(sql, function (err, result) {
-            if (err) throw err;
-            
-
-            res.status(200).send('Password changed.');
-        });
-    });
+    let current_datetime = new Date();
+    sql1 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = `+ req.query['user_id'] + `;`;
+    con.query(sql1, function(err, result1){
+        if (err) throw err;
+        if (result1.length > 0)
+            if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= result1[0].expires_at)){
+                    bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
+                        var sql2 = `UPDATE csci3100.User SET password = '` + hash + `' WHERE user_id = ` + req.query['user_id'] +`;`;
+                        con.query(sql2, function (err, result) {
+                            if (err) throw err;
+                            else{
+                                res.status(200).send('Password reset successfully.');
+                                // send email
+                                var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ` + req.query['user_id'] + `;`;
+                                con.query(sql3, function (err, result) {if (err) throw err;})
+                            }
+                        });
+                    });
+            }else
+                res.status(400).send({error: 'Invalid or expired password reset token'});
+    })
 });
 
 // Delete event
