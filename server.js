@@ -130,13 +130,19 @@ app.post('/signup', function(req, res) {
                 res.status(400).send({'error':'email has been used'});    
             }else{
                 bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
-                    //no email verification for now
                     sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
                     ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
                     con.query(sql, function (err, result) {
                         if (err) throw err;
-                        
-                        console.log("1 record inserted");
+                        var subject = "Welcome to CalEvents";
+                        var content = `<p>Welcome, ` + username + `</p>
+                                        <br>
+                                        <p>Great to have you with us. CalEvents is here to make a difference 
+                                        in the way you join events and manage your time schedule.</p>
+                                        <p>Now let's get <a href="https://localhost:5000/index.html">started</a>.</p>
+                                        <br>
+                                        <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                        send_email(result3[0].email, subject, content);            
                         //return jwt token
                         var token = jwt.sign({user_id:result.insertId}, config.secret, {
                             expiresIn: 60*60*24
@@ -588,7 +594,7 @@ app.post('/refund/:eID', function(req, res){
                         con.query(sql3, [req.body['user_id'], req.params['eID']], function(err, result3){
                             if (err) throw err;
                             var sql4 = `UPDATE csci3100.Event SET capacity = ? WHERE event_id = ?`;
-                            con.query(sql4, [(result2[0].capacity - 1), req.params['eID']], function(err, result4){
+                            con.query(sql4, [(result2[0].capacity + 1), req.params['eID']], function(err, result4){
                                 if (err) throw err;
                                 var sql5 = `UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id = ?`;
                                 con.query(sql5, [result2[0].ticket, req.body['user_id']], function(err, result5){
@@ -611,7 +617,7 @@ app.post('/refund/:eID', function(req, res){
 
 // Reset password request
 app.post('/reset_password', function(req, res){
-    var sql1 = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
+    var sql1 = `SELECT user_id, username FROM csci3100.User WHERE email = ?;`;
     var sql2 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = ?;`;
     var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ?`;
     con.query(sql1, [req.body['email']] , function(err, result1){
@@ -631,11 +637,19 @@ app.post('/reset_password', function(req, res){
                 expire_datetime.setTime(current_datetime.getTime() + 10 * 60000);
                 con.query(sql4, [result1[0].user_id, hash, expire_datetime], function(err, result2){
                     if (err) throw err;
-                    //reset password link
+                    //send email with password reset link
                     const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
-                    // send email with link from generated token
+                    var subject = "CalEvents Password Reset";
+                    var content = `<p>Dear ` + result1[0].username + `,</p>
+                                    <br>
+                                    <p>You requested to reset your password.</p>
+                                    <p>Click the link below to reset your password.</p>
+                                    <a href="https://`+ link + `">Reset Password</a>
+                                    <p>Your reset link is only valid once and will be expired in 10 minutes.</p>
+                                    <br>
+                                    <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                    send_email(req.body['email'], subject, content);
                     res.send({link});
-                    
                 });
             })
         }else{
@@ -654,13 +668,24 @@ app.put('/reset_password', function(req, res){
             if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= result1[0].expires_at)){
                     bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
                         var sql2 = `UPDATE csci3100.User SET password = '` + hash + `' WHERE user_id = ` + req.query['user_id'] +`;`;
-                        con.query(sql2, function (err, result) {
+                        con.query(sql2, function (err, result2) {
                             if (err) throw err;
                             else{
-                                res.status(200).send('Password reset successfully.');
-                                // send email
-                                var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ` + req.query['user_id'] + `;`;
-                                con.query(sql3, function (err, result) {if (err) throw err;})
+                                var sql3 = `SELECT username, email FROM csci3100.User WHERE user_id = ?`;
+                                con.query(sql3, [req.query['user_id']], function(err, result3){
+                                    if (err) throw err;
+                                    res.status(200).send('Password reset successfully.');
+                                    var subject = "CalEvents Password Changed";
+                                    var content = `<p>Dear ` + result3[0].username + `,</p>
+                                                    <br>
+                                                    <p>Your password has been successfully reset.</p>
+                                                    <p>If you did not make this request, please immediately contact us.</p>
+                                                    <br>
+                                                    <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                                    send_email(result3[0].email, subject, content);
+                                    var sql4 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ` + req.query['user_id'] + `;`;
+                                    con.query(sql4, function (err, result4) {if (err) throw err;})
+                                })
                             }
                         });
                     });
@@ -727,7 +752,7 @@ app.delete('/user_events/:eID', function(req, res){
                                         cancelled and a refund has been made. Please check your new account balance. If 
                                         you have any enquiries, please don't hesitate to contact us.</p>
                                         <br>
-                                        <p>Yours Sincerely,<br>Calevents Admins</p>`
+                                        <p>Yours Sincerely,<br>CalEvents Admins</p>`
                         for(let i in result){
                             send_email(result[i].email, subject, content);
                         }
