@@ -43,7 +43,7 @@
 }
 
 .schedule-body {
-  grid-template-rows: 25px !important;
+  grid-template-rows: 30px !important;
   border-top: 1px solid rgba(166, 168, 179, 0.4);
   height: 68vh;
   overflow-y: scroll;
@@ -121,6 +121,16 @@
   grid-column: 1 / span 2;
 }
 
+.block {
+  z-index: 2;
+  cursor: pointer;
+}
+
+.block:hover {
+  z-index: 10;
+  background-color: rgba(81, 92, 230, 0.15);
+}
+
 .block:nth-child(2n) {
   border-bottom: 1px solid rgba(166, 168, 179, 0.4);
 }
@@ -140,6 +150,7 @@
   grid-row: 1 / span 3;
   grid-column: 2;
   border-left-color: transparent;
+  z-index: 1;
 }
 
 .block--today {

@@ -101,13 +101,71 @@
   margin: 5px 0 0;
   text-transform: uppercase;
   font-weight: 500;
-  color: #ffffff;
-  /* background-color: #ffffff; */
-  border: 1px solid #54e38e;
+  /* color: #ffffff; */
+  color: #54e38e;
+  background-color: #ffffff;
+  border: 2px solid #54e38e;
   transition: all 0.3s ease-in-out;
+  /* background-color: #54e38e; */
+}
+
+.redeem-button:hover {
   background-color: #54e38e;
+  color: #ffffff;
 }
 
 .redeem-button--clicked {
 
+}
+
+.form-button {
+  font-size: 1em;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  background-image: linear-gradient(to top right, #6de195, #d4fc78);
+  color: #282828;
+  border-radius: 2em;
+  border: none;
+  padding: 0.5em 2em;
+  margin-left: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  margin-top: 10px;
+  z-index: 1;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.form-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+.form-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease-in-out;
+  z-index: -1;
+}
+
+.form-button::before {
+  background-color: #ffffff;
+}
+
+.form-button:hover::before {
+  height: 0%;
+}
+
+.form-button:hover {
+  /* background-color: black; */
+  transform: translateY(-5px);
 }

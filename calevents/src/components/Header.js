@@ -65,38 +65,46 @@ const AddValueBox = ({ closeModal }) => {
     event.target.name === 'number' ? setCardNumber(event.target.value) : setPassword(event.target.value);
   } 
 
-  const redeemCard = async (event) => {
+  const redeemCard = (event) => {
     event.preventDefault();
     // send request POST /add_value
+    const form = new FormData(document.getElementById("redeem-form"))
     const requestOptions = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user_id: 40, // to be changed
-        card_id: cardNumber,
-        card_pw: password
-      })
+      body: form
     };
-    const response = await fetch(getaddr()+'add_value', requestOptions);
-    const data = await response.json();
+    fetch(getaddr()+'add_value', requestOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.message);
+        }
+        if (response.status === 200) {
+          console.log(JSON.stringify(response))
+        } else {
+          alert("err")
+        }
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
     // console.log(data);
   }
 
   return (
       <div className="add-value--background" onClick={closeModal}>
         <div className="add-value--container" onClick={event => { event.stopPropagation(); }}>
-          <h2>Redeem gift card</h2>
-          <form className="redeem-form">
+          <h2 className="flex-center" style={{justifyContent: 'flex-start'}}>Redeem gift card&nbsp;<Icon.Cash /></h2>
+          <form id="redeem-form" onSubmit={redeemCard}>
             <div>
               <input type="text" name="number" placeholder="Card number" onChange={onChangeHandler}/>
             </div>
             <div>
               <input type="password" name="password" placeholder="Password" onChange={onChangeHandler}/>
             </div>
-            <RedeemButton classes={''} clickHandler={redeemCard} content={`
-  Redeem`} />
+            <RedeemButton classes={''} content={`Redeem`} />
           </form>
         </div>
       </div>

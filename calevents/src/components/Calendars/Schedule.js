@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarButton } from '../CustomButton';
-import { getDate, getDay, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks } from 'date-fns';
+import EventForm from '../Event/EventForm';
+import { getDate, getDay, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes } from 'date-fns';
+import { CSSTransition } from 'react-transition-group';
 import '../../styles/components/Calendars/Schedule.css';
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -15,7 +17,7 @@ const takeWeek = (date = new Date()) => {
   let day = start;
   while (day < end) {
     scheduleObj = {
-      'day': getDate(day),
+      'day': day,
       'disabled': false,
       'today': false,
       'sunday': false,
@@ -43,6 +45,10 @@ const Schedule = () => {
     'scheduleArr': takeWeek(today)
   }
   const [scheduleInfo, setScheduleInfo] = useState(initialInfo);
+  const [eventForm, setEventForm] = useState({
+    'show': false,
+    'startDateTime': new Date(),
+  });
 
   // view the previous month
   const previousWeek = () => {
@@ -69,8 +75,24 @@ const Schedule = () => {
     setScheduleInfo(initialInfo)
   }
 
+  const createEventForm = (dateTime) => {
+    setEventForm({
+      'show': true,
+      'startDateTime': dateTime
+    });
+    console.log(dateTime)
+  }
+
   return (
     <div className="schedule-container">
+      <CSSTransition
+        in={eventForm['show']}
+        timeout={300}
+        classNames={"create-event-form-"}
+        unmountOnExit
+      >
+        <EventForm dismissHandler={() => setEventForm({'show': false, 'startDateTime': eventForm['startDateTime']})} startDate={eventForm['startDateTime']}/>
+      </CSSTransition>
       <div className="schedule-header">
         <div className="timeslots timeslots-button">
           <CalendarButton classes="calendar-button-left" clickHandler={previousWeek}/>
@@ -85,7 +107,7 @@ const Schedule = () => {
             fontWeight: `${day.today ? '600' : '400'}`,
           }
           return (
-            <span className={`schedule-day-name`} style={style} key={index}><span className="schedule-header--number">{day.day}</span>&nbsp;&nbsp;{dayNames[index]}</span>
+            <span className={`schedule-day-name`} style={style} key={index}><span className="schedule-header--number">{getDate(day.day)}</span>&nbsp;&nbsp;{dayNames[index]}</span>
           )
         })}
       </div>
@@ -111,7 +133,7 @@ const Schedule = () => {
               gridColumn: col+2,
             }
             return (
-              <div style={style} className={`block ${day.today ? 'block--today' : ''}`} key={col * row + row}>&nbsp;</div>
+              <div style={style} className={`block ${day.today ? 'block--today' : ''}`} key={col * row + row} onClick={() => createEventForm(addMinutes(day.day, 30 * (row)))}>&nbsp;</div>
             )
           })
         })}

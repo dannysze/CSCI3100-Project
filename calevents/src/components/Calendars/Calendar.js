@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { startOfMonth, startOfWeek, endOfMonth, endOfWeek, startOfDay, addDays, getDate, getMonth, getYear, addMonths, subMonths, getWeekOfMonth, getDay, differenceInDays, differenceInCalendarDays, differenceInCalendarWeeks } from 'date-fns';
 import { CalendarButton } from '../CustomButton';
+import { CSSTransition } from 'react-transition-group';
+import EventForm from '../Event/EventForm';
 import getaddr from '../getaddr'
 import '../../styles/components/Calendars/Calendar.css';
 
@@ -20,7 +22,7 @@ const takeMonth = (date = new Date()) => {
   while (day < end) {
     
     calendarObj = {
-      'day': getDate(day),
+      'day': day,
       'disabled': false,
       'today': false,
       'sunday': false,
@@ -74,6 +76,10 @@ const Calendar = ({ heightHandler }) => {
   };
   const [calendarInfo, setCalendarInfo] = useState(initialInfo);
   const [events, setEvents] = useState([]);
+  const [eventForm, setEventForm] = useState({
+    'show': false,
+    'startDate': new Date(),
+  });
 
   // change the height of upcoming events according to the calendar
   useEffect(() => {
@@ -110,7 +116,7 @@ const Calendar = ({ heightHandler }) => {
       // start = start_date || startOfWeek(startOfMonth(startOfDay(date)))
       let start = startOfDay(new Date());
       // end = end_date || endOfWeek(endOfMonth(startOfDay(date)))
-      let end = startOfDay(new Date(2021, 3, 10));
+      let end = startOfDay(new Date(2021, 3, 11));
 
       let startRow = getWeekOfMonth(start) + 1;
       let endRow = getWeekOfMonth(end) + 1;
@@ -207,9 +213,23 @@ const Calendar = ({ heightHandler }) => {
     });
   }
 
+  const createEventForm = (date) => {
+    setEventForm({
+      'show': true,
+      'startDate': date
+    });
+  }
 
   return (
     <div className="calendar-container">
+      <CSSTransition
+        in={eventForm['show']}
+        timeout={300}
+        classNames={"create-event-form-"}
+        unmountOnExit
+      >
+        <EventForm dismissHandler={() => setEventForm({'show': false, 'startDate': eventForm['startDate']})} startDate={eventForm['startDate']}/>
+      </CSSTransition>
       <div className="calendar-header">
         <CalendarHeader 
           month={monthNames[getMonth(calendarInfo['calendarStart'])]} 
@@ -220,7 +240,7 @@ const Calendar = ({ heightHandler }) => {
       </div>
       <div className="calendar">
         {dayNames.map((day, index) => (<span className="day-name" key={index} style={day === "Sun" ? {color: "rgb(217, 83, 79)"} : {}}>{day}</span>))}
-        {calendarInfo['calendarArr'].map((item, index) => <CalendarItems disabled={item.disabled} name={(item.day)} today={item.today} sunday={item.sunday} key={index} />)}
+        {calendarInfo['calendarArr'].map((item, index) => <CalendarItems disabled={item.disabled} name={(item.day)} today={item.today} sunday={item.sunday} key={index} clickHandler={createEventForm}/>)}
         {stickEvents()}
         {stickTags()}
       </div>
@@ -242,9 +262,12 @@ const CalendarHeader = ({ month, year, previousMonth, nextMonth }) => {
 }
 
 const CalendarItems = (props) => {
+
+  const [startDate, setStartDate] = useState(props.name);
+
   return (
-    <div className={`day ${props.disabled ? 'day--disabled' : ''}`} style={props.sunday ? {color: `rgba(217, 83, 79, ${props.disabled ? 0.6 : 1})`} : {}}>
-      <span className={props.today ? "calendar--today" : ""}>{props.name}</span>
+    <div className={`day ${props.disabled ? 'day--disabled' : ''}`} style={props.sunday ? {color: `rgba(217, 83, 79, ${props.disabled ? 0.6 : 1})`} : {}} onClick={() => props.clickHandler(startDate)}>
+      <span className={props.today ? "calendar--today" : ""}>{getDate(props.name)}</span>
     </div>
   )
 }

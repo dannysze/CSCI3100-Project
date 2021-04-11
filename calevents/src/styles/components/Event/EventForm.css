@@ -1,0 +1,198 @@
+.create-event-form--background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.4)
+}
+
+.create-event-form--container {
+  background-color: rgba(255, 255, 255);
+  width: 645px;
+  height: 590px; /**/
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+.create-event-form--image-upload-container {
+  position: relative;
+  text-align: center;
+  margin: 0 auto;
+  width: 80%;
+}
+
+input[type="file"] {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 80%;
+  outline: none;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.create-event-form--image-wrapper {
+  display: none;
+}
+
+.create-event-form--uploaded-image {
+  max-height: 160px;
+  max-width: 516px;
+  width: auto;
+  height: auto;
+}
+
+.create-event-form--title {
+  width: 80%;
+  margin: 45px auto 10px;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: underline;
+  font-weight: 300;
+  font-size: 30px;
+  letter-spacing: .1em;
+}
+
+.create-event-form--input-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  margin: auto;
+}
+
+.create-event-form--input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 44px;
+  grid-auto-rows: 44px;
+  width: 80%;
+}
+
+.react-datepicker-wrapper, .react-datepicker-wrapper * {
+  width: 100%;
+}
+
+.react-datepicker-wrapper input {
+  padding: 5px 16px !important;
+}
+
+.create-event-form--datepicker {
+  position: relative;
+}
+
+.create-event-form--datepicker::after {
+  position: absolute;
+  content: '-';
+  right: -3px;
+  top: 20%;
+}
+
+.create-event-form--input-group input:not([type="checkbox"]) {
+  flex: 1;
+  width: 100%;
+  border: 1px solid #dedede;
+  /* background-color: #EFEFEF; */
+  padding: 5px 4px;
+  margin: 5px auto;
+}
+
+.create-event-form--input-group input[name="ticket"], .create-event-form--input-group input[name="day"] {
+  width: 60%;
+}
+
+.create-event-form--input:nth-child(odd) {
+  padding-right: 5px;
+}
+
+.create-event-form--input:nth-child(even) {
+  padding-left: 5px;
+}
+
+.create-event-form--input {
+  display: flex;
+  flex: 50%;
+  text-align: center;
+}
+
+.create-event-form--image-upload-container {
+  text-align: center;
+  height: 200px;
+}
+
+.create-event-form--image-upload {
+  color: #AAAAAA;
+  width: 100%;
+  padding: 2em;
+  margin: auto;
+  border: 3px dashed #aaaaaa;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.create-event-form--image-upload-container:hover .create-event-form--image-upload {
+  background-color: #cdcdcd;
+}
+
+.create-event-form--input textarea {
+  width: 100%;
+  height: calc(42px * 3);
+  padding: 5px 16px;
+  border: 1px solid #dedede;
+  /* border: none; */
+  /* background-color: #EFEFEF; */
+  resize: none;
+  overflow-y: scroll;
+}
+
+.create-event-form--checkbox {
+  display: flex;
+  align-items: center;
+  /* justify-content: space-between; */
+  /* text-align: left !important; */
+  padding-left: 5px;
+}
+
+.create-event-form--checkbox > span {
+  white-space: nowrap;
+}
+
+.create-event-form--checkbox input[type="number"] {
+  margin: 5px 0 !important;
+  /* width: 60% !important; */
+}
+
+.create-event-form--input-append, .create-event-form--input-prepend { 
+  /* background-color: #efefef; */
+  border: 1px solid #dedede;
+  margin: 5px 0;
+  padding: 5px 8px;
+}
+
+.create-event-form--input-append {
+  box-sizing: border-box;
+  border-left: none;
+  height: 100%;
+}
+
+.create-event-form--input-prepend {
+  border-right: none;
+}
+
+.create-event-form--input-prepend + input {
+  border-left: none !important;
+}
+
+.create-event-form--input-label {
+  /* display: flex; */
+  margin: 0;
+}
+
+.create-event-form--enter-active .create-event-form--container, .create-event-form--enter-done .create-event-form--container {
+  transform: translateY(10px);
+  opacity: 1;
+}
