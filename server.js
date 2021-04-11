@@ -75,6 +75,28 @@ const checkAuth = (req, res, next) => {
     });
 };
 
+app.get('/test', function(req, res){
+    var u_ID = 13;
+    var sql = `SELECT user_id,username,img_loc, email,type,account_balance FROM csci3100.User where user_id = ?;`;
+    con.query(sql, [u_ID], function(err, result){
+        if(err) throw err;
+        //check if user with the user exists
+        if(result.length > 0){
+            var result = result[0];
+            //send base64 url for the image
+            try{
+                var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
+                result.img_loc = imageAsBase64;
+            }catch{
+                result.img_loc = "";
+            }
+            res.status(200).send(result);
+        }else{
+            res.status(400).send({error: 'User does not exist'});
+        }
+    });
+});
+
 //for login.return jwt token with payload being userid after successful login.
 app.post('/login', function(req, res) {
     console.log(req.body);
@@ -420,6 +442,40 @@ app.post('/edit_event', function(req, res) {
     }
 });
 
+// change event picture
+app.post('/event_pic', upload.single('img'),function(req, res){
+    var event_id = req.body['event_id'];
+    var oldpath;
+    // console.log(event_id);
+    sql = `SELECT img_loc from csci3100.Event WHERE event_id = ?;`;
+    con.query(sql, [req.body['event_id']], function(err, result){
+        if (err) throw err;
+        
+        if(result.length > 0){
+            oldpath = result[0].img_loc;
+            sql = `UPDATE csci3100.Event SET img_loc = ? WHERE event_id = ?;`;
+            // console.log(req.file.filename);
+            con.query(sql, [req.file.filename, event_id], function(err, result){
+                if (err) throw err;
+                // console.log(oldpath);
+                //remove old file
+                if(oldpath){
+                    fs.unlink('uploads/' + oldpath, (err) => {
+                        if (err){
+                            console.log(err);
+                        }
+                    });
+                    res.status(200).send("ok");
+                }
+            });
+        }
+        else{
+            res.send("Invalid Event");
+            console.log("Invalid Event");
+        }
+    });
+})
+
 // Add value to user balance
 app.post('/add_value', function(req, res) {
     // variables from the request
@@ -495,8 +551,17 @@ app.get('/event/:eID',function(req, res){
     con.query(sql, [eID], function (err, result) {
         if (err) throw err;
 
+        if(result.length > 0){
+            //send base64 url for the image
+            try{
+                var imageAsBase64 = 'data:image/' + pwd.extname(result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
+                result[0].img_loc = imageAsBase64;
+            }catch{
+                result[0].img_loc = "";
+            }
+        }
         res.send(result);
-        console.log(result);
+        // console.log(result);
     });
 });
 
@@ -507,8 +572,17 @@ app.get('/user_events/:uID', function(req, res){
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
 
+        if(result.length > 0){
+            //send base64 url for the image
+            try{
+                var imageAsBase64 = 'data:image/' + pwd.extname(result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
+                result[0].img_loc = imageAsBase64;
+            }catch{
+                result[0].img_loc = "";
+            }
+        }
         res.send(result);
-        console.log(result);
+        // console.log(result);
     });
 });
 
@@ -768,9 +842,9 @@ app.delete('/user_events/:eID', function(req, res){
 });
 
 
-app.get('/', function(req, res) {
-    res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
-});
+// app.get('/', function(req, res) {
+//     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
+// });
 
 //var server = app.listen(3000);
 var server = app.listen(5000);
