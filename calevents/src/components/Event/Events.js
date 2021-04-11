@@ -51,6 +51,8 @@ function Events({ height }) {
           {/* <Modal.Title id='example-custom-modal-styling-title'>
             {showEvent.event.name}
           </Modal.Title> */}
+          <h1>Event</h1>
+
         </Modal.Header>
 
         <Modal.Body>

@@ -54,14 +54,22 @@
 .custom-modal .title{
     margin: 15px 0px;
     font-size:18px;
-    font-style: italic;
-    
+    font-style: italic;  
 }
+
+
 
 
 .pop-up-bar{
     background-color: rgb(217, 83, 79);
-   
+    
+}
+
+.pop-up-bar h1{
+    font-size: 30px;
+    font-style: oblique;
+    font-weight: 350;
+    margin-left: 10px;
 }
 
 .row-container{
