@@ -21,6 +21,7 @@ const takeWeek = (date = new Date()) => {
       'disabled': false,
       'today': false,
       'sunday': false,
+      'frequency': 0
     };
     if (day < startOfDay(new Date())) {
       // console.log(day)
@@ -56,24 +57,24 @@ const Schedule = () => {
   const stickScheduleEvents = () => {
     eventRecord = {};
 
-    // const scheduleEventBlocks = events.map((event, index) => {
-    const scheduleEventBlocks = [...Array(3)].map((event, index) => {
+    // const scheduleEventBlocks = events.map((scheduleEvent, index) => {
+    const scheduleEventBlocks = [...Array(3)].map((scheduleEvent, index) => {
       
-      let start = new Date(2021, 3, 11, 15, 0, 0);
-      let end = new Date(2021, 3, 11, 16, 30, 0)
+      let start = new Date(2021, 3, 12, 9, 0, 0);
+      let end = new Date(2021, 3, 12, 22, 30, 0)
       let colNum = getDay(start) + 2;
-      console.log(`${start} - ${end}`)
+      // console.log(`${start} - ${end}`)
       let minutesDiff = differenceInMinutes(end, start)
-      console.log(`${minutesDiff} - ${minutesDiff}`)
+      // console.log(`${minutesDiff} - ${minutesDiff}`)
       let startMinute = getMinutes(start);
       let startHour = getHours(start)
       let endMinute = getMinutes(end);
       let endHour = getHours(end);
       let rowStart;
       if (startMinute <= 30 && startMinute > 0) {
-        rowStart = startHour * 2 + 1;
+        rowStart = startHour * 2 + 2;
       } else if (startMinute == 0) {
-        rowStart = startHour * 2; 
+        rowStart = startHour * 2 + 1; 
       } else {
         rowStart = startMinute * 2 + 2;
       }
@@ -81,9 +82,9 @@ const Schedule = () => {
       let rowSpan;
       // if (endMinute <= 30 && endMinute > 0)
       rowSpan = Math.floor(minutesDiff / 30);
-      console.log(rowStart)
+      // console.log(rowStart)
       let extrapx = minutesDiff % 30;
-      
+      // console.log(`${colNum} col ${rowStart} start ${rowSpan} span`)
       let style = {
         gridColumn: `${colNum}`,
         gridRow: `${rowStart} / span ${rowSpan}`,
@@ -96,6 +97,50 @@ const Schedule = () => {
       // console.log(`${minutesDiff % 30} minutes`);
     })
     return scheduleEventBlocks;
+  }
+
+  let allDayEventRecord = {};
+  const stickAllDayEvent = () => {
+    
+    allDayEventRecord = {};
+    // const allDayEventBar = events.map((allDayEvent, index) => {
+    const allDayEventBar = [...Array(3)].map((allDayEvent, index) => {
+      let start = startOfDay(new Date());
+      let end = startOfDay(new Date(2021, 3, 12));
+      let colNum = getDay(start) + 1;
+      let colSpan = differenceInCalendarDays(end, start);
+      
+      let max = 1;
+      let rangeStart = false;
+      for (let i = 0; i < scheduleInfo.scheduleArr.length; i++) {
+        if (rangeStart) {
+          scheduleInfo.scheduleArr[i].frequency++;
+          if (scheduleInfo.scheduleArr[i].day === end) {
+            rangeStart = false;
+          }
+          max = Math.max(max, scheduleInfo.scheduleArr[i].frequency);
+        }
+        if (scheduleInfo.scheduleArr[i].day === start) {
+          rangeStart = true;
+          scheduleInfo.scheduleArr[i].frequency++;
+          max = scheduleInfo.scheduleArr[i].frequency;
+        }
+      }
+      let row = max;
+      let style = {
+        gridColoum: `${colNum} / span ${colSpan}`,
+        gridRow: `${row}`,
+      }
+
+      console.log(style);
+
+      return (
+        <section className="task task--warning all-day-events--bar" style={style}>Test</section>
+      )
+    })
+
+    return allDayEventBar;
+    
   }
 
   // view the previous month
@@ -163,13 +208,14 @@ const Schedule = () => {
         <div className="timeslots all-day-events--title">All-day</div>
         <div className="all-day-events--grid">
           {scheduleInfo.scheduleArr.map((day, index) => (<div className={`all-day-events--slots ${day.today? 'block--today' : ''}`} key={index}></div>))}
-          <section className="task task--warning all-day-events--bar">Test</section>
+          {/* <section className="task task--warning all-day-events--bar">Test</section>
           <section className="task task--danger all-day-events--bar" style={{gridColumn: '2 / span 3', gridRow: '2'}}>Test</section>
           <section className="task task--info all-day-events--bar" style={{gridColumn: '3 / span 5', gridRow: '1'}}>Test</section>
           <section className="task task--danger all-day-events--bar" style={{gridColumn: '2 / span 4', gridRow: '5'}}>Test</section>
           <section className="task task--info all-day-events--bar" style={{gridColumn: '4 / span 2', gridRow: '3'}}>Test</section>
           <section className="task task--danger all-day-events--bar" style={{gridColumn: '5 / span 1', gridRow: '4'}}>Test</section>
-          <section className="task task--info all-day-events--bar" style={{gridColumn: '1 / span 1', gridRow: '2'}}>Test</section>
+          <section className="task task--info all-day-events--bar" style={{gridColumn: '1 / span 1', gridRow: '2'}}>Test</section> */}
+          {stickAllDayEvent()}
         </div>
       </div>
       <div className="schedule-body">
