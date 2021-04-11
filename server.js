@@ -673,17 +673,24 @@ app.put('/reset_password', function(req, res){
 app.delete('/user_events/:eID', function(req, res){
     var parti = '(';
     var ori_ticket;
-    var sql = `SELECT event_id , ticket FROM csci3100.Event WHERE event_id = ?;`;
+    var no_of_parti;
+    var organizer;
+    var oldpath;
+    var sql = `SELECT event_id , ticket, organizer, img_loc FROM csci3100.Event WHERE event_id = ?;`;
     con.query(sql, [req.params['eID']], function (err, result) {
         if (err) throw err;
 
         if(result.length > 0){
             ori_ticket = result[0].ticket;
+            organizer = result[0].organizer;
+            oldpath = result[0].img_loc;
             var sql = `SELECT user_id FROM csci3100.Event_Join WHERE event_id = ?;`;
             con.query(sql, [req.params['eID']], function (err, result) {
                 if (err) throw err;
                 
                 // construct the list of participant user_id
+                no_of_parti = result.length
+                console.log(no_of_parti);
                 for(let i in result){
                     parti += result[i].user_id + ',';
                 }
@@ -693,25 +700,32 @@ app.delete('/user_events/:eID', function(req, res){
                 // refund to user's account
                 // delete join record
                 // delete event
-                var sql = `UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
+                var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
+                            UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
                             DELETE FROM csci3100.Event_Join WHERE event_id = ?;
                             DELETE FROM csci3100.Event WHERE event_id = ?;`;
 
-                // console.log(sql);
-                con.query(sql, [ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
+                con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
                     if (err) throw err;
 
+                    // delete event image
+                    if(oldpath){
+                        fs.unlink('uploads/' + oldpath, (err) => {
+                            if (err){
+                                console.log(err);
+                            }
+                        });
+                    }
                     // send an email notification to affected participants
                     var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
 
-                    // console.log(sql);
                     con.query(sql, function (err, result){
                         var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
                         var content = `<p>Dear participant,</p>
                                         <br>
-                                        <p>We are sorry to inform you that the event with id `+ req.params['eID'] +`is 
+                                        <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
                                         cancelled and a refund has been made. Please check your new account balance. If 
-                                        you have any enquiries, please don't hesitate to contact us</p>
+                                        you have any enquiries, please don't hesitate to contact us.</p>
                                         <br>
                                         <p>Yours Sincerely,<br>Calevents Admins</p>`
                         for(let i in result){
