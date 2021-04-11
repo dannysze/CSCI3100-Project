@@ -53,6 +53,10 @@ const Schedule = () => {
 
   const [events, setEvents] = useState([]);
 
+  useEffect(() => {
+
+  })
+
   let eventRecord = {};
   const stickScheduleEvents = () => {
     eventRecord = {};
@@ -78,13 +82,12 @@ const Schedule = () => {
       } else {
         rowStart = startMinute * 2 + 2;
       }
-
       let rowSpan;
       // if (endMinute <= 30 && endMinute > 0)
       rowSpan = Math.floor(minutesDiff / 30);
-      // console.log(rowStart)
+      
       let extrapx = minutesDiff % 30;
-      // console.log(`${colNum} col ${rowStart} start ${rowSpan} span`)
+      
       let style = {
         gridColumn: `${colNum}`,
         gridRow: `${rowStart} / span ${rowSpan}`,
@@ -93,37 +96,42 @@ const Schedule = () => {
       return (
         <section className="block--events task task--danger" style={style}>Test</section>
       )
-      // console.log(`${rowSpan} row`)
-      // console.log(`${minutesDiff % 30} minutes`);
     })
     return scheduleEventBlocks;
   }
 
-  let allDayEventRecord = {};
+  // let allDayEventRecord = {};
   const stickAllDayEvent = () => {
-    
-    allDayEventRecord = {};
+    // console.log(scheduleInfo)
+    // let allDayEventRecord = scheduleInfo.scheduleArr.slice(0, 7);
+    const allDayEventRecord = scheduleInfo.scheduleArr.slice(0, 7).map((item, index) => {
+      item.frequency = 0;
+      return item;
+    })
+
     // const allDayEventBar = events.map((allDayEvent, index) => {
-    const allDayEventBar = [...Array(3)].map((allDayEvent, index) => {
+    const allDayEventBar = [...Array(2)].map((allDayEvent, index) => {
       let start = startOfDay(new Date());
       let end = startOfDay(new Date(2021, 3, 12));
       let colNum = getDay(start) + 1;
-      let colSpan = differenceInCalendarDays(end, start);
+      let colSpan = differenceInCalendarDays(end, start) + 1;
       
       let max = 1;
       let rangeStart = false;
-      for (let i = 0; i < scheduleInfo.scheduleArr.length; i++) {
+      // console.log(allDayEventRecord)
+      for (let i = 0; i < allDayEventRecord.length; i++) {
         if (rangeStart) {
-          scheduleInfo.scheduleArr[i].frequency++;
-          if (scheduleInfo.scheduleArr[i].day === end) {
-            rangeStart = false;
+          allDayEventRecord[i].frequency++;
+          max = Math.max(max, allDayEventRecord[i].frequency);
+          if (differenceInCalendarDays(allDayEventRecord[i].day, end) === 0) {
+            // rangeStart = false;
+            break;
           }
-          max = Math.max(max, scheduleInfo.scheduleArr[i].frequency);
         }
-        if (scheduleInfo.scheduleArr[i].day === start) {
+        if (differenceInCalendarDays(allDayEventRecord[i].day, start) === 0) {
           rangeStart = true;
-          scheduleInfo.scheduleArr[i].frequency++;
-          max = scheduleInfo.scheduleArr[i].frequency;
+          allDayEventRecord[i].frequency++;
+          max = allDayEventRecord[i].frequency;
         }
       }
       let row = max;
@@ -131,27 +139,24 @@ const Schedule = () => {
         gridColoum: `${colNum} / span ${colSpan}`,
         gridRow: `${row}`,
       }
-
-      console.log(style);
-
+      // console.log(allDayEventRecord)
       return (
         <section className="task task--warning all-day-events--bar" style={style}>Test</section>
       )
     })
-
+    // console.log(scheduleInfo)
     return allDayEventBar;
-    
   }
 
   // view the previous month
   const previousWeek = () => {
     let newWeek = subWeeks(scheduleInfo['weekStart'], 1);
-    console.log(newWeek);
+    // console.log(newWeek);
     setScheduleInfo({
       'weekStart': newWeek,
       'scheduleArr': takeWeek(newWeek)
     });
-    console.log(scheduleInfo);
+    // console.log(scheduleInfo);
   }
 
   // view the next week
@@ -173,7 +178,6 @@ const Schedule = () => {
       'show': true,
       'startDateTime': dateTime
     });
-    console.log(dateTime)
   }
 
   return (
@@ -208,13 +212,6 @@ const Schedule = () => {
         <div className="timeslots all-day-events--title">All-day</div>
         <div className="all-day-events--grid">
           {scheduleInfo.scheduleArr.map((day, index) => (<div className={`all-day-events--slots ${day.today? 'block--today' : ''}`} key={index}></div>))}
-          {/* <section className="task task--warning all-day-events--bar">Test</section>
-          <section className="task task--danger all-day-events--bar" style={{gridColumn: '2 / span 3', gridRow: '2'}}>Test</section>
-          <section className="task task--info all-day-events--bar" style={{gridColumn: '3 / span 5', gridRow: '1'}}>Test</section>
-          <section className="task task--danger all-day-events--bar" style={{gridColumn: '2 / span 4', gridRow: '5'}}>Test</section>
-          <section className="task task--info all-day-events--bar" style={{gridColumn: '4 / span 2', gridRow: '3'}}>Test</section>
-          <section className="task task--danger all-day-events--bar" style={{gridColumn: '5 / span 1', gridRow: '4'}}>Test</section>
-          <section className="task task--info all-day-events--bar" style={{gridColumn: '1 / span 1', gridRow: '2'}}>Test</section> */}
           {stickAllDayEvent()}
         </div>
       </div>
@@ -231,9 +228,6 @@ const Schedule = () => {
             )
           })
         })}
-        {/* <section className="block--events task task--danger">Test</section>
-        <section className="block--events task task--danger" style={{gridColumn: '3', gridRow: '4 / span 8'}}>Test</section>
-        <section className="block--events task task--danger" style={{gridColumn: '4', gridRow: '16 / span 8'}}>Test</section> */}
         {stickScheduleEvents()}
       </div>
     </div>

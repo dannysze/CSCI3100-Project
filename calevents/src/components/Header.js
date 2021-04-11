@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import * as Icon from 'react-bootstrap-icons';
 import { RedeemButton, CloseButton } from './CustomButton';
 import getaddr from './getaddr';
+import useToken from '../useToken'
+import { UserContext } from '../UserContext';
 import '../styles/components/Header.css';
 
 const Header = () => {
+
+  const [events, setEvents] = useState([]);
+  const {token} = useToken();
+  const {user, setUser} = useContext(UserContext);
+
+  const getUser = async () => {
+      try{
+        //change getaddr() to getaddr(isLocal=false) to make it use remote address
+        //basically passing the token by the header
+        let res = await fetch(getaddr(false)+'user', {
+            method: 'GET',
+            headers: {
+            'auth': token,
+            'Content-Type': 'application/json',
+            },
+            //body: JSON.stringify({token:token}),
+        });
+        let body = await res.json();
+        setUser(body);
+      }catch(err){
+        console.log(err);
+      }
+  }
+
+  useEffect(() => {
+    getUser();
+  })
+
   const headerItems = [
     {
-        title: '$0.00 ',
+        title: `$${Math.round(user.account_balance * 10) / 10}`,
         url: '#',
         icon: <Icon.Plus />,
         cName: 'header-items',
         onclick: () => { setShowRedeem(true) }
     },
     {
-        title: 'Username ',
+        title: `${user.username} `,
         url: '#',
         icon: <Icon.PersonCircle />,
         cName: 'header-items'

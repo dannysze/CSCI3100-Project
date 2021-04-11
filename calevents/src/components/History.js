@@ -32,7 +32,7 @@ const History = () => {
 
   useEffect(() => {
     getUser();
-    console.log(user)
+    // console.log(user)
     const getEvents = async () => {
       const eventsFromServer = await fetchEvents()
       setEvents(eventsFromServer)
@@ -49,7 +49,7 @@ const History = () => {
       }
     })
     const data = await res.json()
-    console.log(data)
+    // console.log(data)
     return data
   }
 

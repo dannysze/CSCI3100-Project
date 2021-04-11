@@ -188,7 +188,7 @@ const EventForm = ({ dismissHandler, startDate }) => {
             </div>
           </div>
           <div className="create-event-form--input-group create-event-form--input-grid">
-            <div className="create-event-form--input" style={{gridRow: '1 / span 1', gridColumn: '1', paddingRight: '0px'}}>
+            <div className="create-event-form--input" style={{gridRow: '1 / span 1', gridColumn: '1', paddingRight: '5px'}}>
               <span className="create-event-form--input-prepend flex-center">
                 <Tag />
               </span>
