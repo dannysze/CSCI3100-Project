@@ -7,20 +7,11 @@ import { CaretDownFill, } from 'react-bootstrap-icons';
 const Eventrecord = ({ event, onClick, userType, index }) => {
 
     const [showDetail, toggleShowDetail] = useState(false);
-<<<<<<< HEAD
     const [height, setHeight] = useState('');
     useEffect(() => {
         setHeight(document.getElementsByClassName('record-info')[index].scrollHeight)
     }, [])
 
-=======
-    const [height, setHeight] = useState(''); 
-
-    useEffect(() =>{
-        setHeight(document.getElementsByClassName('record-info')[index].scrollHeight);
-    }, []) 
-    
->>>>>>> a77b1ad5fbf441376766a0a205c6b2701fc8f931
     const showRecordDetail = () => {
         toggleShowDetail(!showDetail);
     }
