@@ -43,7 +43,8 @@ Event
 	- organizers (forign key -> User.user_id)
 	- ticket -> int
 	- allow_refund -> tinyint
-	- days_for_refund -> int
+	- days_for_refund -> int (A SQL event is scheduled to update the field at 00:00:00 every day)
+	- category -> varchar(20)
 Event_Join
 	- user_id -> int (primary key, foreign key User.user_id)
 	- event_id -> int (primary key, foreign key Event.event_id)

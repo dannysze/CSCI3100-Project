@@ -130,13 +130,19 @@ app.post('/signup', function(req, res) {
                 res.status(400).send({'error':'email has been used'});    
             }else{
                 bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
-                    //no email verification for now
                     sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
                     ( default , '` + username + `', '`+ hash + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
                     con.query(sql, function (err, result) {
                         if (err) throw err;
-                        
-                        console.log("1 record inserted");
+                        var subject = "Welcome to CalEvents";
+                        var content = `<p>Welcome, ` + username + `</p>
+                                        <br>
+                                        <p>Great to have you with us. CalEvents is here to make a difference 
+                                        in the way you join events and manage your time schedule.</p>
+                                        <p>Now let's get <a href="https://localhost:5000/index.html">started</a>.</p>
+                                        <br>
+                                        <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                        send_email(result3[0].email, subject, content);            
                         //return jwt token
                         var token = jwt.sign({user_id:result.insertId}, config.secret, {
                             expiresIn: 60*60*24
@@ -217,9 +223,9 @@ const upload = multer({
 // time format: HH:MM:SS
 app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
     // variables from the request
-    //var user_id = req.body['user_id'];
-    jwt.verify(token, config.secret, function(err, decoded){
-        var user_id = decoded.user_id;
+    var user_id = req.body['user_id'];
+    // jwt.verify(token, config.secret, function(err, decoded){
+    //     var user_id = decoded.user_id;
         var event_name = req.body['event_name'];
         var start_date = req.body['start_date'];
         var start_time = req.body['start_time'];
@@ -234,19 +240,22 @@ app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
         var ticket = req.body['ticket'];
         var refund = req.body['refund'];
         var refund_days = req.body['refund_days'];
+        var category = req.body['category'];
     
         var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
         con.query(sql, function (err, result) {
             if (err) throw err;
+            console.log(err);
             // if the user is valid
             if(result.length > 0){
                 // insert event
                 sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
-                    , img_loc, organizer, ticket, allow_refund, days_for_refund) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
-                    visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`)`;
+                    , img_loc, organizer, ticket, allow_refund, days_for_refund, category) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
+                    visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`,`+ category +`)`;
                 con.query(sql, function (err, result){
                     if (err) throw err;
                     //res.send(result);
+
                     res.status(200).send("ok");
                 });
             }
@@ -255,7 +264,7 @@ app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
             }
         });
     })
-});
+// });
 
 
 // Join Event
@@ -483,7 +492,7 @@ app.get('/search_events', function(req, res){
 app.get('/event/:eID',function(req, res){
     var eID = req.params['eID'];
     var sql = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
-    con.query(sql, [eID],function (err, result) {
+    con.query(sql, [eID], function (err, result) {
         if (err) throw err;
 
         res.send(result);
@@ -570,9 +579,45 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
     })
 });
 
+// Refund
+app.post('/refund/:eID', function(req, res){
+    var sql1 = `SELECT * FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?;`;
+    var sql2 = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
+    con.query(sql1, [req.body['user_id'], req.params['eID']], function(err, result1){
+        if (err) throw err;
+        if (result1.length > 0)
+            con.query(sql2, [req.params['eID']], function(err, result2){
+                if (err) throw err;
+                if (result2.length > 0)
+                    if (result2[0].allow_refund && result2[0].allow_refund > 0){
+                        var sql3 = `DELETE FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?`;
+                        con.query(sql3, [req.body['user_id'], req.params['eID']], function(err, result3){
+                            if (err) throw err;
+                            var sql4 = `UPDATE csci3100.Event SET capacity = ? WHERE event_id = ?`;
+                            con.query(sql4, [(result2[0].capacity + 1), req.params['eID']], function(err, result4){
+                                if (err) throw err;
+                                var sql5 = `UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id = ?`;
+                                con.query(sql5, [result2[0].ticket, req.body['user_id']], function(err, result5){
+                                    if (err) throw err;
+                                    var sql6 = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = ?`;
+                                    con.query(sql6, [result2[0].ticket, result2[0].organizer], function(err, result6){
+                                        if (err) throw err;
+                                        res.status(200).send('Refunded. Your account balance has been updated.');
+                                    })
+                                })
+                            })
+                        })
+                    }else
+                        res.status(400).send({error: 'The event is not refundable.'});
+            })
+        else
+            res.status(400).send({error: 'You have not joined this event.'});
+    });
+});
+
 // Reset password request
 app.post('/reset_password', function(req, res){
-    var sql1 = `SELECT user_id FROM csci3100.User WHERE email = ?;`;
+    var sql1 = `SELECT user_id, username FROM csci3100.User WHERE email = ?;`;
     var sql2 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = ?;`;
     var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ?`;
     con.query(sql1, [req.body['email']] , function(err, result1){
@@ -592,11 +637,19 @@ app.post('/reset_password', function(req, res){
                 expire_datetime.setTime(current_datetime.getTime() + 10 * 60000);
                 con.query(sql4, [result1[0].user_id, hash, expire_datetime], function(err, result2){
                     if (err) throw err;
-                    //reset password link
+                    //send email with password reset link
                     const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
-                    // send email with link from generated token
+                    var subject = "CalEvents Password Reset";
+                    var content = `<p>Dear ` + result1[0].username + `,</p>
+                                    <br>
+                                    <p>You requested to reset your password.</p>
+                                    <p>Click the link below to reset your password.</p>
+                                    <a href="https://`+ link + `">Reset Password</a>
+                                    <p>Your reset link is only valid once and will be expired in 10 minutes.</p>
+                                    <br>
+                                    <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                    send_email(req.body['email'], subject, content);
                     res.send({link});
-                    
                 });
             })
         }else{
@@ -615,13 +668,24 @@ app.put('/reset_password', function(req, res){
             if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= result1[0].expires_at)){
                     bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
                         var sql2 = `UPDATE csci3100.User SET password = '` + hash + `' WHERE user_id = ` + req.query['user_id'] +`;`;
-                        con.query(sql2, function (err, result) {
+                        con.query(sql2, function (err, result2) {
                             if (err) throw err;
                             else{
-                                res.status(200).send('Password reset successfully.');
-                                // send email
-                                var sql3 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ` + req.query['user_id'] + `;`;
-                                con.query(sql3, function (err, result) {if (err) throw err;})
+                                var sql3 = `SELECT username, email FROM csci3100.User WHERE user_id = ?`;
+                                con.query(sql3, [req.query['user_id']], function(err, result3){
+                                    if (err) throw err;
+                                    res.status(200).send('Password reset successfully.');
+                                    var subject = "CalEvents Password Changed";
+                                    var content = `<p>Dear ` + result3[0].username + `,</p>
+                                                    <br>
+                                                    <p>Your password has been successfully reset.</p>
+                                                    <p>If you did not make this request, please immediately contact us.</p>
+                                                    <br>
+                                                    <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                                    send_email(result3[0].email, subject, content);
+                                    var sql4 = `DELETE FROM csci3100.Password_Recovery WHERE user_id = ` + req.query['user_id'] + `;`;
+                                    con.query(sql4, function (err, result4) {if (err) throw err;})
+                                })
                             }
                         });
                     });
@@ -632,13 +696,77 @@ app.put('/reset_password', function(req, res){
 
 // Delete event
 app.delete('/user_events/:eID', function(req, res){
-    var sql = `DELETE FROM csci3100.Event WHERE event_id = `+ req.params['eID'] +`;`;
-    con.query(sql, function (err, result) {
+    var parti = '(';
+    var ori_ticket;
+    var no_of_parti;
+    var organizer;
+    var oldpath;
+    var sql = `SELECT event_id , ticket, organizer, img_loc FROM csci3100.Event WHERE event_id = ?;`;
+    con.query(sql, [req.params['eID']], function (err, result) {
         if (err) throw err;
-        // send email
-        res.send(result);
+
+        if(result.length > 0){
+            ori_ticket = result[0].ticket;
+            organizer = result[0].organizer;
+            oldpath = result[0].img_loc;
+            var sql = `SELECT user_id FROM csci3100.Event_Join WHERE event_id = ?;`;
+            con.query(sql, [req.params['eID']], function (err, result) {
+                if (err) throw err;
+                
+                // construct the list of participant user_id
+                no_of_parti = result.length
+                console.log(no_of_parti);
+                for(let i in result){
+                    parti += result[i].user_id + ',';
+                }
+                parti = parti.substring(0, parti.length - 1);
+                parti += ')'; 
+                
+                // refund to user's account
+                // delete join record
+                // delete event
+                var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
+                            UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
+                            DELETE FROM csci3100.Event_Join WHERE event_id = ?;
+                            DELETE FROM csci3100.Event WHERE event_id = ?;`;
+
+                con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
+                    if (err) throw err;
+
+                    // delete event image
+                    if(oldpath){
+                        fs.unlink('uploads/' + oldpath, (err) => {
+                            if (err){
+                                console.log(err);
+                            }
+                        });
+                    }
+                    // send an email notification to affected participants
+                    var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
+
+                    con.query(sql, function (err, result){
+                        var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
+                        var content = `<p>Dear participant,</p>
+                                        <br>
+                                        <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
+                                        cancelled and a refund has been made. Please check your new account balance. If 
+                                        you have any enquiries, please don't hesitate to contact us.</p>
+                                        <br>
+                                        <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                        for(let i in result){
+                            send_email(result[i].email, subject, content);
+                        }
+                        res.send("Event deleted, refund is done, email is sent to participants");
+                    });
+                });
+            });
+        }
+        else{
+            res.send("Invalid event ID");
+        }
     });
 });
+
 
 app.get('/', function(req, res) {
     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
