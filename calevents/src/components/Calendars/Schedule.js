@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarButton } from '../CustomButton';
 import EventForm from '../Event/EventForm';
-import { getDate, getDay, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes } from 'date-fns';
+import { getDate, getDay, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes, getMinutes, getHours, addHours, differenceInMinutes } from 'date-fns';
 import { CSSTransition } from 'react-transition-group';
 import '../../styles/components/Calendars/Schedule.css';
 
@@ -49,6 +49,54 @@ const Schedule = () => {
     'show': false,
     'startDateTime': new Date(),
   });
+
+  const [events, setEvents] = useState([]);
+
+  let eventRecord = {};
+  const stickScheduleEvents = () => {
+    eventRecord = {};
+
+    // const scheduleEventBlocks = events.map((event, index) => {
+    const scheduleEventBlocks = [...Array(3)].map((event, index) => {
+      
+      let start = new Date(2021, 3, 11, 15, 0, 0);
+      let end = new Date(2021, 3, 11, 16, 30, 0)
+      let colNum = getDay(start) + 2;
+      console.log(`${start} - ${end}`)
+      let minutesDiff = differenceInMinutes(end, start)
+      console.log(`${minutesDiff} - ${minutesDiff}`)
+      let startMinute = getMinutes(start);
+      let startHour = getHours(start)
+      let endMinute = getMinutes(end);
+      let endHour = getHours(end);
+      let rowStart;
+      if (startMinute <= 30 && startMinute > 0) {
+        rowStart = startHour * 2 + 1;
+      } else if (startMinute == 0) {
+        rowStart = startHour * 2; 
+      } else {
+        rowStart = startMinute * 2 + 2;
+      }
+
+      let rowSpan;
+      // if (endMinute <= 30 && endMinute > 0)
+      rowSpan = Math.floor(minutesDiff / 30);
+      console.log(rowStart)
+      let extrapx = minutesDiff % 30;
+      
+      let style = {
+        gridColumn: `${colNum}`,
+        gridRow: `${rowStart} / span ${rowSpan}`,
+      }
+
+      return (
+        <section className="block--events task task--danger" style={style}>Test</section>
+      )
+      // console.log(`${rowSpan} row`)
+      // console.log(`${minutesDiff % 30} minutes`);
+    })
+    return scheduleEventBlocks;
+  }
 
   // view the previous month
   const previousWeek = () => {
@@ -137,9 +185,10 @@ const Schedule = () => {
             )
           })
         })}
-        <section className="block--events task task--danger">Test</section>
+        {/* <section className="block--events task task--danger">Test</section>
         <section className="block--events task task--danger" style={{gridColumn: '3', gridRow: '4 / span 8'}}>Test</section>
-        <section className="block--events task task--danger" style={{gridColumn: '4', gridRow: '16 / span 8'}}>Test</section>
+        <section className="block--events task task--danger" style={{gridColumn: '4', gridRow: '16 / span 8'}}>Test</section> */}
+        {stickScheduleEvents()}
       </div>
     </div>
   )

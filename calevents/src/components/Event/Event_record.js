@@ -7,8 +7,9 @@ const Eventrecord = ({ event, onClick, userType, index }) => {
 
     const [showDetail, toggleShowDetail] = useState(false);
     const [height, setHeight] = useState(''); 
+
     useEffect(() =>{
-        setHeight(document.getElementsByClassName('record-info')[index].scrollHeight)    
+        setHeight(document.getElementsByClassName('record-info')[index].scrollHeight);
     }, []) 
     
     const showRecordDetail = () => {

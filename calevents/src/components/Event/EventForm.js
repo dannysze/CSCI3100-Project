@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { addHours } from 'date-fns';
 import CustomDatePicker from '../CustomeDatePicker';
 import { Image, Tag, GeoAlt, Calendar, People, CashStack } from 'react-bootstrap-icons';
 import { CloseButton, FormButton } from '../CustomButton';
@@ -9,6 +10,8 @@ import '../../styles/components/Event/EventForm.css';
 
 const EventForm = ({ dismissHandler, startDate }) => {
 
+  const [startSelectedDate, setStartSelectedDate] = useState(startDate);
+  const [endSelectedDate, setEndSelectedDate] = useState(addHours(startDate, 1));
   const [event, setEvent] = useState({
     user_id: '',
     event_name: '',
@@ -170,14 +173,15 @@ const EventForm = ({ dismissHandler, startDate }) => {
           <div className="create-event-form--input-group">
             <div className="create-event-form--input create-event-form--datepicker">
               <CustomDatePicker
-                onChange={onChangeHandler}
-                startDate={startDate}
+                onChangeHandler={(date) => setStartSelectedDate(date)}
+                startDate={startSelectedDate}
                 placeholder="Select Start Time"
               />
             </div>
             <div className="create-event-form--input">
               <CustomDatePicker 
-                onChange={onChangeHandler}
+                onChangeHandler={(date) => {setEndSelectedDate(date); console.log(endSelectedDate); }}
+                startDate={endSelectedDate}
                 placeholder="Select End Time"
               />
             </div>

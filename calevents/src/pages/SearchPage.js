@@ -15,9 +15,19 @@ const SearchPage = () => {
 
 
   return (
-    <div>
-      Search Page
-    </div>
+    <Container className="home" fluid>
+      <Header />
+      <Navbar />
+      <Row className="main-content">
+        <Col md={9}>
+          
+        </Col>
+        <Col md={3}>
+          
+        </Col>
+      </Row>
+      <Footer />
+    </Container>
   )
 }
 

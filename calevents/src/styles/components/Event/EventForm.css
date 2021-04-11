@@ -79,6 +79,11 @@ input[type="file"] {
 
 .react-datepicker-wrapper input {
   padding: 5px 16px !important;
+  /* z-index: 5; */
+}
+
+.react-datepicker__month-container {
+  z-index: 2;
 }
 
 .create-event-form--datepicker {

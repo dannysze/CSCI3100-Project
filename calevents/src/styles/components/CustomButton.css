@@ -122,7 +122,8 @@
   font-size: 1em;
   text-transform: uppercase;
   letter-spacing: .1em;
-  background-image: linear-gradient(to top right, #6de195, #d4fc78);
+  background-color: #ffffff;
+  /* background-image: linear-gradient(to top right, #6de195, #d4fc78); */
   color: #282828;
   border-radius: 2em;
   border: none;
@@ -130,7 +131,7 @@
   margin-left: auto;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   margin-top: 10px;
-  z-index: 1;
+  /* z-index: 1; */
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease-in-out;
