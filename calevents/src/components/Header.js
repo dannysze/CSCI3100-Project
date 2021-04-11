@@ -78,14 +78,14 @@ const Header = () => {
         classNames={'add-value-box-'}
         unmountOnExit
       >
-        <AddValueBox closeModal={closeModal}/>
+        <AddValueBox closeModal={closeModal} userInfo={user}/>
       </CSSTransition>
       {headerItems.map((item, index) => <a href={item.url} className={`flex-center ${item.cName}`} key={index} onClick={item.onclick}>{item.title}{item.icon}</a>)}
     </div>
   )
 }
 
-const AddValueBox = ({ closeModal }) => {
+const AddValueBox = ({ closeModal, userInfo }) => {
   
   // const [prePaidCard, setPrePaidCard] = useState({ 'number': '', 'password': '' })
   const [cardNumber, setCardNumber] = useState('');
@@ -98,7 +98,9 @@ const AddValueBox = ({ closeModal }) => {
   const redeemCard = (event) => {
     event.preventDefault();
     // send request POST /add_value
+    // console.log(userInfo)
     const form = new FormData(document.getElementById("redeem-form"))
+    form.append('user_id', userInfo.user_id)
     const requestOptions = {
       method: 'POST',
       body: form

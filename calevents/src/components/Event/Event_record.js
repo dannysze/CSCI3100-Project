@@ -18,12 +18,15 @@ const Eventrecord = ({ event, onClick, userType, index }) => {
 
     return (
         <li className='record-container'>
-            <div className='record-title' onClick={showRecordDetail}><span className='record'>{event.name}</span><span style={showDetail ? { transform: 'rotate(180deg)' } : { transform: 'rotate(0deg)' }} className="record-title-icon"><CaretDownFill /></span></div>
-            <div className='record-info' style={showDetail ? { height: `${height}px` } : { height: '0px' }}>
-                <div className="organizer">Organizer:&nbsp;{event.organizer}</div>
-                <div className="date">Date:&nbsp;{event.start_date === event.end_date ? `${event.start_date}` : `${event.start_date}` + "-" + `${event.end_date}`}</div>
-                <div className="time">Time:&nbsp;{event.start_time}-{event.end_time}</div>
-                <div className="venue">Venue:&nbsp;{event.venue}</div>
+            <div className='record-title' onClick={showRecordDetail}><span className='record'  style={showDetail ? { whiteSpace: 'normal' } : {  }}>{event.name}</span><span style={showDetail ? { transform: 'rotate(180deg)' } : { transform: 'rotate(0deg)' }} className="record-title-icon"><CaretDownFill /></span></div>
+            <div className='record-info' style={showDetail ? { height: `${height}px`, marginTop: '10px' } : { height: '0px' }}>
+                <div className="organizer"><em>Organizer:</em>&nbsp;{event.organizer}</div>
+                <div className="venue"><em>Venue:</em>&nbsp;{event.venue}</div>
+                <div className="date">
+                    {event.start_date === event.end_date ? `${event.start_date}` : `${event.start_date}` + "-" + `${event.end_date}`}
+                    <span className="time">{event.start_time}-{event.end_time}</span>
+                </div>
+                <hr style={{ margin: '.5em'}}/>
                 <div className="re-description-head">Description:</div>
                 <div className="description">{event.desc}</div>
             </div>

@@ -15,7 +15,7 @@ const History = () => {
       try{
         //change getaddr() to getaddr(isLocal=false) to make it use remote address
         //basically passing the token by the header
-        let res = await fetch(getaddr(false)+'user', {
+        let res = await fetch(getaddr()+'user', {
             method: 'GET',
             headers: {
             'auth': token,
@@ -42,7 +42,7 @@ const History = () => {
 
   // GET the private events of the user
   const fetchEvents = async () => {
-    const res = await fetch(`${getaddr()}user_events/${user.user_id}`, {
+    const res = await fetch(getaddr()+'events/', {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
