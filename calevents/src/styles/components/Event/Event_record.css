@@ -40,7 +40,7 @@
     font-weight: 350;
     font-size: 18px;
     font-style: oblique;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.5s ease-in-out;
 }
 
 .record-info{
@@ -48,7 +48,7 @@
     overflow: hidden;
     background-color: white;
     padding: 0px 15px;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.5s ease-in-out;
 }
 
 .date, .time, .venue, .organizer{
@@ -91,5 +91,19 @@
     font-style: normal;
 }
 
+.record-button-group {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
+.record-button {
+    margin: 0 !important;
+    width: 130px;
+    /* background-color: #bf0000 !important; */
+}
+
+.record-button::before {
+}
 

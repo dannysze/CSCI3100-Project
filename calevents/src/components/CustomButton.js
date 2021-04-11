@@ -59,7 +59,7 @@ export { RedeemButton }
 
 const FormButton = ({ classes, clickHandler, content }) => {
   return (
-    <button className={`form-button ${classes}`} onClick={clickHandler} type="submit">
+    <button className={`form-button ${classes}`} onClick={clickHandler} >
       {content}
     </button>
   )
