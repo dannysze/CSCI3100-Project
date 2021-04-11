@@ -1,59 +1,51 @@
 .record-container{
     position: relative;
-    border-radius: 11px;
-    width: 95%;
-    /* overflow-x: hidden; */
-    box-shadow : 0px 0px 15px -5px;
+    border-bottom: 1px solid rgba(152, 160, 166, 0.6);
+    /* border-radius: 11px; */
+    width: 100%;
+    /* box-shadow : 0px 0px 15px -5px; */
     background-color: white;
     margin: 8px auto;
     color: #282828;
-    /* border: groove; */
     height: auto;
     list-style: none;
 }
 
+.record-title {
+    padding: 6px;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width:100%;
+    cursor: pointer;
+}
 
+.record-title-icon {
+    transition: all 0.3s ease-in-out;
+    color: #282828;
+}
 
 .record{
-    padding: 6px 8px 6px 6px;
-    
-    font-size: 20px;
-    background-color: rgb(217, 83, 79);
-    color: #fef0db;
-    border: solid;
-    border-radius: 11px;
-    display:-webkit-box;
-    -webkit-line-clamp: 1;
+    width: 85%;
+    display: inline-block;
     text-overflow: ellipsis;
-    word-break: break-word;
-    width:100%;
+    white-space: nowrap;
     text-align: left;
-    cursor: pointer;
-    height: 50px;
     overflow: hidden;
     font-weight: 300;
 }
 
 .record-info{
-    height:400px;
-    border: solid;
-    border-color: #fef0db;
-    border-radius: 11px;
+    height: 0px;
+    overflow: hidden;
     background-color: white;
-    
+    /* padding: 10px 0; */
+    /* margin: 10px auto; */
+    transition: all 0.3s ease-in-out;
 }
 
-.date{
-    padding-left: 6px;
-    font-weight: 300;
-}
-
-.time{
-    padding-left: 6px;
-    font-weight: 300;
-}
-
-.venue{
+.date, .time, .venue{
     padding-left: 6px;
     font-weight: 300;
 }
@@ -66,12 +58,8 @@
 
 .description{
     padding-left: 6px;
-    font-weight: 400;
-    
+    font-weight: 400;    
 }
-
-
-
 
 
 

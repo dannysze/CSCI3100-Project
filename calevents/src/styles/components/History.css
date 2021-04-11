@@ -31,3 +31,7 @@
 .history--list::-webkit-scrollbar {
   display: none;
 }
+
+.history--list ul {
+  padding: 0;
+}

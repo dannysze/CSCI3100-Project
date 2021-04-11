@@ -34,7 +34,7 @@ const History = () => {
       <div className="history--list">
         <ul>
           {events.map((event, index) => {
-            return <Eventrecord key={index} event={event} />
+            return <Eventrecord key={index} event={event} index={index} />
           })}
         </ul>
       </div>
