@@ -56,3 +56,13 @@ const RedeemButton = ({ classes, clickHandler, content }) => {
 }
 
 export { RedeemButton }
+
+const FormButton = ({ classes, clickHandler, content }) => {
+  return (
+    <button className={`form-button ${classes}`} onClick={clickHandler} type="submit">
+      {content}
+    </button>
+  )
+}
+
+export { FormButton }

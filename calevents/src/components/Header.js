@@ -1,21 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import * as Icon from 'react-bootstrap-icons';
 import { RedeemButton, CloseButton } from './CustomButton';
 import getaddr from './getaddr';
+import useToken from '../useToken'
+import { UserContext } from '../UserContext';
 import '../styles/components/Header.css';
 
 const Header = () => {
+
+  const [events, setEvents] = useState([]);
+  const {token} = useToken();
+  const {user, setUser} = useContext(UserContext);
+
+  const getUser = async () => {
+      try{
+        //change getaddr() to getaddr(isLocal=false) to make it use remote address
+        //basically passing the token by the header
+        let res = await fetch(getaddr(false)+'user', {
+            method: 'GET',
+            headers: {
+            'auth': token,
+            'Content-Type': 'application/json',
+            },
+            //body: JSON.stringify({token:token}),
+        });
+        let body = await res.json();
+        setUser(body);
+      }catch(err){
+        console.log(err);
+      }
+  }
+
+  useEffect(() => {
+    getUser();
+  })
+
   const headerItems = [
     {
-        title: '$0.00 ',
+        title: `$${Math.round(user.account_balance * 10) / 10}`,
         url: '#',
         icon: <Icon.Plus />,
         cName: 'header-items',
         onclick: () => { setShowRedeem(true) }
     },
     {
-        title: 'Username ',
+        title: `${user.username} `,
         url: '#',
         icon: <Icon.PersonCircle />,
         cName: 'header-items'
@@ -65,38 +95,46 @@ const AddValueBox = ({ closeModal }) => {
     event.target.name === 'number' ? setCardNumber(event.target.value) : setPassword(event.target.value);
   } 
 
-  const redeemCard = async (event) => {
+  const redeemCard = (event) => {
     event.preventDefault();
     // send request POST /add_value
+    const form = new FormData(document.getElementById("redeem-form"))
     const requestOptions = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user_id: 40, // to be changed
-        card_id: cardNumber,
-        card_pw: password
-      })
+      body: form
     };
-    const response = await fetch(getaddr()+'add_value', requestOptions);
-    const data = await response.json();
+    fetch(getaddr()+'add_value', requestOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.message);
+        }
+        if (response.status === 200) {
+          console.log(JSON.stringify(response))
+        } else {
+          alert("err")
+        }
+      })
+      .then(data => {
+        console.log(data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
     // console.log(data);
   }
 
   return (
       <div className="add-value--background" onClick={closeModal}>
         <div className="add-value--container" onClick={event => { event.stopPropagation(); }}>
-          <h2>Redeem gift card</h2>
-          <form className="redeem-form">
+          <h2 className="flex-center" style={{justifyContent: 'flex-start'}}>Redeem gift card&nbsp;<Icon.Cash /></h2>
+          <form id="redeem-form" onSubmit={redeemCard}>
             <div>
               <input type="text" name="number" placeholder="Card number" onChange={onChangeHandler}/>
             </div>
             <div>
               <input type="password" name="password" placeholder="Password" onChange={onChangeHandler}/>
             </div>
-            <RedeemButton classes={''} clickHandler={redeemCard} content={`
-  Redeem`} />
+            <RedeemButton classes={''} content={`Redeem`} />
           </form>
         </div>
       </div>

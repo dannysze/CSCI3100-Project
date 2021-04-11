@@ -164,7 +164,7 @@ app.post('/signup', function(req, res) {
                                         <p>Now let's get <a href="https://localhost:5000/index.html">started</a>.</p>
                                         <br>
                                         <p>Yours Sincerely,<br>CalEvents Admins</p>`
-                        send_email(result3[0].email, subject, content);            
+                        send_email(email, subject, content);            
                         //return jwt token
                         var token = jwt.sign({user_id:result.insertId}, config.secret, {
                             expiresIn: 60*60*24

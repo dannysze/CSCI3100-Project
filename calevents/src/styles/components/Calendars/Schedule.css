@@ -38,12 +38,12 @@
   grid-column: 2 / span 8;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: auto [last-line] !important;
+  grid-template-rows: auto !important;
   overflow-y: scroll;
 }
 
 .schedule-body {
-  grid-template-rows: 25px !important;
+  grid-template-rows: 30px !important;
   border-top: 1px solid rgba(166, 168, 179, 0.4);
   height: 68vh;
   overflow-y: scroll;
@@ -75,7 +75,7 @@
 
 .all-day-events--slots {
   /* change with js */
-  grid-row: 1 / 9;
+  grid-row: 1 / span 9;
 }
 
 .all-day-events--slots:nth-child(n+1):nth-last-child(n+2) {
@@ -121,6 +121,16 @@
   grid-column: 1 / span 2;
 }
 
+.block {
+  z-index: 2;
+  cursor: pointer;
+}
+
+.block:hover {
+  z-index: 10;
+  background-color: rgba(81, 92, 230, 0.15);
+}
+
 .block:nth-child(2n) {
   border-bottom: 1px solid rgba(166, 168, 179, 0.4);
 }
@@ -137,9 +147,8 @@
   font-weight: 600;
   padding: 0 0 0 5px;
   margin: 0 5px 0 0;
-  grid-row: 1 / span 3;
-  grid-column: 2;
   border-left-color: transparent;
+  z-index: 1;
 }
 
 .block--today {
