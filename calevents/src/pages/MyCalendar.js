@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import Header from '../components/Header';
 import Navbar from '../components/Navbar';
@@ -11,7 +11,7 @@ const MyCalendar = () => {
 
   useEffect(() => {
     document.title = 'My Calendar';
-  })
+  }, [])
 
   return (
     <Container className="home" fluid>

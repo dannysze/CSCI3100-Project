@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { addHours } from 'date-fns';
 import CustomDatePicker from '../CustomeDatePicker';
-import { Image, Tag, GeoAlt, Calendar, People, CashStack } from 'react-bootstrap-icons';
+import { Image, Tag, GeoAlt, CalendarEvent, People, CashStack } from 'react-bootstrap-icons';
 import { CloseButton, FormButton } from '../CustomButton';
 import useToken from '../../useToken';
 import getaddr from '../getaddr'
@@ -9,6 +10,8 @@ import '../../styles/components/Event/EventForm.css';
 
 const EventForm = ({ dismissHandler, startDate }) => {
 
+  const [startSelectedDate, setStartSelectedDate] = useState(startDate);
+  const [endSelectedDate, setEndSelectedDate] = useState(addHours(startDate, 1));
   const [event, setEvent] = useState({
     user_id: '',
     event_name: '',
@@ -24,6 +27,7 @@ const EventForm = ({ dismissHandler, startDate }) => {
     ticket: 10,
     refund: 1,
     refund_days: 0,
+    catagory: '',
   });
 
   const {token, setToken} = useToken();
@@ -156,7 +160,7 @@ const EventForm = ({ dismissHandler, startDate }) => {
           <div className="create-event-form--input-group">
             <div className="create-event-form--input">
               <span className="create-event-form--input-prepend flex-center">
-                <Tag />
+                <CalendarEvent />
               </span>
               <input type="text" name="event_name" placeholder="Event" onChange={onChangeHandler}/>
             </div>
@@ -170,23 +174,34 @@ const EventForm = ({ dismissHandler, startDate }) => {
           <div className="create-event-form--input-group">
             <div className="create-event-form--input create-event-form--datepicker">
               <CustomDatePicker
-                onChange={onChangeHandler}
-                startDate={startDate}
+                onChangeHandler={(date) => setStartSelectedDate(date)}
+                startDate={startSelectedDate}
                 placeholder="Select Start Time"
               />
             </div>
             <div className="create-event-form--input">
               <CustomDatePicker 
-                onChange={onChangeHandler}
+                onChangeHandler={(date) => {setEndSelectedDate(date); console.log(endSelectedDate); }}
+                startDate={endSelectedDate}
                 placeholder="Select End Time"
               />
             </div>
           </div>
           <div className="create-event-form--input-group create-event-form--input-grid">
-            <div className="create-event-form--input" style={{gridRow: '1 / span 3', gridColumn: '1', paddingTop: '0px'}}>
+            <div className="create-event-form--input" style={{gridRow: '1 / span 1', gridColumn: '1', paddingRight: '0px'}}>
+              <span className="create-event-form--input-prepend flex-center">
+                <Tag />
+              </span>
+              <select className="" name="catagory" placeholder="">
+                {['Sport', 'Music', 'Academic'].map((item, index) => (
+                  <option value={item} key={index}>{item}</option>
+                ))}
+              </select>
+            </div>
+            <div className="create-event-form--input" style={{gridRow: '2 / span 2', gridColumn: '1', paddingRight: '5px', paddingLeft: '0px'}}>
               <textarea className="" name="description" placeholder="Description..."></textarea>
             </div>
-            <div className="create-event-form--input" style={{gridRow: '1', gridColumn: '2'}}>
+            <div className="create-event-form--input" style={{gridRow: '1', gridColumn: '2', paddingRight: '0', paddingLeft: '5px'}}>
               <span className="create-event-form--input-prepend flex-center">
                 <People />
               </span>
@@ -196,15 +211,15 @@ const EventForm = ({ dismissHandler, startDate }) => {
               <span className="create-event-form--input-prepend flex-center" style={{padding: '9px 8px'}}>
                 <CashStack />
               </span>
-              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} />
+              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} min="0" />
               <span className="create-event-form--input-append">
                 <label className="create-event-form--input-label">
                   <input type="checkbox" name="free" onChange={onChangeHandler} checked={event.ticket === 0}/>&nbsp;Free
                 </label>
               </span>
             </div>
-            <div className="create-event-form--input create-event-form--checkbox" style={{gridRow: '3', gridColumn: '2'}}>
-              <input type="number" name="refund_days" placeholder="Refund before" onChange={onChangeHandler} style={{paddingLeft: '16px'}} />
+            <div className="create-event-form--input create-event-form--checkbox" style={{gridRow: '3', gridColumn: '2', paddingRight: '0px'}}>
+              <input type="number" name="refund_days" placeholder="Refund before" onChange={onChangeHandler} style={{paddingLeft: '16px'}} min="0" />
               <span className="create-event-form--input-append">
                 <label className="create-event-form--input-label">
                   <input type="checkbox" name="refund" onChange={onChangeHandler} value={1} checked={event.refund > 0} />&nbsp;Allow refund

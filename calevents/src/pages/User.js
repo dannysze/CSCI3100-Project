@@ -10,23 +10,23 @@ const User = () => {
     const {user, setUser} = useContext(UserContext);
     //this gets the user info by token, change to /userinfo/:uid for general user
     const getUser = async () => {
-        try{
-          //change getaddr() to getaddr(isLocal=false) to make it use remote address
-          //basically passing the token by the header
-          let res = await fetch(getaddr()+'user', {
-            method: 'GET',
-            headers: {
-              'auth': token,
-              'Content-Type': 'application/json',
-            },
-            //body: JSON.stringify({token:token}),
-          });
-          let body = await res.json();
-          setUser(body);
-        }catch(err){
-          console.log(err);
-        }
+      try{
+        //change getaddr() to getaddr(isLocal=false) to make it use remote address
+        //basically passing the token by the header
+        let res = await fetch(getaddr()+'user', {
+          method: 'GET',
+          headers: {
+            'auth': token,
+            'Content-Type': 'application/json',
+          },
+          //body: JSON.stringify({token:token}),
+        });
+        let body = await res.json();
+        setUser(body);
+      }catch(err){
+        console.log(err);
       }
+    }
 
     var pfp;
     const fileSelectedHandler = event => {
