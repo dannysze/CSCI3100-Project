@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import "../../styles/components/Event/EventCard.css"
+import { FormButton } from "../CustomButton.js";
 
 const originCard = ({ event, onClick }) => {
     return (
@@ -36,6 +37,7 @@ const EventCard = ({ event, onClick }) => {
             </div>
             <div className="btn">
                 <button className="flex-center" onClick={onClick}>More</button>
+                {/* <FormButton content="more" /> */}
             </div>
 
         </div>

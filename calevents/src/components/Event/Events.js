@@ -3,6 +3,7 @@ import { Container, Row, Col, Modal, ListGroup, Button, ListGroupItem } from 're
 import EventCard from './EventCard'
 import getaddr from '../getaddr'
 import '../../styles/components/Event/Events.css'
+import { FormButton } from "../CustomButton.js";
 
 function Events({ height }) {
   const [events, setEvents] = useState([]);
@@ -51,7 +52,7 @@ function Events({ height }) {
           {/* <Modal.Title id='example-custom-modal-styling-title'>
             {showEvent.event.name}
           </Modal.Title> */}
-          <h1>Event</h1>
+          <h1>E v e n t</h1>
 
         </Modal.Header>
 
@@ -90,11 +91,13 @@ function Events({ height }) {
           <Row>
             <Col sm={8}></Col>
             <Col sm={1}>
-              <button className="pop-button">Join</button>
+              {/* <button className="pop-button">Join</button> */}
+              <FormButton content="Join" />
             </Col>
 
             <Col sm={3}>
-              <button className="pop-button-organizer">Contact Organizer</button>
+              {/* <button className="pop-button-organizer">Contact Organizer</button> */}
+              <FormButton className="pop-button-organizer" content="Contact Organizer" />
             </Col>
           </Row>
 

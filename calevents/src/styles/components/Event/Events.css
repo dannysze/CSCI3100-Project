@@ -61,15 +61,19 @@
 
 
 .pop-up-bar{
-    background-color: rgb(217, 83, 79);
+    background-color: none;
     
 }
 
 .pop-up-bar h1{
     font-size: 30px;
-    font-style: oblique;
+    /* font-style: oblique; */
     font-weight: 350;
     margin-left: 10px;
+    /* border-bottom: groove;
+    width:auto;
+    border-color: black; */
+
 }
 
 .row-container{
@@ -81,7 +85,7 @@
 .pop-img-container{
     border:solid;
     border-radius: 11px;
-    border-color: antiquewhite;
+    border-color: Gainsboro;
     position:relative;
     height:300px;
     
@@ -130,7 +134,11 @@
     font-style: oblique;
     border-top-left-radius: 11px;
     border-top-right-radius: 11px;
-    background: rgb(217, 83, 79);
+    /* background: rgb(217, 83, 79); */
+    background: Snow;
+    border:solid;
+    border-color: Gainsboro;
+    border-bottom: none;
     padding-left: 20px;
     margin-top: 10px;
 
@@ -139,7 +147,7 @@
 .pop-description{
     position:relative;
     border:solid;
-    border-color: antiquewhite;
+    border-color: Gainsboro;
     border-bottom-left-radius: 11px;
     border-bottom-right-radius: 11px;
     font-size: 18px;
@@ -171,7 +179,7 @@
 }
 
 .pop-button-organizer{
-    position: relative;
+    /* position: relative;
     margin:10px 5px 10px 5px;
     width:250px;
     height: 40px;
@@ -180,16 +188,17 @@
     border-radius: 11px;
     background-color: rgb(217, 83, 79);
     /* margin-left: -30px; */
-    right:-30px;
+    /* right:-30px;
     font-weight: 300;
     font-size: 26px;
     transition: 0.3s;
-    animation: ease-in-out;
+    animation: ease-in-out; */ 
+    right:-30px;
 }
 
-.pop-button-organizer:hover{
+/* .pop-button-organizer:hover{
     transform: scale(1.1);
-}
+} */
 
 
 

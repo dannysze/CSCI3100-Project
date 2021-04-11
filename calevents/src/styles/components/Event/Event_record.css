@@ -1,11 +1,12 @@
 .record-container{
     position: relative;
     border-bottom: 1px solid rgba(152, 160, 166, 0.6);
-    /* border-radius: 11px; */
+    border-radius: 11px;
     width: 100%;
-    /* box-shadow : 0px 0px 15px -5px; */
+    box-shadow : 0px 0px 8px -5px;
     background-color: white;
-    margin: 8px auto;
+    margin: 10px auto;
+    
     color: #282828;
     height: auto;
     list-style: none;
@@ -13,7 +14,6 @@
 
 .record-title {
     padding: 6px;
-    font-size: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -33,7 +33,9 @@
     white-space: nowrap;
     text-align: left;
     overflow: hidden;
-    font-weight: 300;
+    font-weight: 350;
+    font-size: 24px;
+    font-style: oblique;
 }
 
 .record-info{
@@ -45,20 +47,30 @@
     transition: all 0.3s ease-in-out;
 }
 
-.date, .time, .venue{
+.date, .time, .venue, .organizer{
+    font-size: 18px;
     padding-left: 6px;
     font-weight: 300;
+    /* border-bottom: solid;
+    border-color: gainsboro; */
+    box-shadow:0px 0px 7px -5px;
+   
+
+    width:450px;
 }
 
-.description-head{
+.re-description-head{
     padding-left: 6px;
     padding-bottom: 3px;
-    font-weight: 500;
+    font-style: oblique;
+    font-weight: 350;
+    font-size: 24px;
+    border-radius: 11px;
+    
 }
-
 .description{
     padding-left: 6px;
-    font-weight: 400;    
+    font-weight: 300;    
 }
 
 
