@@ -75,27 +75,27 @@ const checkAuth = (req, res, next) => {
     });
 };
 
-app.get('/test', function(req, res){
-    var u_ID = 13;
-    var sql = `SELECT user_id,username,img_loc, email,type,account_balance FROM csci3100.User where user_id = ?;`;
-    con.query(sql, [u_ID], function(err, result){
-        if(err) throw err;
-        //check if user with the user exists
-        if(result.length > 0){
-            var result = result[0];
-            //send base64 url for the image
-            try{
-                var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
-                result.img_loc = imageAsBase64;
-            }catch{
-                result.img_loc = "";
-            }
-            res.status(200).send(result);
-        }else{
-            res.status(400).send({error: 'User does not exist'});
-        }
-    });
-});
+// app.get('/test', function(req, res){
+//     var u_ID = 13;
+//     var sql = `SELECT user_id,username,img_loc, email,type,account_balance FROM csci3100.User where user_id = ?;`;
+//     con.query(sql, [u_ID], function(err, result){
+//         if(err) throw err;
+//         //check if user with the user exists
+//         if(result.length > 0){
+//             var result = result[0];
+//             //send base64 url for the image
+//             try{
+//                 var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
+//                 result.img_loc = imageAsBase64;
+//             }catch{
+//                 result.img_loc = "";
+//             }
+//             res.status(200).send(result);
+//         }else{
+//             res.status(400).send({error: 'User does not exist'});
+//         }
+//     });
+// });
 
 //for login.return jwt token with payload being userid after successful login.
 app.post('/login', function(req, res) {
@@ -290,6 +290,7 @@ app.post('/create_event',checkAuth, upload.single('img'), function(req, res) {
     })
 });
 
+
 // Retrieve joined events
 app.get('/joined_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
@@ -395,6 +396,8 @@ app.post('/join_event', function(req, res){
 })
 
 
+
+
 // Editing all information of an event except ticket and organizer
 // Change image location will be handled separately.
 app.post('/edit_event', function(req, res) {
@@ -492,59 +495,79 @@ app.post('/event_pic', upload.single('img'),function(req, res){
 
 // Add value to user balance
 app.post('/add_value', function(req, res) {
-    // variables from the request
-    var user_id = req.body['user_id'];
-    var card_id = req.body['card_id'];
-    var input_pw = req.body['card_pw'];
+//app.post('/add_value', checkAuth, function(req, res) {
     
-    // store intermediate query attributes
-    var old_bal;
-    var actual_pw;
-    var card_val;
-    // check if the user id is valid
-    var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
-    con.query(sql, function (err, result) {
-        if (err) throw err;
+    //var token = req.headers['token'];
+    //jwt.verify(token, config.secret, function(err, decoded){
+        // variables from the request
+        //var user_id = decoded.user_id;
+        var user_id = req.body['user_id'];
+        var card_id = req.body['card_id'];
+        var input_pw = req.body['card_pw'];
+        
 
-        // if the user is valid
-        if(result.length > 0){
-            old_bal = result[0].account_balance;
-            // check if the card is valid
-            sql = `SELECT * FROM csci3100.Prepaid_Card where card_id = `+ card_id +`;`;
-            con.query(sql, function (err, result) {
-                if (err) throw err;
+        // store intermediate query attributes
+        var old_bal;
+        var actual_pw;
+        var card_val;
+        // check if the user id is valid
+        var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            
+            // if the user is valid
+            if(result.length > 0){
+                old_bal = result[0].account_balance;
+                // check if the card is valid
+                sql = `SELECT * FROM csci3100.Prepaid_Card where card_id = '`+ card_id +`';`;
+                con.query(sql, function (err, result) {
+                    if (err) throw err;
+                    
+                    //Check if card number exists
+                    if(result.length > 0){
 
-                // if the user is valid
-                if(result.length > 0){
+                        // console.log(result[0]);
+                        actual_pw = result[0].card_password;
+                        card_val = result[0].value;
 
-                    // console.log(result[0]);
-                    actual_pw = result[0].card_password;
-                    card_val = result[0].value;
+                        // if the card is used or the password is incorrect
+                        if(result[0].user_id == null && actual_pw == input_pw){
 
-                    // if the card is used or the password is incorrect
-                    if(result[0].user_id == null && actual_pw == input_pw){
+                            // Set the card as used and add value to the user's account
+                            sql = `UPDATE csci3100.Prepaid_Card SET user_id = `+ user_id +` WHERE card_id = `+ card_id +`;
+                            UPDATE csci3100.User SET account_balance = `+ (card_val + old_bal) +` WHERE user_id = `+ user_id +`;`;
+                            con.query(sql, function (err, result) {
+                                if (err) throw err;
+                                res.status(200).send({success:"Add value successful, new balance: " + (card_val + old_bal)});
+                                console.log("Add value successful, new balance: " + (card_val + old_bal));
+                            });
+                        }
+                        else{
+                            console.log("fail");
 
-                        // Set the card as used and add value to the user's account
-                        sql = `UPDATE csci3100.Prepaid_Card SET user_id = `+ user_id +` WHERE card_id = `+ card_id +`;
-                        UPDATE csci3100.User SET account_balance = `+ (card_val + old_bal) +` WHERE user_id = `+ user_id +`;`;
-                        con.query(sql, function (err, result) {
-                            if (err) throw err;
-                            res.send("Add value successful, new balance: " + (card_val + old_bal));
-                            console.log("Add value successful, new balance: " + (card_val + old_bal));
-                        });
+                            
+                            if(result[0].user_id != null){
+                                res.status(400).send({error:"The card has been used"})
+                                console.log("The card has been used");
+                            }else if(actual_pw != input_pw){
+                                res.status(400).send({error:"The password is incorrect"});
+                                console.log("The password of the card is incorrect")
+                            }
+                            //res.status(400).send("Failed to add value")
+                            console.log("Failed to add value");
+                        }
+                    }else{
+                        res.status(400).send({error:"Card number does not exist"});
+                        console.log("Card number does not exist");
                     }
-                    else{
-                        res.send("Failed to add value")
-                        console.log("Failed to add value");
-                    }
-                }
-            });
-        }
-        else{
-            res.send("Invalid User");
-            console.log("Invalid User");
-        }
-    });
+                });
+            }
+            else{      
+                res.send("Invalid User");
+                console.log("Invalid User");
+            }
+        });
+    //});
 });
 
 // Retrieve all public events
@@ -573,8 +596,11 @@ app.get('/event/:eID',function(req, res){
             }catch{
                 result[0].img_loc = "";
             }
+            res.send(result);
         }
-        res.send(result);
+        else{
+            res.send("Invalid event id");
+        }
         // console.log(result);
     });
 });
@@ -594,8 +620,12 @@ app.get('/user_events/:uID', function(req, res){
             }catch{
                 result[0].img_loc = "";
             }
+            res.send(result);
         }
-        res.send(result);
+        else{
+            res.send("Invalid event id");
+        }
+        
         // console.log(result);
     });
 });
@@ -807,46 +837,65 @@ app.delete('/user_events/:eID', function(req, res){
                 for(let i in result){
                     parti += result[i].user_id + ',';
                 }
-                parti = parti.substring(0, parti.length - 1);
-                parti += ')'; 
-                
-                // refund to user's account
-                // delete join record
-                // delete event
-                var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
+                // if there are participants
+                if(result.length > 0){
+                    parti = parti.substring(0, parti.length - 1);
+                    parti += ')'; 
+                    
+                    // refund to user's account
+                    // delete join record
+                    // delete event
+                    var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
                             UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
                             DELETE FROM csci3100.Event_Join WHERE event_id = ?;
-                            DELETE FROM csci3100.Event WHERE event_id = ?;`;
+                            DELETE FROM csci3100.Event WHERE event_id = ?;`
+                    con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
+                        if (err) throw err;
 
-                con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
-                    if (err) throw err;
-
-                    // delete event image
-                    if(oldpath){
-                        fs.unlink('uploads/' + oldpath, (err) => {
-                            if (err){
-                                console.log(err);
-                            }
-                        });
-                    }
-                    // send an email notification to affected participants
-                    var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
-
-                    con.query(sql, function (err, result){
-                        var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
-                        var content = `<p>Dear participant,</p>
-                                        <br>
-                                        <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
-                                        cancelled and a refund has been made. Please check your new account balance. If 
-                                        you have any enquiries, please don't hesitate to contact us.</p>
-                                        <br>
-                                        <p>Yours Sincerely,<br>CalEvents Admins</p>`
-                        for(let i in result){
-                            send_email(result[i].email, subject, content);
+                        // delete event image
+                        if(oldpath){
+                            fs.unlink('uploads/' + oldpath, (err) => {
+                                if (err){
+                                    console.log(err);
+                                }
+                            });
                         }
-                        res.send("Event deleted, refund is done, email is sent to participants");
+                        // send an email notification to affected participants
+                        var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
+
+                        con.query(sql, function (err, result){
+                            var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
+                            var content = `<p>Dear participant,</p>
+                                            <br>
+                                            <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
+                                            cancelled and a refund has been made. Please check your new account balance. If 
+                                            you have any enquiries, please don't hesitate to contact us.</p>
+                                            <br>
+                                            <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                            for(let i in result){
+                                send_email(result[i].email, subject, content);
+                            }
+                            res.send("Event deleted, refund is done, email is sent to participants");
+                        });
                     });
-                });
+                }
+                // if there are no participants
+                else{
+                    var sql = `DELETE FROM csci3100.Event WHERE event_id = ?;`
+                    con.query(sql, [req.params['eID']], function (err, result) {
+                        if (err) throw err;
+
+                        // delete event image
+                        if(oldpath){
+                            fs.unlink('uploads/' + oldpath, (err) => {
+                                if (err){
+                                    console.log(err);
+                                }
+                            });
+                        }
+                        res.send("Event deleted");
+                    });
+                }       
             });
         }
         else{
@@ -854,7 +903,6 @@ app.delete('/user_events/:eID', function(req, res){
         }
     });
 });
-
 
 // app.get('/', function(req, res) {
 //     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
