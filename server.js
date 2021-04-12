@@ -505,6 +505,7 @@ app.post('/add_value', function(req, res) {
         var card_id = req.body['card_id'];
         var input_pw = req.body['card_pw'];
         
+
         // store intermediate query attributes
         var old_bal;
         var actual_pw;
@@ -518,7 +519,7 @@ app.post('/add_value', function(req, res) {
             if(result.length > 0){
                 old_bal = result[0].account_balance;
                 // check if the card is valid
-                sql = `SELECT * FROM csci3100.Prepaid_Card where card_id = `+ card_id +`;`;
+                sql = `SELECT * FROM csci3100.Prepaid_Card where card_id = '`+ card_id +`';`;
                 con.query(sql, function (err, result) {
                     if (err) throw err;
                     
