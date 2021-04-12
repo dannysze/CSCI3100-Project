@@ -121,6 +121,9 @@ const Login = () => {
       setSignupResult({'errorMsg':'Please select user type', 'alert':true});
       return;
     }
+    if(!valid.username||!valid.password||!valid.email|!valid.userType){
+      return;
+    }
     try{
       let res = await fetch(getaddr()+'signup', {
         method: 'POST',
