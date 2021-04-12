@@ -396,6 +396,8 @@ app.post('/join_event', function(req, res){
 })
 
 
+
+
 // Editing all information of an event except ticket and organizer
 // Change image location will be handled separately.
 app.post('/edit_event', function(req, res) {
@@ -493,59 +495,78 @@ app.post('/event_pic', upload.single('img'),function(req, res){
 
 // Add value to user balance
 app.post('/add_value', function(req, res) {
-    // variables from the request
-    var user_id = req.body['user_id'];
-    var card_id = req.body['card_id'];
-    var input_pw = req.body['card_pw'];
+//app.post('/add_value', checkAuth, function(req, res) {
     
-    // store intermediate query attributes
-    var old_bal;
-    var actual_pw;
-    var card_val;
-    // check if the user id is valid
-    var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
-    con.query(sql, function (err, result) {
-        if (err) throw err;
+    //var token = req.headers['token'];
+    //jwt.verify(token, config.secret, function(err, decoded){
+        // variables from the request
+        //var user_id = decoded.user_id;
+        var user_id = req.body['user_id'];
+        var card_id = req.body['card_id'];
+        var input_pw = req.body['card_pw'];
+        
+        // store intermediate query attributes
+        var old_bal;
+        var actual_pw;
+        var card_val;
+        // check if the user id is valid
+        var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
+        con.query(sql, function (err, result) {
+            if (err) throw err;
+            
+            // if the user is valid
+            if(result.length > 0){
+                old_bal = result[0].account_balance;
+                // check if the card is valid
+                sql = `SELECT * FROM csci3100.Prepaid_Card where card_id = `+ card_id +`;`;
+                con.query(sql, function (err, result) {
+                    if (err) throw err;
+                    
+                    //Check if card number exists
+                    if(result.length > 0){
 
-        // if the user is valid
-        if(result.length > 0){
-            old_bal = result[0].account_balance;
-            // check if the card is valid
-            sql = `SELECT * FROM csci3100.Prepaid_Card where card_id = `+ card_id +`;`;
-            con.query(sql, function (err, result) {
-                if (err) throw err;
+                        // console.log(result[0]);
+                        actual_pw = result[0].card_password;
+                        card_val = result[0].value;
 
-                // if the user is valid
-                if(result.length > 0){
+                        // if the card is used or the password is incorrect
+                        if(result[0].user_id == null && actual_pw == input_pw){
 
-                    // console.log(result[0]);
-                    actual_pw = result[0].card_password;
-                    card_val = result[0].value;
+                            // Set the card as used and add value to the user's account
+                            sql = `UPDATE csci3100.Prepaid_Card SET user_id = `+ user_id +` WHERE card_id = `+ card_id +`;
+                            UPDATE csci3100.User SET account_balance = `+ (card_val + old_bal) +` WHERE user_id = `+ user_id +`;`;
+                            con.query(sql, function (err, result) {
+                                if (err) throw err;
+                                res.status(200).send({success:"Add value successful, new balance: " + (card_val + old_bal)});
+                                console.log("Add value successful, new balance: " + (card_val + old_bal));
+                            });
+                        }
+                        else{
+                            console.log("fail");
 
-                    // if the card is used or the password is incorrect
-                    if(result[0].user_id == null && actual_pw == input_pw){
-
-                        // Set the card as used and add value to the user's account
-                        sql = `UPDATE csci3100.Prepaid_Card SET user_id = `+ user_id +` WHERE card_id = `+ card_id +`;
-                        UPDATE csci3100.User SET account_balance = `+ (card_val + old_bal) +` WHERE user_id = `+ user_id +`;`;
-                        con.query(sql, function (err, result) {
-                            if (err) throw err;
-                            res.send("Add value successful, new balance: " + (card_val + old_bal));
-                            console.log("Add value successful, new balance: " + (card_val + old_bal));
-                        });
+                            
+                            if(result[0].user_id != null){
+                                res.status(400).send({error:"The card has been used"})
+                                console.log("The card has been used");
+                            }else if(actual_pw != input_pw){
+                                res.status(400).send({error:"The password is incorrect"});
+                                console.log("The password of the card is incorrect")
+                            }
+                            //res.status(400).send("Failed to add value")
+                            console.log("Failed to add value");
+                        }
+                    }else{
+                        res.status(400).send({error:"Card number does not exist"});
+                        console.log("Card number does not exist");
                     }
-                    else{
-                        res.send("Failed to add value")
-                        console.log("Failed to add value");
-                    }
-                }
-            });
-        }
-        else{
-            res.send("Invalid User");
-            console.log("Invalid User");
-        }
-    });
+                });
+            }
+            else{      
+                res.send("Invalid User");
+                console.log("Invalid User");
+            }
+        });
+    //});
 });
 
 // Retrieve all public events
