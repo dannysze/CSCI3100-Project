@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { CaretDownFill, } from 'react-bootstrap-icons';
 import { FormButton } from '../CustomButton';
 import { CSSTransition } from 'react-transition-group';
 import EventForm from './EventForm';
 import PropTypes from 'prop-types'
+import getaddr from '../getaddr'
+import useToken from '../../useToken'
+import {UserContext} from '../../UserContext'
 import "../../styles/components/Event/Event_record.css"
 
 
-const Eventrecord = ({ event, onClick, userType, index }) => {
+const Eventrecord = ({ event, onClick, index }) => {
 
     const [showDetail, toggleShowDetail] = useState(false);
     const [height, setHeight] = useState('');
@@ -37,14 +40,61 @@ const Eventrecord = ({ event, onClick, userType, index }) => {
         toggleShowDetail(!showDetail);
     }
 
-    // DELETE events API 
-    const deleteEvent = (event) => {
-
+    const {token} = useToken();
+    const {user, setUser} = useContext(UserContext);
+    //this gets the user info by token, change to /userinfo/:uid for general user
+    const getUser = async () => {
+      try{
+        //change getaddr() to getaddr(isLocal=false) to make it use remote address
+        //basically passing the token by the header
+        let res = await fetch(getaddr()+'user', {
+          method: 'GET',
+          headers: {
+            'auth': token,
+            'Content-Type': 'application/json',
+          },
+          //body: JSON.stringify({token:token}),
+        });
+        let body = await res.json();
+        setUser(body);
+      }catch(err){
+        console.log(err);
+      }
     }
-    
+
+    useEffect(() => {
+        getUser();
+    }, [])
+
+    // DELETE events API 
+    const deleteEvent = async (event) => {
+        fetch(getaddr()+'user_events/'+event.id, {
+            method: 'DELETE'
+        }).then(res => {
+            res.json()
+        }).then(res => {
+            console.log(res)
+        })
+    }
+
     // Edit event API
     const editEvent = (e) => {
         e.preventDefault();
+        
+    }
+
+    // User request for refunding
+    const userRefund = async (e) => {
+        e.preventDefault()
+        let data = new FormData();
+        data.append('user_id', user.user_id);
+        await fetch(`${getaddr()}refund/${event.event_id}`, {
+            method: 'POST',
+            headers: {
+                'auth': token,
+            },
+            body: data
+        });
     }
 
     const toggleEditForm = (event) => {
@@ -74,7 +124,8 @@ const Eventrecord = ({ event, onClick, userType, index }) => {
                 <div className="re-description-head">Description:</div>
                 <div className="description">{event.desc}</div>
                 <div className="record-button-group">
-                    <FormButton classes="record-button" clickHandler={deleteEvent} content="delete"/>
+                    {(event.visible === 1 && user.type === 0) ? <FormButton classes="record-button" clickHandler={userRefund} content="refund" disabled={true} /> : <FormButton classes="record-button" clickHandler={deleteEvent} content="delete"/>
+                    }
                     <FormButton classes="record-button" clickHandler={toggleEditForm} content="edit"/>
                 </div>
             </div>

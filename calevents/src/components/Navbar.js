@@ -26,17 +26,7 @@ const navItems = [
 const dropItems = [
   {
     title:'My Schedule',
-    url: '#',
-    cName: 'nav__submenu-items'
-  },
-  {
-    title:'Edit',
-    url: '#',
-    cName: 'nav__submenu-items'
-  },
-  {
-    title:'Remove?',
-    url: '#',
+    url: '/myCalendar',
     cName: 'nav__submenu-items'
   },
 ]

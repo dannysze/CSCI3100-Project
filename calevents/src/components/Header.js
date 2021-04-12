@@ -51,15 +51,9 @@ const Header = () => {
         cName: 'header-items'
     },
     {
-        title: '',
+        title: 'Log out ',
         url: '#',
-        icon: <Icon.QuestionCircle />,
-        cName: 'header-items'
-    },
-    {
-        title: '',
-        url: '#',
-        icon: <Icon.Gear />,
+        icon: <Icon.BoxArrowRight />,
         cName: 'header-items'
     },
   ]
@@ -131,10 +125,10 @@ const AddValueBox = ({ closeModal, userInfo }) => {
           <h2 className="flex-center" style={{justifyContent: 'flex-start'}}>Redeem gift card&nbsp;<Icon.Cash /></h2>
           <form id="redeem-form" onSubmit={redeemCard}>
             <div>
-              <input type="text" name="number" placeholder="Card number" onChange={onChangeHandler}/>
+              <input type="text" name="card_id" placeholder="Card number" onChange={onChangeHandler}/>
             </div>
             <div>
-              <input type="password" name="password" placeholder="Password" onChange={onChangeHandler}/>
+              <input type="password" name="card_pw" placeholder="Password" onChange={onChangeHandler}/>
             </div>
             <RedeemButton classes={''} content={`Redeem`} />
           </form>

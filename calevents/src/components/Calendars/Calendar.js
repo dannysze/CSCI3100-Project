@@ -228,7 +228,7 @@ const Calendar = ({ heightHandler }) => {
         classNames={"create-event-form-"}
         unmountOnExit
       >
-        <EventForm dismissHandler={() => setEventForm({'show': false, 'startDate': eventForm['startDate']})} startDate={eventForm['startDate']}/>
+        <EventForm dismissHandler={() => setEventForm({'show': false, 'startDate': eventForm['startDate']})} startDate={eventForm['startDate']} edit={false}/>
       </CSSTransition>
       <div className="calendar-header">
         <CalendarHeader 
