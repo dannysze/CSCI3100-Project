@@ -22,12 +22,7 @@ const Login = () => {
     'email': true,
   }
 
-  var defaultLogin = {
-    'errorMsg':'',
-    'alert':false,
-  }
-
-  var defaultSignup = {
+  var defaultResult = {
     'errorMsg':'',
     'alert':false,
   }
@@ -39,16 +34,17 @@ const Login = () => {
   const [showSignUp, setShowSignUp] = useState(true);
   const [valid, setValid] = useState(checkValid);
   const [resetPassword, setResetPassword] = useState(false);
-  const [loginResult, setLoginResult] = useState(defaultLogin);
-  const [signupResult, setSignupResult] = useState(defaultSignup);
+  const [loginResult, setLoginResult] = useState(defaultResult);
+  const [signupResult, setSignupResult] = useState(defaultResult);
+  const [resetResult, setResetResult] = useState(defaultResult);
 
   const loginChangeHandler = (event) => {
     event.target.name === 'username' ? setUsername(event.target.value) : setPassword(event.target.value);
-    setLoginResult(defaultLogin);
+    setLoginResult(defaultResult);
   }
 
   const signUpChangeHandler = (event) => {
-    setSignupResult(defaultLogin);
+    setSignupResult(defaultResult);
     if (event.target.name === 'username_register') {
       setUsername(event.target.value);
     } else if (event.target.name === 'password_register') {
@@ -68,6 +64,14 @@ const Login = () => {
     }
   }
 
+  const resetChangeHandler = (event) => {
+    event.preventDefault();
+    setResetResult(defaultResult);
+    let regEmail = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      regEmail.test(email) ? setValid({ ...checkValid, 'email': true }) : setValid({ ...checkValid, 'email': false })
+      setEmail(event.target.value);
+  }
+
   const resetPasswordHandler = (event) => {
     event.preventDefault();
     clearForm();
@@ -75,7 +79,7 @@ const Login = () => {
   }
 
   const validationCheck = () => {
-
+    
   }
 
   const login = async (event) => {
@@ -109,7 +113,6 @@ const Login = () => {
 
   const signup = async (event) => {
     event.preventDefault();
-    event.preventDefault();
     if(!username||!password||!email){
       setSignupResult({'errorMsg':'No fields should be left empty', 'alert':true});
       return;
@@ -140,6 +143,34 @@ const Login = () => {
     }
   }
 
+  const resetpassword = async event => {
+    event.preventDefault();
+    if(!email){
+      setResetResult({'errorMsg':'Email should not be left empty', 'alert':true});
+      return;
+    }
+    if(!valid.email){
+      return;
+    }
+    try{
+      let res = await fetch(getaddr()+'reset_password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email:email}),
+      });
+      let body = await res.json();
+      if (!res.ok){
+            setResetResult({'errorMsg':body['error'], 'alert':true});
+      }else{
+        setResetResult({'errorMsg':'Password reset link has been sent to your mailbox. Reset your password there.', 'alert':true});
+      }
+
+    }catch(err){
+      console.log(err);
+    }
+  }
   const forms = document.getElementsByTagName('form'); //
 
   const clearForm = () => {
@@ -196,8 +227,9 @@ const Login = () => {
     clearForm();
     setResetPassword(false);
     setShowSignUp(!showSignUp);
-    setLoginResult(defaultLogin);
-    setSignupResult(defaultSignup);
+    setLoginResult(defaultResult);
+    setSignupResult(defaultResult);
+    setResetResult(defaultResult);
   }
 
   return (
@@ -282,9 +314,11 @@ const Login = () => {
               <CloseButton onClick={resetPasswordHandler} style={{marginLeft: '10%', marginTop: '-20%'}}/>
               <h2>Reset Password</h2>
               <form action="auth" method="POST">
-                <input type="text" name="email" placeholder="Enter your email" onChange={loginChangeHandler}/>
+                <input type="text" name="email" placeholder="Enter your email" onChange={resetChangeHandler}/>
+                {<div className="alert-box" style={!valid.email ? {visibility: 'visible'} : {visibility: 'hidden'}}>Not valid email address</div>}
+                {<div className="alert-box" style={resetResult.alert ? {visibility: 'visible'} : {visibility: 'hidden'}}>{resetResult.errorMsg}</div>}
                 <br /><br />
-                <LoginButton type="submit" onClick={login} content='Reset password' />
+                <LoginButton type="submit" onClick={resetpassword} content='Reset password' />
               </form>
             </div>
           </CSSTransition>
