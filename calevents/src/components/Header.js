@@ -79,6 +79,10 @@ const AddValueBox = ({ closeModal, userInfo }) => {
     // send request POST /add_value
     // const form = new FormData(document.getElementById("redeem-form"));
     // form.append('user_id', userInfo.user_id)
+    if(!cardNumber||!password){
+      setRedeemResult({errormsg:"No fields should be left blank", alert:true});
+      return;
+    }
     const requestOptions = {
       method: 'POST',
       headers:{
