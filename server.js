@@ -243,9 +243,9 @@ const upload = multer({
 // First check if the user_id is valid
 // date format: YYYY-MM-DD
 // time format: HH:MM:SS
-app.post('/create_event',checkAuth, upload.single('img'), function(req, res) {
+app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
     // variables from the request
-    //var user_id = req.body['user_id'];
+    // var user_id = req.body['user_id'];
     var token = req.headers['auth'];
     jwt.verify(token, config.secret, function(err, decoded){
         var user_id = decoded.user_id;
@@ -264,6 +264,7 @@ app.post('/create_event',checkAuth, upload.single('img'), function(req, res) {
         var refund = req.body['refund'];
         var refund_days = req.body['refund_days'];
         var category = req.body['category'];
+        var event_id;
         
         var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
         con.query(sql, function (err, result) {
@@ -271,16 +272,28 @@ app.post('/create_event',checkAuth, upload.single('img'), function(req, res) {
             console.log(err);
             // if the user is valid
             if(result.length > 0){
-                // insert event
-                sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
-                    , img_loc, organizer, ticket, allow_refund, days_for_refund, category) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
-                    visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`,'`+ category +`')`;
-                console.log(sql);
-                con.query(sql, function (err, result){
+
+                var sql = `SELECT MAX(event_id) AS new_id FROM csci3100.Event;`;
+                con.query(sql, function(err, result){
                     if (err) throw err;
-                    //res.send(result);
-                    
-                    res.status(200).send("ok");
+
+                    if(result.length > 0){
+                        console.log(result[0].new_id + 1);
+                        event_id = result[0].new_id + 1;
+
+                        // insert event
+                        sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
+                            , img_loc, organizer, ticket, allow_refund, days_for_refund, category) VALUES (`+ event_id +`, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
+                            visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`,'`+ category +`');
+                            INSERT INTO csci3100.Event_Join (user_id, event_id) VALUES(`+ user_id +`, `+ event_id +`);`;
+                        // console.log(sql);
+                        con.query(sql, function (err, result){
+                            if (err) throw err;
+                            //res.send(result);
+                            
+                            res.status(200).send("ok");
+                        });
+                    }
                 });
             }
             else{
