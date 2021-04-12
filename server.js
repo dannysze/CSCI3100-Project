@@ -245,9 +245,10 @@ const upload = multer({
 // time format: HH:MM:SS
 app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
     // variables from the request
-    var user_id = req.body['user_id'];
-    // jwt.verify(token, config.secret, function(err, decoded){
-    //     var user_id = decoded.user_id;
+    //var user_id = req.body['user_id'];
+    var token = req.headers['auth'];
+    jwt.verify(token, config.secret, function(err, decoded){
+        var user_id = decoded.user_id;
         var event_name = req.body['event_name'];
         var start_date = req.body['start_date'];
         var start_time = req.body['start_time'];
@@ -258,12 +259,12 @@ app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
         var venue = req.body['venue'];
         var capacity = req.body['capacity'];
         var desc = req.body['description'];
-        var img_loc = req.file.filename;
+        var img_loc = (req.file!=undefined)?req.file.filename:"";
         var ticket = req.body['ticket'];
         var refund = req.body['refund'];
         var refund_days = req.body['refund_days'];
         var category = req.body['category'];
-    
+        
         var sql = `SELECT * FROM csci3100.User where user_id = `+ user_id +`;`;
         con.query(sql, function (err, result) {
             if (err) throw err;
@@ -273,11 +274,11 @@ app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
                 // insert event
                 sql = `INSERT INTO csci3100.Event (event_id, name, start_date, start_time, end_date, end_time, visible, repeat_every_week, venue, capacity, description
                     , img_loc, organizer, ticket, allow_refund, days_for_refund, category) VALUES (default, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
-                    visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`,`+ category +`)`;
+                    visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`,'`+ category +`')`;
                 con.query(sql, function (err, result){
                     if (err) throw err;
                     //res.send(result);
-
+                    
                     res.status(200).send("ok");
                 });
             }
@@ -286,7 +287,19 @@ app.post('/create_event', checkAuth, upload.single('img'), function(req, res) {
             }
         });
     })
-// });
+});
+
+// Retrieve joined events
+app.get('/joined_events/:uID', function(req, res){
+    var u_ID = req.params['uID'];
+    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
+    con.query(sql, [u_ID], function(err, result){
+        if (err) throw err;
+
+        res.status(200).send(result);
+        console.log(result);
+    });
+});
 
 
 // Join Event
