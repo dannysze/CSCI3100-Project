@@ -19,7 +19,7 @@ function Events({ height }) {
   }, [])
 
   const fetchEvents = async () => {
-    const res = await fetch(getaddr() + 'events', {
+    const res = await fetch(getaddr() + 'search_events', {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -53,7 +53,6 @@ function Events({ height }) {
             {showEvent.event.name}
           </Modal.Title> */}
           <h1>E v e n t</h1>
-
         </Modal.Header>
 
         <Modal.Body>

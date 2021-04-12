@@ -64,7 +64,7 @@
     margin: 20px auto;
     color: #282828;
     border: groove;
-    height: 470px;
+    /* height: 470px; */
 }
 
 .image-container{
@@ -75,13 +75,14 @@
 .image-container img{
     overflow: hidden;
     height: 170px;
+    width: auto
 }
 
 .info-container{
     overflow: hidden;
     border-top-color: #d9534f;
     display: grid;
-    padding-bottom: 5px;
+    padding: 5px 10px;
 }
 
 .organizer{
@@ -99,10 +100,6 @@
     font-size: 15px;
     font-weight: 350;
     text-align: left;
-    display: block;
-    display:-webkit-box;
-    -webkit-line-clamp: 1;
-    line-height: 100%;
     padding: 3px 3px 5px 5px;
     
 }
@@ -119,17 +116,14 @@
 
 .description-head{
     font-size: 20px;
-    font-weight: 350;
+    font-weight: 400;
     font-style: oblique;
     text-align: left;
     display: block;
     display:-webkit-box;
     -webkit-line-clamp: 1;
-    /* background-color: Gainsboro; */
-    /* border-top:solid ;
-    border-bottom: solid;
-    border-color: Gainsboro; */
-    line-height: 100%;
+    margin: 5px 0;
+    line-height: 1em;
     padding-left: 5px;
 }
 
@@ -148,18 +142,18 @@
     padding-left: 5px;
     padding-right: 5px;
     width:93%;
+    margin-bottom: 0;
     /* padding-top: 0; */
     /* margin-bottom: 0; */
 }
-.btn{
-    position: absolute;
-    right: 2px;
-    bottom: 0.5px;
-
+.card-btn{
+    margin: auto;
+    width: 90%;
+    padding: 10px 0;
 }
 
-.btn button{
-    background-color: rgb(217, 83, 79);
+.card-btn button{
+    background-color: rgba(217, 83, 79, 0.9);
     border: none;
     border-radius: 6px;
     font-size: 25px;
@@ -168,11 +162,13 @@
     cursor: pointer;
     transition: 0.3s;
     animation: ease-in-out;
-    margin-top: 1px ;
+    width: 100%;
+    /* margin-top: 1px ; */
 }
 
- .btn button:hover{
-    transform: scale(1.1);
-    /* box-shadow : 0px 0px 20px -5px; */
+ .card-btn button:hover{
+    transform: scale(1.05);
+    background-color: rgba(217, 83, 79, 1);
+    
 }
 
