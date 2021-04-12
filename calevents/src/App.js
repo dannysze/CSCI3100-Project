@@ -10,9 +10,10 @@ import './styles/App.css';
 import useToken from './useToken';
 import ProtectedRoute from './ProtectedRoute';
 import User from './pages/User';
-//import JoinEvent from './pages/JoinEvent';
+import JoinEvent from './pages/JoinEvent';
 import {UserContext} from  './UserContext';
 import getaddr from './components/getaddr';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
  
@@ -49,7 +50,7 @@ function App() {
 
   useEffect(() => {
     getUser();
-  },[token]);
+  },[]);
 
   return (
     <div className="App">
@@ -64,7 +65,9 @@ function App() {
           {/*The following links are for functional illustration purpose */}
           <ProtectedRoute path="/user" exact component={User} />
           {/* <ProtectedRoute path="/joinEvent" exact component={JoinEvent} /> */}
+          
         </UserContext.Provider>
+        <Route path="/reset_password" component={ResetPassword}></Route>
       </Router>
     </div>
   );
