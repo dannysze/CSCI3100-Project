@@ -550,11 +550,11 @@ app.post('/add_value', function(req, res) {
 
 // Retrieve all public events
 app.get('/search_events', function(req, res){
-    var sql = `SELECT * FROM csci3100.Event WHERE visible = 1 ORDER BY start_date ASC;`;
+    var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE visible = 1 ORDER BY start_date ASC;`;
     con.query(sql, function (err, result) {
         if (err) throw err;
 
-        res.send(result);
+        res.status(200).send(result);
         console.log(result);
     });
 });
@@ -562,7 +562,7 @@ app.get('/search_events', function(req, res){
 // Retrieve event with given ID
 app.get('/event/:eID',function(req, res){
     var eID = req.params['eID'];
-    var sql = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
+    var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE event_id = ?;`;
     con.query(sql, [eID], function (err, result) {
         if (err) throw err;
 
@@ -574,10 +574,10 @@ app.get('/event/:eID',function(req, res){
             }catch{
                 result[0].img_loc = "";
             }
-            res.send(result);
+            res.status(200).send(result);
         }
         else{
-            res.send("Invalid event id");
+            res.status(401).send("Invalid event id");
         }
         // console.log(result);
     });
@@ -889,4 +889,5 @@ app.delete('/user_events/:eID', function(req, res){
 //var server = app.listen(3000);
 var server = app.listen(5000);
 
-module.exports = app
+// module.exports = app
+module.exports = server;
