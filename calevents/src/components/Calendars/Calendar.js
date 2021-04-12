@@ -45,13 +45,13 @@ const takeMonth = (date = new Date()) => {
   return days;
 }
 
-const sqlToJsDate = (sqlDate) => {
+const sqlToJsDate = (sqlDate, sqlTime) => {
   //sqlDate in SQL DATETIME format ("yyyy-mm-dd hh:mm:ss.ms")
   var sqlDateArr1 = sqlDate.split("-");
   //format of sqlDateArr1[] = ['yyyy','mm','dd hh:mm:ms']
   var sYear = sqlDateArr1[0];
   var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
-  var sqlDateArr2 = sqlDateArr1[2].split(" ");
+  var sqlDateArr2 = sqlDateArr1[2].split("T");
   //format of sqlDateArr2[] = ['dd', 'hh:mm:ss.ms']
   var sDay = sqlDateArr2[0];
   var sqlDateArr3 = sqlDateArr2[1].split(":");
@@ -62,8 +62,10 @@ const sqlToJsDate = (sqlDate) => {
   //format of sqlDateArr4[] = ['ss','ms']
   var sSecond = sqlDateArr4[0];
   var sMillisecond = sqlDateArr4[1];
+
+  var sqlTimeArr = sqlTime.split(":");
    
-  return new Date(sYear,sMonth,sDay,sHour,sMinute,sSecond,sMillisecond);
+  return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
 }
 
 const Calendar = ({ heightHandler }) => {
@@ -89,10 +91,12 @@ const Calendar = ({ heightHandler }) => {
       // console.log(JSON.stringify(eventsFromServer));
       
       // filter the events on this month (can be done here)
-
+      // console.log(eventsFromServer);
+      
       setEvents(eventsFromServer);
     }
     getEvents();
+    // console.log(events)
   }, [calendarInfo]);
   
     const fetchEvents = async () => {
@@ -110,56 +114,99 @@ const Calendar = ({ heightHandler }) => {
   let dayRecord = {};
   const stickEvents = () => {
     dayRecord = {};
-    // const eventsBars = events.map((event, index) => {
-    const eventsBars = [...Array(3)].map((event, index) => {
-      // let date = sqlToJsDate(event.date);
+    const eventsBars = events.map((event, index) => {
+      // console.log(event);
+    // const eventsBars = [...Array(3)].map((event, index) => {
+      let start_date = sqlToJsDate(event.start_date, event.start_time);
       // start = start_date || startOfWeek(startOfMonth(startOfDay(date)))
-      let start = startOfDay(new Date());
       // end = end_date || endOfWeek(endOfMonth(startOfDay(date)))
-      let end = startOfDay(new Date(2021, 3, 11));
-
+      let end_date = sqlToJsDate(event.end_date, event.end_time);
+      
+      if (end_date < calendarInfo.calendarStart || start_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
+        // console.log(start_date, end_date);
+        return
+      } else if (start_date < calendarInfo.calendarStart) {
+        start_date = calendarInfo.calendarStart;
+      } else if (end_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
+        end_date = calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day;
+      }
+      
+      let start = startOfDay(start_date);
+      let end = startOfDay(end_date);
+      // console.log(start_date, end_date);
       let startRow = getWeekOfMonth(start) + 1;
       let endRow = getWeekOfMonth(end) + 1;
       let colNum = getDay(start) + 1;
       let diffDays = differenceInDays(end, start) + 1;
       let diffWeeks = differenceInCalendarWeeks(end, start);
-      let span = [...Array(diffWeeks + 1)].map((_, index) => {
-        if (index == 0) {
-          diffDays -= (7 - colNum) + 1
-          return (7 - colNum) + 1;
-        } else if (index == diffWeeks) {
-          return diffDays;
-        } else {
-          diffDays -= 7;
-          return 7;
-        }
-      })
-      // console.log(start)
+      // console.log(`${diffWeeks} - ${diffDays}`)
+      let span;
+      if (diffWeeks > 0) {
+        span = [...Array(diffWeeks + 1)].map((_, index) => {
+          if (index == 0) {
+            diffDays -= (7 - colNum) + 1
+            return (7 - colNum) + 1;
+          } else if (index == diffWeeks) {
+            return diffDays;
+          } else {
+            diffDays -= 7;
+            return 7;
+          }
+        })
+      } else {
+        span = [diffDays]; 
+      }
+      // console.log(span)
       // console.log(`${startRow} - ${endRow} - ${colNum} - ${span}`);
       
-      let pos = 'center'
-
-      let display = 'block';
+      // let pos = 'center'
+      // console.log(dayRecord)
+      // let display = 'block';
+      let curPos = {
+        'center': true,
+        'end': true,
+      }
       for (let i = start; i <= end; i = addDays(i, 1)) {
         if (dayRecord[i]) {
           dayRecord[i]['frequency']++;
-          if (dayRecord[i]['frequency'] <= 2) {
-            pos = 'end';
-            dayRecord[i]['end'] = true;
-          } else {
-            display = 'none';
-            dayRecord[i]['hide']++;
-            return
-          }
+          
+          curPos['center'] = curPos['center'] && dayRecord[i]['center']
+          curPos['end'] = curPos['end'] && dayRecord[i]['end']
+
         } else {
           dayRecord[i] = {
+            'center': true,
+            'end': true,
             'frequency': 1,
             'hide': 0,
             'row': startRow,
             'column': colNum + differenceInDays(i, start),
           }
         }
+        // console.log(i)
       }
+      let display = 'block';
+      // console.log(JSON.stringify(dayRecord[new Date(2021, 4, 18)]));
+
+      if (curPos['center']) {
+        // console.log(startstart, end)
+        for (let i = start; i <= end; i = addDays(i, 1)) {
+          dayRecord[i]['center'] = false;
+        }
+      } else if (curPos['end']) {
+        // console.log(`end ${start} ${end}`);
+        for (let i = start; i <= end; i = addDays(i, 1)) {
+          dayRecord[i]['end'] = false;
+        }
+      } else {
+        display = 'none'
+        dayRecord[start]['hide']++;
+      }
+      // console.log(dayRecord[new Date(2021, 3, 23)])
+      let pos = curPos['center'] ? 'center' : (curPos['end'] ? 'end' : '');
+      
+      // console.log(display, pos);
+      // console.log(dayRecord)
       // console.log(JSON.stringify(dayRecord));
       return (span.map((colSpan, idx) => {
           let style = {
@@ -169,7 +216,7 @@ const Calendar = ({ heightHandler }) => {
             display: display
           }
           return (
-            <CalendarEvent key={idx} classes="task--warning" styles={style} name="test"/>
+            <CalendarEvent key={idx} classes="task--warning" styles={style} name={event.name} />
           )
         })
       )
@@ -178,7 +225,9 @@ const Calendar = ({ heightHandler }) => {
   }
 
   const stickTags = () => {
+    let tagsArr = [];
     for (let key in dayRecord) {
+      // console.log(dayRecord[key]['hide'])
       if (dayRecord[key]['hide'] !== 0) {
         let style = {
           gridColumn: `${dayRecord[key]['column']}`,
@@ -186,13 +235,11 @@ const Calendar = ({ heightHandler }) => {
           alignSelf: 'start',
         }
         // console.log(dayRecord[key]);
-        return (
-          <CalendarTag styles={style} hide={dayRecord[key]['hide']} key={key} />
-        )
+          tagsArr.push(<CalendarTag styles={style} hide={dayRecord[key]['hide']} key={key} />)
       } else {
-        return
       }
     }
+    return tagsArr
   }
 
   // view the previous month
@@ -228,7 +275,7 @@ const Calendar = ({ heightHandler }) => {
         classNames={"create-event-form-"}
         unmountOnExit
       >
-        <EventForm dismissHandler={() => setEventForm({'show': false, 'startDate': eventForm['startDate']})} startDate={eventForm['startDate']}/>
+        <EventForm dismissHandler={() => setEventForm({'show': false, 'startDate': eventForm['startDate']})} startDate={eventForm['startDate']} edit={false}/>
       </CSSTransition>
       <div className="calendar-header">
         <CalendarHeader 

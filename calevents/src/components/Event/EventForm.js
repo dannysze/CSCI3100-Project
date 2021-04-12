@@ -138,7 +138,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     }
     console.log(event);
   }
-
+  
   return (
     <div className="create-event-form--background flex-center" onClick={dismissHandler}>
       <div className="create-event-form--container" onClick={(e) => e.stopPropagation()}>

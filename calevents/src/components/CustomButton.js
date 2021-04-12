@@ -57,9 +57,9 @@ const RedeemButton = ({ classes, clickHandler, content }) => {
 
 export { RedeemButton }
 
-const FormButton = ({ classes, clickHandler, content }) => {
+const FormButton = ({ classes, clickHandler, content, expired = false }) => {
   return (
-    <button className={`form-button ${classes}`} onClick={clickHandler} type="submit">
+    <button className={`form-button ${classes}`} onClick={clickHandler} disabled={expired} type="button">
       {content}
     </button>
   )

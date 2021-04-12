@@ -19,7 +19,7 @@ function Events({ height }) {
   }, [])
 
   const fetchEvents = async () => {
-    const res = await fetch(getaddr() + 'events', {
+    const res = await fetch(getaddr() + 'search_events', {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -53,7 +53,6 @@ function Events({ height }) {
             {showEvent.event.name}
           </Modal.Title> */}
           <h1>E v e n t</h1>
-
         </Modal.Header>
 
         <Modal.Body>
@@ -65,8 +64,8 @@ function Events({ height }) {
 
             </Col >
             <Col className="pop-info-container" sm={7}>
-              <div className="pop-up-title">Event Title: {showEvent.event.name}</div>
-              <ListGroup>
+              <div className="pop-up-title">{showEvent.event.name}</div>
+              <ListGroup variant="flush">
                 <ListGroup.Item className="pop-info">Organizer: {showEvent.event.organizer}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Date: {showEvent.event.start_date === showEvent.event.end_date ? `${showEvent.event.start_date}` : `${showEvent.event.start_date}` + "-" + `${showEvent.event.end_date}`}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Time: {showEvent.event.start_time} - {showEvent.event.end_time}</ListGroup.Item>
@@ -92,7 +91,7 @@ function Events({ height }) {
             <Col sm={8}></Col>
             <Col sm={1}>
               {/* <button className="pop-button">Join</button> */}
-              <FormButton content="Join" />
+              <FormButton content="Join"/>
             </Col>
 
             <Col sm={3}>
