@@ -42,7 +42,7 @@ const ResetPassword = () => {
           if (!res.ok){
                 setResetResult({'errorMsg':body['error'], 'alert':true});
           }else{
-            setResetResult({'errorMsg':body['You have successfully changed your password! You can try to login with new password'], 'alert':true});
+            setResetResult({'errorMsg':'You have successfully changed your password! You can try to login with new password', 'alert':true});
           }
     };
     return (

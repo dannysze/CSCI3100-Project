@@ -1,3 +1,4 @@
+  
 // Node server
 // import {con} from './calevents/src/db';
 const con = require('./calevents/src/db');
@@ -776,17 +777,26 @@ app.post('/reset_password', function(req, res){
                 con.query(sql4, [result1[0].user_id, hash, expire_datetime], function(err, result2){
                     if (err) throw err;
                     //send email with password reset link
-                    //const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
-                    const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
+                    const link = 'localhost:3000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
                     var subject = "CalEvents Password Reset";
                     var content = `<p>Dear ` + result1[0].username + `,</p>
                                     <br>
                                     <p>You requested to reset your password.</p>
                                     <p>Click the link below to reset your password.</p>
-                                    <a href="https://`+ link + `">Reset Password</a>
+                                    <a href="http://`+ link + `">Reset Password</a>
                                     <p>Your reset link is only valid once and will be expired in 10 minutes.</p>
                                     <br>
                                     <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                    // const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
+                    // var subject = "CalEvents Password Reset";
+                    // var content = `<p>Dear ` + result1[0].username + `,</p>
+                    //                 <br>
+                    //                 <p>You requested to reset your password.</p>
+                    //                 <p>Click the link below to reset your password.</p>
+                    //                 <a href="https://`+ link + `">Reset Password</a>
+                    //                 <p>Your reset link is only valid once and will be expired in 10 minutes.</p>
+                    //                 <br>
+                    //                 <p>Yours Sincerely,<br>CalEvents Admins</p>`
                     send_email(req.body['email'], subject, content);
                     res.send({link});
                 });
