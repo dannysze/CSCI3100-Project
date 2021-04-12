@@ -10,8 +10,13 @@ import '../styles/components/Header.css';
 const Header = () => {
 
   const [events, setEvents] = useState([]);
-  const {token} = useToken();
+  const {token, setToken} = useToken();
   const {user, setUser} = useContext(UserContext);
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    window.location.replace("/login");
+  };
 
   const headerItems = [
     {
@@ -31,7 +36,8 @@ const Header = () => {
         title: 'Log out ',
         url: '#',
         icon: <Icon.BoxArrowRight />,
-        cName: 'header-items'
+        cName: 'header-items',
+        onclick: () => {logout()}
     },
   ]
   const [showRedeem, setShowRedeem] = useState(false);
