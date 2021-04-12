@@ -875,7 +875,6 @@ app.delete('/user_events/:eID', function(req, res){
     });
 });
 
-
 // app.get('/', function(req, res) {
 //     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
 // });
