@@ -75,27 +75,27 @@ const checkAuth = (req, res, next) => {
     });
 };
 
-app.get('/test', function(req, res){
-    var u_ID = 13;
-    var sql = `SELECT user_id,username,img_loc, email,type,account_balance FROM csci3100.User where user_id = ?;`;
-    con.query(sql, [u_ID], function(err, result){
-        if(err) throw err;
-        //check if user with the user exists
-        if(result.length > 0){
-            var result = result[0];
-            //send base64 url for the image
-            try{
-                var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
-                result.img_loc = imageAsBase64;
-            }catch{
-                result.img_loc = "";
-            }
-            res.status(200).send(result);
-        }else{
-            res.status(400).send({error: 'User does not exist'});
-        }
-    });
-});
+// app.get('/test', function(req, res){
+//     var u_ID = 13;
+//     var sql = `SELECT user_id,username,img_loc, email,type,account_balance FROM csci3100.User where user_id = ?;`;
+//     con.query(sql, [u_ID], function(err, result){
+//         if(err) throw err;
+//         //check if user with the user exists
+//         if(result.length > 0){
+//             var result = result[0];
+//             //send base64 url for the image
+//             try{
+//                 var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
+//                 result.img_loc = imageAsBase64;
+//             }catch{
+//                 result.img_loc = "";
+//             }
+//             res.status(200).send(result);
+//         }else{
+//             res.status(400).send({error: 'User does not exist'});
+//         }
+//     });
+// });
 
 //for login.return jwt token with payload being userid after successful login.
 app.post('/login', function(req, res) {
@@ -289,6 +289,7 @@ app.post('/create_event',checkAuth, upload.single('img'), function(req, res) {
         });
     })
 });
+
 
 // Retrieve joined events
 app.get('/joined_events/:uID', function(req, res){
