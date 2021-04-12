@@ -810,8 +810,9 @@ app.put('/reset_password', function(req, res){
     sql1 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = `+ req.query['user_id'] + `;`;
     con.query(sql1, function(err, result1){
         if (err) throw err;
-        if (result1.length > 0)
-            if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= result1[0].expires_at)){
+        if (result1.length > 0){
+            let expire_time = new Date(result1[0].expires_at);
+            if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= expire_time)){
                     bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
                         var sql2 = `UPDATE csci3100.User SET password = '` + hash + `' WHERE user_id = ` + req.query['user_id'] +`;`;
                         con.query(sql2, function (err, result2) {
@@ -835,8 +836,14 @@ app.put('/reset_password', function(req, res){
                             }
                         });
                     });
+<<<<<<< HEAD
+            }
+        }else
+            res.status(400).send({error: 'Invalid or expired password reset token'});
+=======
             }else res.status(400).send({error: 'Invalid or expired password reset token'});
         else res.status(400).send({error:'No recovery request record'});
+>>>>>>> 834683b60369cba9e8e6b899e8ac3f0f3917c024
     })
 });
 
