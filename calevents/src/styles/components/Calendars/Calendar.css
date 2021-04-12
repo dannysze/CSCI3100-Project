@@ -163,32 +163,34 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-}
-
-.task--warning {
-  border-left-color: #fdb44d;
-  background: rgba(254, 240, 219, 0.7);
-  color: rgba(253, 180, 77, 0.88);
   margin-top: -5px;
+  /* color: #ffffff; */
+  font-weight: 500;
 }
 
-.task--danger {
-  border-left-color: #fa607e;
-  background: rgba(253, 197, 208, 0.7);
-  color: rgba(250, 96, 126, 0.88);
+.task--Sport {
+  border-left-color: rgba(234, 71, 3, 1);
+  /* background: rgba(254, 240, 219, 0.7); */
+  /* color: rgba(253, 180, 77, 0.88); */
+  background-color: rgba(234, 71, 3, 0.8);
 }
 
-.task--info {
-  border-left-color: #4786ff;
-  background: rgba(218, 231, 255, 0.7);
-  color: rgba(71, 134, 255, 0.88);
+.task--Music {
+  border-left-color: rgba(204, 114, 245, 1);
+  background-color: rgba(204, 114, 245, 0.8);
 }
 
-.task--primary {
-  background: #4786ff;
-  border: 0;
-  border-radius: 4px;
-  align-self: end;
-  color: #fff;
-  box-shadow: 0 10px 14px rgba(71, 134, 255, 0.4);
+.task--Academic {
+  border-left-color: rgba(0, 171, 56, 1);
+  background-color: rgba(0, 171, 56, 0.7);
+}
+
+.task--Health {
+  border-left-color: rgba(7, 185, 252, 1);
+  background-color: rgba(7, 185, 252, 0.8);
+}
+
+.task--Festival {
+  border-left-color: rgba(255, 206, 245, 1);
+  background-color: rgba(255, 206, 245, 0.8);
 }

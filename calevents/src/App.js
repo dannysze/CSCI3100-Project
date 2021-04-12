@@ -10,7 +10,7 @@ import './styles/App.css';
 import useToken from './useToken';
 import ProtectedRoute from './ProtectedRoute';
 import User from './pages/User';
-import JoinEvent from './pages/JoinEvent';
+// import JoinEvent from './pages/JoinEvent';
 import {UserContext} from  './UserContext';
 import getaddr from './components/getaddr';
 import ResetPassword from './pages/ResetPassword';

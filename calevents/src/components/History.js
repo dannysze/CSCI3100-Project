@@ -42,7 +42,7 @@ const History = () => {
 
   // GET the private events of the user
   const fetchEvents = async () => {
-    const res = await fetch(getaddr()+'events/', {
+    const res = await fetch(getaddr()+'user_events/'+user.user_id, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

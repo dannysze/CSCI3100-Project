@@ -88,16 +88,16 @@ const Calendar = ({ heightHandler }) => {
     // console.log(events)
   }, [calendarInfo]);
   
-    const fetchEvents = async () => {
-      const res = await fetch(getaddr()+'search_events', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        }
-      })
-      const data = await res.json()
-      return data
-    }
+  const fetchEvents = async () => {
+    const res = await fetch(getaddr()+'search_events', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    })
+    const data = await res.json()
+    return data
+  }
   
   // add fetched events to calendar
   let dayRecord = {};
@@ -146,7 +146,8 @@ const Calendar = ({ heightHandler }) => {
         span = [diffDays]; 
       }
       // console.log(span)
-      // console.log(`${startRow} - ${endRow} - ${colNum} - ${span}`);
+      console.log(`${start}, ${end}`)
+      console.log(`${startRow} - ${endRow} - ${colNum} - ${span}`);
       
       // let pos = 'center'
       // console.log(dayRecord)
@@ -168,8 +169,8 @@ const Calendar = ({ heightHandler }) => {
             'end': true,
             'frequency': 1,
             'hide': 0,
-            'row': startRow,
-            'column': colNum + differenceInDays(i, start),
+            'row': startRow + differenceInCalendarWeeks(i, start),
+            'column': (colNum + differenceInCalendarDays(i, start)) % 7,
           }
         }
         // console.log(i)
@@ -205,7 +206,7 @@ const Calendar = ({ heightHandler }) => {
             display: display
           }
           return (
-            <CalendarEvent key={idx} classes="task--warning" styles={style} name={event.name} />
+            <CalendarEvent key={idx} classes={`task--${event.category}`} styles={style} name={event.name} />
           )
         })
       )
@@ -223,7 +224,8 @@ const Calendar = ({ heightHandler }) => {
           gridRow: `${dayRecord[key]['row']}`,
           alignSelf: 'start',
         }
-        // console.log(dayRecord[key]);
+        console.log(key)
+        console.log(dayRecord[key]);
           tagsArr.push(<CalendarTag styles={style} hide={dayRecord[key]['hide']} key={key} />)
       } else {
       }

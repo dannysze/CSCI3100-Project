@@ -118,7 +118,7 @@ const Eventrecord = ({ event, onClick, index }) => {
                 <div className="venue"><em>Venue:</em>&nbsp;{event.venue}</div>
                 <div className="date">
                     {event.start_date === event.end_date ? `${event.start_date}` : `${event.start_date}` + "-" + `${event.end_date}`}
-                    <span className="time">{event.start_time}-{event.end_time}</span>
+                    <span className="time">{event.start_time.substring(0, 5)}-{event.end_time.substring(0, 5)}</span>
                 </div>
                 <hr style={{ margin: '.5em'}}/>
                 <div className="re-description-head">Description:</div>
