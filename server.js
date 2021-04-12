@@ -589,8 +589,14 @@ app.get('/search_events', function(req, res){
     con.query(sql, function (err, result) {
         if (err) throw err;
 
-        res.status(200).send(result);
-        console.log(result);
+        if(result.length > 0){
+            res.status(200).send(result);
+            console.log(result);
+        }
+        else{
+            res.status(404).send("No events");
+        }
+
     });
 });
 
