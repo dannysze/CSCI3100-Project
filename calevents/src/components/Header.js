@@ -70,7 +70,7 @@ const AddValueBox = ({ closeModal, userInfo }) => {
   const [redeemResult, setRedeemResult] = useState({errormsg:"", alert:false});
   
   const onChangeHandler = (event) => {
-    event.target.name === 'number' ? setCardNumber(event.target.value) : setPassword(event.target.value);
+    event.target.name === 'card_id' ? setCardNumber(event.target.value) : setPassword(event.target.value);
     setRedeemResult({errormsg:"", alert:false});
   } 
 
