@@ -13,29 +13,6 @@ const Header = () => {
   const {token} = useToken();
   const {user, setUser} = useContext(UserContext);
 
-  const getUser = async () => {
-      try{
-        //change getaddr() to getaddr(isLocal=false) to make it use remote address
-        //basically passing the token by the header
-        let res = await fetch(getaddr(false)+'user', {
-            method: 'GET',
-            headers: {
-            'auth': token,
-            'Content-Type': 'application/json',
-            },
-            //body: JSON.stringify({token:token}),
-        });
-        let body = await res.json();
-        setUser(body);
-      }catch(err){
-        console.log(err);
-      }
-  }
-
-  useEffect(() => {
-    getUser();
-  })
-
   const headerItems = [
     {
         title: `$${Math.round(user.account_balance * 10) / 10}`,
@@ -84,39 +61,42 @@ const AddValueBox = ({ closeModal, userInfo }) => {
   // const [prePaidCard, setPrePaidCard] = useState({ 'number': '', 'password': '' })
   const [cardNumber, setCardNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [redeemResult, setRedeemResult] = useState({errormsg:"", alert:false});
   
   const onChangeHandler = (event) => {
     event.target.name === 'number' ? setCardNumber(event.target.value) : setPassword(event.target.value);
+    setRedeemResult({errormsg:"", alert:false});
   } 
 
-  const redeemCard = (event) => {
+  const redeemCard = async (event) => {
     event.preventDefault();
     // send request POST /add_value
-    // console.log(userInfo)
-    const form = new FormData(document.getElementById("redeem-form"))
-    form.append('user_id', userInfo.user_id)
+    // const form = new FormData(document.getElementById("redeem-form"));
+    // form.append('user_id', userInfo.user_id)
+    if(!cardNumber||!password){
+      setRedeemResult({errormsg:"No fields should be left blank", alert:true});
+      return;
+    }
     const requestOptions = {
       method: 'POST',
-      body: form
+      headers:{
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({card_id:cardNumber, card_pw:password, user_id:userInfo.user_id})
     };
-    fetch(getaddr()+'add_value', requestOptions)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(response.message);
-        }
-        if (response.status === 200) {
-          console.log(JSON.stringify(response))
-        } else {
-          alert("err")
-        }
-      })
-      .then(data => {
-        console.log(data);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    // console.log(data);
+    let response = await fetch(getaddr()+'add_value', requestOptions);
+    let result = await response.json();
+    try{
+      if (!response.ok) {
+        //console.log(result);
+        setRedeemResult({errormsg:result['error'],alert:true})
+      } else {
+        //alert("err");
+        setRedeemResult({errormsg:result['success'],alert:true})
+      }
+    }catch(err){
+      console.log(err);
+    } 
   }
 
   return (
@@ -130,6 +110,7 @@ const AddValueBox = ({ closeModal, userInfo }) => {
             <div>
               <input type="password" name="card_pw" placeholder="Password" onChange={onChangeHandler}/>
             </div>
+            {<div className="alert-box" style={redeemResult.alert ? {visibility: 'visible'} : {visibility: 'hidden'}}>{redeemResult.errormsg}</div>}
             <RedeemButton classes={''} content={`Redeem`} />
           </form>
         </div>

@@ -11,7 +11,8 @@ var con = mysql.createConnection({
     user: user,
     password: pw,
     database: db,
-    multipleStatements: true
+    multipleStatements: true,
+    dateStrings: true
 });
 
 con.connect(function(err) {

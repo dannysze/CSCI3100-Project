@@ -7,7 +7,7 @@ const EventCard = ({ event, onClick }) => {
     return (
         <div className='card-container'>
             <div className='image-container'>
-                <img src={EventTarget.img_loc} alt="event photo"></img>
+                <img src={event.img_loc} alt="event photo"></img>
             </div>
             <h3 className='title'>{event.name}</h3>
             <div className="info-container">
