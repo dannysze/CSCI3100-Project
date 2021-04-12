@@ -574,8 +574,11 @@ app.get('/event/:eID',function(req, res){
             }catch{
                 result[0].img_loc = "";
             }
+            res.send(result);
         }
-        res.send(result);
+        else{
+            res.send("Invalid event id");
+        }
         // console.log(result);
     });
 });
@@ -595,8 +598,12 @@ app.get('/user_events/:uID', function(req, res){
             }catch{
                 result[0].img_loc = "";
             }
+            res.send(result);
         }
-        res.send(result);
+        else{
+            res.send("Invalid event id");
+        }
+        
         // console.log(result);
     });
 });
