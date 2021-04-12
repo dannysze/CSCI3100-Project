@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext} from 'react';
 import { addHours } from 'date-fns';
 import CustomDatePicker from '../CustomeDatePicker';
 import { Image, Tag, GeoAlt, CalendarEvent, People, CashStack } from 'react-bootstrap-icons';
 import { CloseButton, FormButton } from '../CustomButton';
 import useToken from '../../useToken';
-import getaddr from '../getaddr'
+import {UserContext} from '../../UserContext';
+import getaddr from '../getaddr';
 
 import '../../styles/components/Event/EventForm.css';
 
-const EventForm = ({ dismissHandler, startDate }) => {
+const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) => {
 
-  const [startSelectedDate, setStartSelectedDate] = useState(startDate);
-  const [endSelectedDate, setEndSelectedDate] = useState(addHours(startDate, 1));
-  const [event, setEvent] = useState({
+  const [startSelectedDate, setStartSelectedDate] = useState(edit ? editInfo.start_date : startDate);
+  const [endSelectedDate, setEndSelectedDate] = useState(edit ? editInfo.end_date : addHours(startDate, 1));
+  const [event, setEvent] = useState( edit ? editInfo : {
     user_id: '',
     event_name: '',
     start_date: '',
@@ -27,45 +28,21 @@ const EventForm = ({ dismissHandler, startDate }) => {
     ticket: 10,
     refund: 1,
     refund_days: 0,
-    catagory: '',
+    category: '',
   });
 
   const {token, setToken} = useToken();
-  const [user, setUser] = useState({});
+  const {user, setUser} = useContext(UserContext);
   const [reload, setReload] = useState(false);
   const [file, setFile] = useState({
     'src': '#',
     'value': '',
   });
-  //this gets the user info by token, change to /userinfo/:uid for general user
-  const getUser = async () => {
-      try{
-        //change getaddr() to getaddr(isLocal=false) to make it use remote address
-        //basically passing the token by the header
-        let res = await fetch(getaddr()+'user', {
-          method: 'GET',
-          headers: {
-            'auth': token,
-            'Content-Type': 'application/json',
-          },
-          //body: JSON.stringify({token:token}),
-        });
-        let body = await res.json();
-        setUser(body);
-      }catch(err){
-        console.log(err);
-      }
-    }
 
-  useEffect(() => {
-    getUser();
-    console.log(user)
-  },[token,reload]);
-
-  var pfp;
+  var img;
   const fileSelectedHandler = uploadedFile => {
     if (window.FileReader) {
-      pfp = uploadedFile.target.files[0];
+      img = uploadedFile.target.files[0];
       let reader = new FileReader();
       reader.onload = function (e) {
         setFile({
@@ -76,7 +53,7 @@ const EventForm = ({ dismissHandler, startDate }) => {
         document.getElementsByClassName('create-event-form--image-upload')[0].style.display = 'none';
         document.getElementsByClassName('create-event-form--image-wrapper')[0].style.display = 'block';
       }
-      reader.readAsDataURL(pfp)
+      reader.readAsDataURL(img)
       setFile({
         ...file,
         'value': reader
@@ -86,12 +63,36 @@ const EventForm = ({ dismissHandler, startDate }) => {
     }
   }
 
-  const fileUploadHandler = async event => {
-    event.preventDefault();
+  //from https://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss/18229123
+  const  checkTime = (i) => {
+    return (i < 10) ? "0" + i : i;
+  }
+
+  const toSqlTime = (date) =>{
+    let h = checkTime(date.getHours());
+    let m = checkTime(date.getMinutes());
+    let s = checkTime(date.getSeconds());
+    return [h, m, s].join(':');
+  }
+
+  const toSqlDate = (date) => {
+    let y = date.getFullYear();
+    let m = checkTime(date.getMonth());
+    let d = checkTime(date.getDay());
+    return [y, m, d].join('-');
+  }
+
+  const submitHandler = async e => {
+    e.preventDefault();
     let data = new FormData();
-    if(!pfp) return;
-    data.append('pfp', pfp);
-    await fetch(getaddr()+'updatepfp', {
+    if(img) data.append('img', img);
+    setEvent({...event,start_time:toSqlTime(startSelectedDate),start_date:toSqlDate(startSelectedDate)});
+    setEvent({...event,end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate)});
+    //if user is normal user, it would be private.if user is organizer, it would be public.
+    setEvent({...event, visible:user.type});
+    Object.keys(event).forEach(key => data.append(key, event[key]));
+    
+    await fetch(getaddr()+'create_event', {
       method: 'POST',
       headers: {
         'auth': token,
@@ -99,11 +100,11 @@ const EventForm = ({ dismissHandler, startDate }) => {
       },
       body: data,
     });
-    setReload(!reload);
+    //setReload(!reload);
   }
 
-  // handling the input of the event form
-  const onChangeHandler = (e) => {
+   // handling the input of the event form
+   const onChangeHandler = (e) => {
     const ticketCheckbox = document.getElementById('create-event-form').elements.namedItem('free');
     const refundCheckbox = document.getElementById('create-event-form').elements.namedItem('refund');
     const ticketInput = document.getElementById('create-event-form').elements.namedItem('ticket');
@@ -135,14 +136,14 @@ const EventForm = ({ dismissHandler, startDate }) => {
     } else {
       setEvent({...event, [e.target.name]: e.target.value});
     }
-    // console.log(event);
+    console.log(event);
   }
 
   return (
     <div className="create-event-form--background flex-center" onClick={dismissHandler}>
       <div className="create-event-form--container" onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={dismissHandler} style={{fontSize: '2em', top: '10px', left: '10px'}} />
-        <h1 className="create-event-form--title">create event</h1>
+        <h1 className="create-event-form--title">{edit ? 'edit' : 'create'} event</h1>
         <form id="create-event-form">
           <div className="create-event-form--image-upload-container flex-center">
             <input type="file" accept="image/*" onChange={fileSelectedHandler} />
@@ -162,13 +163,13 @@ const EventForm = ({ dismissHandler, startDate }) => {
               <span className="create-event-form--input-prepend flex-center">
                 <CalendarEvent />
               </span>
-              <input type="text" name="event_name" placeholder="Event" onChange={onChangeHandler}/>
+              <input type="text" name="event_name" placeholder="Event" onChange={onChangeHandler} value={edit ? editInfo.event_name : event.event_name} />
             </div>
             <div className="create-event-form--input">
               <span className="create-event-form--input-prepend flex-center">
                 <GeoAlt />
               </span>
-              <input type="text" name="venue" placeholder="Venue" onChange={onChangeHandler}/>
+              <input type="text" name="venue" placeholder="Venue" onChange={onChangeHandler} value={edit ? editInfo.venue : event.venue} />
             </div>
           </div>
           <div className="create-event-form--input-group">
@@ -181,7 +182,7 @@ const EventForm = ({ dismissHandler, startDate }) => {
             </div>
             <div className="create-event-form--input">
               <CustomDatePicker 
-                onChangeHandler={(date) => {setEndSelectedDate(date); console.log(endSelectedDate); }}
+                onChangeHandler={(date) => {setEndSelectedDate(date)}}
                 startDate={endSelectedDate}
                 placeholder="Select End Time"
               />
@@ -192,26 +193,26 @@ const EventForm = ({ dismissHandler, startDate }) => {
               <span className="create-event-form--input-prepend flex-center">
                 <Tag />
               </span>
-              <select className="" name="catagory" placeholder="">
+              <select className="" name="category" placeholder="" onChange={onChangeHandler}>
                 {['Sport', 'Music', 'Academic'].map((item, index) => (
                   <option value={item} key={index}>{item}</option>
                 ))}
               </select>
             </div>
             <div className="create-event-form--input" style={{gridRow: '2 / span 2', gridColumn: '1', paddingRight: '5px', paddingLeft: '0px'}}>
-              <textarea className="" name="description" placeholder="Description..."></textarea>
+              <textarea className="" name="description" placeholder="Description..." onChange={onChangeHandler} value={edit ? editInfo.description : event.description}></textarea>
             </div>
             <div className="create-event-form--input" style={{gridRow: '1', gridColumn: '2', paddingRight: '0', paddingLeft: '5px'}}>
               <span className="create-event-form--input-prepend flex-center">
                 <People />
               </span>
-              <input type="number" name="capacity" placeholder="Capacity" onChange={onChangeHandler}/>
+              <input type="number" name="capacity" placeholder="Capacity" onChange={onChangeHandler} value={edit ? editInfo.capacity : event.capacity} />
             </div>
             <div className="create-event-form--input create-event-form--checkbox" style={{gridRow: '2', gridColumn: '2', paddingRight: '0'}}>
               <span className="create-event-form--input-prepend flex-center" style={{padding: '9px 8px'}}>
                 <CashStack />
               </span>
-              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} min="0" />
+              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} min="0" value={edit ? editInfo.ticket : event.ticket} />
               <span className="create-event-form--input-append">
                 <label className="create-event-form--input-label">
                   <input type="checkbox" name="free" onChange={onChangeHandler} checked={event.ticket === 0}/>&nbsp;Free
@@ -228,7 +229,7 @@ const EventForm = ({ dismissHandler, startDate }) => {
             </div>
           </div>
           <div className="create-event-form--input-group" style={{paddingBottom: '20px', marginLeft: 'auto'}}>
-            <FormButton content="Create" />
+            <FormButton content={edit ? "edit" : "Create"} clickHandler={edit ? editHandler : submitHandler}/>
           </div>
         </form>
       </div>
