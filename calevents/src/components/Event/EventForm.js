@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext} from 'react';
 import { addHours } from 'date-fns';
 import CustomDatePicker from '../CustomeDatePicker';
 import { Image, Tag, GeoAlt, CalendarEvent, People, CashStack } from 'react-bootstrap-icons';
 import { CloseButton, FormButton } from '../CustomButton';
 import useToken from '../../useToken';
-import getaddr from '../getaddr'
+import {UserContext} from '../../UserContext';
+import getaddr from '../getaddr';
 
 import '../../styles/components/Event/EventForm.css';
 
@@ -31,41 +32,17 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
   });
 
   const {token, setToken} = useToken();
-  const [user, setUser] = useState({});
+  const {user, setUser} = useContext(UserContext);
   const [reload, setReload] = useState(false);
   const [file, setFile] = useState({
     'src': '#',
     'value': '',
   });
-  //this gets the user info by token, change to /userinfo/:uid for general user
-  const getUser = async () => {
-      try{
-        //change getaddr() to getaddr(isLocal=false) to make it use remote address
-        //basically passing the token by the header
-        let res = await fetch(getaddr()+'user', {
-          method: 'GET',
-          headers: {
-            'auth': token,
-            'Content-Type': 'application/json',
-          },
-          //body: JSON.stringify({token:token}),
-        });
-        let body = await res.json();
-        setUser(body);
-      }catch(err){
-        console.log(err);
-      }
-    }
 
-  useEffect(() => {
-    getUser();
-    console.log(user)
-  },[token,reload]);
-
-  var pfp;
+  var img;
   const fileSelectedHandler = uploadedFile => {
     if (window.FileReader) {
-      pfp = uploadedFile.target.files[0];
+      img = uploadedFile.target.files[0];
       let reader = new FileReader();
       reader.onload = function (e) {
         setFile({
@@ -76,7 +53,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
         document.getElementsByClassName('create-event-form--image-upload')[0].style.display = 'none';
         document.getElementsByClassName('create-event-form--image-wrapper')[0].style.display = 'block';
       }
-      reader.readAsDataURL(pfp)
+      reader.readAsDataURL(img)
       setFile({
         ...file,
         'value': reader
@@ -86,12 +63,36 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     }
   }
 
-  const fileUploadHandler = async event => {
-    event.preventDefault();
+  //from https://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss/18229123
+  const  checkTime = (i) => {
+    return (i < 10) ? "0" + i : i;
+  }
+
+  const toSqlTime = (date) =>{
+    let h = checkTime(date.getHours());
+    let m = checkTime(date.getMinutes());
+    let s = checkTime(date.getSeconds());
+    return [h, m, s].join(':');
+  }
+
+  const toSqlDate = (date) => {
+    let y = date.getFullYear();
+    let m = checkTime(date.getMonth());
+    let d = checkTime(date.getDay());
+    return [y, m, d].join('-');
+  }
+
+  const submitHandler = async e => {
+    e.preventDefault();
     let data = new FormData();
-    if(!pfp) return;
-    data.append('pfp', pfp);
-    await fetch(getaddr()+'updatepfp', {
+    if(img) data.append('img', img);
+    setEvent({...event,start_time:toSqlTime(startSelectedDate),start_date:toSqlDate(startSelectedDate)});
+    setEvent({...event,end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate)});
+    //if user is normal user, it would be private.if user is organizer, it would be public.
+    setEvent({...event, visible:user.type});
+    Object.keys(event).forEach(key => data.append(key, event[key]));
+    
+    await fetch(getaddr()+'create_event', {
       method: 'POST',
       headers: {
         'auth': token,
@@ -99,11 +100,11 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
       },
       body: data,
     });
-    setReload(!reload);
+    //setReload(!reload);
   }
 
-  // handling the input of the event form
-  const onChangeHandler = (e) => {
+   // handling the input of the event form
+   const onChangeHandler = (e) => {
     const ticketCheckbox = document.getElementById('create-event-form').elements.namedItem('free');
     const refundCheckbox = document.getElementById('create-event-form').elements.namedItem('refund');
     const ticketInput = document.getElementById('create-event-form').elements.namedItem('ticket');
@@ -138,10 +139,6 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     console.log(event);
   }
   
-  const submitHandler = (e) => {
-    e.preventDefault();
-  }
-
   return (
     <div className="create-event-form--background flex-center" onClick={dismissHandler}>
       <div className="create-event-form--container" onClick={(e) => e.stopPropagation()}>
@@ -196,7 +193,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
               <span className="create-event-form--input-prepend flex-center">
                 <Tag />
               </span>
-              <select className="" name="cateagory" placeholder="" onChange={onChangeHandler}>
+              <select className="" name="category" placeholder="" onChange={onChangeHandler}>
                 {['Sport', 'Music', 'Academic'].map((item, index) => (
                   <option value={item} key={index}>{item}</option>
                 ))}
