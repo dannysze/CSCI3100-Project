@@ -194,7 +194,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
                 <Tag />
               </span>
               <select className="" name="category" placeholder="" onChange={onChangeHandler}>
-                {['Sport', 'Music', 'Academic'].map((item, index) => (
+                {['Sport', 'Music', 'Academic', 'Health', 'Festival'].map((item, index) => (
                   <option value={item} key={index}>{item}</option>
                 ))}
               </select>

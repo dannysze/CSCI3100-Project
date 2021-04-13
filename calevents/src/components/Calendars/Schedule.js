@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { CalendarButton } from '../CustomButton';
 import EventForm from '../Event/EventForm';
 import { getDate, getDay, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes, getMinutes, getHours, addHours, differenceInMinutes } from 'date-fns';
 import { CSSTransition } from 'react-transition-group';
+import useToken from '../../useToken';
+import getaddr from '../getaddr';
+import { UserContext } from '../../UserContext';
 import '../../styles/components/Calendars/Schedule.css';
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -39,6 +42,18 @@ const takeWeek = (date = new Date()) => {
   return days;
 }
 
+const sqlToJsDate = (sqlDate, sqlTime) => {
+
+  var sqlDateArr1 = sqlDate.split("-");
+  var sYear = sqlDateArr1[0];
+  var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
+  var sDay = sqlDateArr1[2];
+
+  var sqlTimeArr = sqlTime.split(":");
+   
+  return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
+}
+
 const Schedule = () => {
   const today = startOfDay(new Date());
   const initialInfo = {
@@ -53,27 +68,76 @@ const Schedule = () => {
 
   const [events, setEvents] = useState([]);
 
-  useEffect(() => {
+  const {token} = useToken();
+    const {user, setUser} = useContext(UserContext);
+    //this gets the user info by token, change to /userinfo/:uid for general user
+    const getUser = async () => {
+      try{
+        //change getaddr() to getaddr(isLocal=false) to make it use remote address
+        //basically passing the token by the header
+        let res = await fetch(getaddr()+'user', {
+          method: 'GET',
+          headers: {
+            'auth': token,
+            'Content-Type': 'application/json',
+          },
+          //body: JSON.stringify({token:token}),
+        });
+        let body = await res.json();
+        setUser(body);
+      }catch(err){
+        console.log(err);
+      }
+    }
 
-  })
+  useEffect(() => {
+    getUser();
+    const getEvents = async () => {
+      const eventsFromServer = await fetchEvents();
+      
+      setEvents(eventsFromServer);
+    }
+    console.log(user)
+    getEvents();
+  }, [scheduleInfo]);
+
+  const fetchEvents = async () => {
+    const res = await fetch(getaddr()+'user_events/'+user.user_id, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    })
+    const data = await res.json()
+    return data
+  }
 
   let eventRecord = {};
   const stickScheduleEvents = () => {
     eventRecord = {};
-
-    // const scheduleEventBlocks = events.map((scheduleEvent, index) => {
-    const scheduleEventBlocks = [...Array(3)].map((scheduleEvent, index) => {
+    const scheduleEventBlocks = events.map((scheduleEvent, index) => {
+    // const scheduleEventBlocks = [...Array(3)].map((scheduleEvent, index) => {
       
-      let start = new Date(2021, 3, 12, 9, 0, 0);
-      let end = new Date(2021, 3, 12, 22, 30, 0)
-      let colNum = getDay(start) + 2;
+      // let start_date = new Date(2021, 3, 12, 9, 0, 0);
+      let start_date = sqlToJsDate(scheduleEvent.start_date, scheduleEvent.start_time);
+      // let end_date = new Date(2021, 3, 12, 22, 30, 0)
+      let end_date = sqlToJsDate(scheduleEvent.end_date, scheduleEvent.end_time);
+      if (differenceInCalendarDays(end_date, start_date) > 0) {
+        return
+      }
+
+      if (start_date > scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day || end_date < scheduleInfo['weekStart']) {
+        return
+      }
+
+      let colNum = getDay(start_date) + 2;
       // console.log(`${start} - ${end}`)
-      let minutesDiff = differenceInMinutes(end, start)
+      let minutesDiff = differenceInMinutes(end_date, start_date)
       // console.log(`${minutesDiff} - ${minutesDiff}`)
-      let startMinute = getMinutes(start);
-      let startHour = getHours(start)
-      let endMinute = getMinutes(end);
-      let endHour = getHours(end);
+      let startMinute = getMinutes(start_date);
+      let startHour = getHours(start_date)
+      let endMinute = getMinutes(end_date);
+      let endHour = getHours(end_date);
       let rowStart;
       if (startMinute <= 30 && startMinute > 0) {
         rowStart = startHour * 2 + 2;
@@ -94,7 +158,10 @@ const Schedule = () => {
       }
 
       return (
-        <section className="block--events task task--danger" style={style}>Test</section>
+        <section className="block--events task task--danger" style={style}>
+          <div className="block--events-title">{scheduleEvent.name}</div>
+          <div className="">{`${startHour}:${('0'+startMinute).slice(-2)} - ${endHour}:${('0'+endMinute).slice(-2)}`}</div>
+        </section>
       )
     })
     return scheduleEventBlocks;
@@ -109,10 +176,27 @@ const Schedule = () => {
       return item;
     })
 
-    // const allDayEventBar = events.map((allDayEvent, index) => {
-    const allDayEventBar = [...Array(2)].map((allDayEvent, index) => {
-      let start = startOfDay(new Date());
-      let end = startOfDay(new Date(2021, 3, 12));
+    const allDayEventBar = events.map((allDayEvent, index) => {
+    // const allDayEventBar = [...Array(2)].map((allDayEvent, index) => {
+      // let start = startOfDay(new Date());
+      // let end = startOfDay(new Date(2021, 3, 12));
+      // console.log(allDayEvent);
+      let start = startOfDay(sqlToJsDate(allDayEvent.start_date, allDayEvent.start_time));
+      let end = startOfDay(sqlToJsDate(allDayEvent.end_date, allDayEvent.end_time));
+      if (differenceInCalendarDays(end, start) === 0) {
+        return
+      } 
+      if (end < scheduleInfo['weekStart'] || start > scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day) {
+        return 
+      }
+
+      if (start < scheduleInfo['weekStart']) {
+        start = scheduleInfo['weekStart']
+      }
+      if (end > scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day) {
+        end = scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day
+      }
+      
       let colNum = getDay(start) + 1;
       let colSpan = differenceInCalendarDays(end, start) + 1;
       
@@ -136,12 +220,13 @@ const Schedule = () => {
       }
       let row = max;
       let style = {
-        gridColoum: `${colNum} / span ${colSpan}`,
+        gridColumn: `${colNum} / span ${colSpan}`,
         gridRow: `${row}`,
       }
+      // console.log(style);
       // console.log(allDayEventRecord)
       return (
-        <section className="task task--warning all-day-events--bar" style={style}>Test</section>
+        <section className="task task--warning all-day-events--bar" style={style}>{allDayEvent.name}</section>
       )
     })
     // console.log(scheduleInfo)

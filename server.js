@@ -1,3 +1,4 @@
+  
 // Node server
 // import {con} from './calevents/src/db';
 const con = require('./calevents/src/db');
@@ -205,6 +206,7 @@ app.post('/signup', function(req, res) {
 const multer = require('multer');
 // for randomizing file name
 const uuid = require('uuid').v4;
+const { DATE } = require('mysql/lib/protocol/constants/types');
 // customize file name
 const storage = multer.diskStorage({
     // set destination of file upload
@@ -773,16 +775,26 @@ app.post('/reset_password', function(req, res){
                 con.query(sql4, [result1[0].user_id, hash, expire_datetime], function(err, result2){
                     if (err) throw err;
                     //send email with password reset link
-                    const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
+                    const link = 'localhost:3000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
                     var subject = "CalEvents Password Reset";
                     var content = `<p>Dear ` + result1[0].username + `,</p>
                                     <br>
                                     <p>You requested to reset your password.</p>
                                     <p>Click the link below to reset your password.</p>
-                                    <a href="https://`+ link + `">Reset Password</a>
+                                    <a href="http://`+ link + `">Reset Password</a>
                                     <p>Your reset link is only valid once and will be expired in 10 minutes.</p>
                                     <br>
                                     <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                    // const link = 'localhost:5000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
+                    // var subject = "CalEvents Password Reset";
+                    // var content = `<p>Dear ` + result1[0].username + `,</p>
+                    //                 <br>
+                    //                 <p>You requested to reset your password.</p>
+                    //                 <p>Click the link below to reset your password.</p>
+                    //                 <a href="https://`+ link + `">Reset Password</a>
+                    //                 <p>Your reset link is only valid once and will be expired in 10 minutes.</p>
+                    //                 <br>
+                    //                 <p>Yours Sincerely,<br>CalEvents Admins</p>`
                     send_email(req.body['email'], subject, content);
                     res.send({link});
                 });
@@ -799,8 +811,9 @@ app.put('/reset_password', function(req, res){
     sql1 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = `+ req.query['user_id'] + `;`;
     con.query(sql1, function(err, result1){
         if (err) throw err;
-        if (result1.length > 0)
-            if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= result1[0].expires_at)){
+        if (result1.length > 0){
+            let expire_time = new Date(result1[0].expires_at);
+            if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= expire_time)){
                     bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
                         var sql2 = `UPDATE csci3100.User SET password = '` + hash + `' WHERE user_id = ` + req.query['user_id'] +`;`;
                         con.query(sql2, function (err, result2) {
@@ -824,8 +837,8 @@ app.put('/reset_password', function(req, res){
                             }
                         });
                     });
-            }else
-                res.status(400).send({error: 'Invalid or expired password reset token'});
+            }else res.status(400).send({error: 'Invalid or expired password reset token'});
+        }else res.status(400).send({error:'No recovery request record'});
     })
 });
 
