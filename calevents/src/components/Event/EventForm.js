@@ -77,8 +77,8 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
 
   const toSqlDate = (date) => {
     let y = date.getFullYear();
-    let m = checkTime(date.getMonth());
-    let d = checkTime(date.getDay());
+    let m = checkTime(date.getMonth()+1);
+    let d = checkTime(date.getDate());
     return [y, m, d].join('-');
   }
 
