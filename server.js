@@ -417,7 +417,8 @@ app.post('/join_event', function(req, res){
 
 // Editing all information of an event except ticket and organizer
 // Change image location will be handled separately.
-app.post('/edit_event', function(req, res) {
+var textOnly = multer();
+app.post('/edit_event', textOnly.none(), function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
@@ -845,7 +846,7 @@ app.put('/reset_password', function(req, res){
         }else res.status(400).send({error:'No recovery request record'});
     })
 });
-
+ 
 // Delete event
 app.delete('/user_events/:eID', function(req, res){
     var parti = '(';
