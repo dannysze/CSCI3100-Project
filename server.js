@@ -626,10 +626,10 @@ app.get('/event/:eID',function(req, res){
     });
 });
 
-// Retrieve user private events
+// Retrieve user private events with public events
 app.get('/user_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
-    var sql = `SELECT * FROM csci3100.Event WHERE organizer = ? AND visible = 0 ORDER BY start_date ASC;`
+    var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE visible = 1 OR (organizer = ? AND visible = 0) ORDER BY start_date ASC;`;
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
 
@@ -644,10 +644,8 @@ app.get('/user_events/:uID', function(req, res){
             res.send(result);
         }
         else{
-            res.send("Invalid event id");
+            res.send("No events event id");
         }
-        
-        // console.log(result);
     });
 });
 
