@@ -8,11 +8,24 @@ import {UserContext} from '../../UserContext';
 import getaddr from '../getaddr';
 
 import '../../styles/components/Event/EventForm.css';
+import EventCard from './EventCard';
 
-const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) => {
+const sqlToJsDate = (sqlDate, sqlTime) => {
+  if(!sqlDate||!sqlTime) return;
+  var sqlDateArr1 = sqlDate.split("-");
+  var sYear = sqlDateArr1[0];
+  var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
+  var sDay = sqlDateArr1[2];
 
-  const [startSelectedDate, setStartSelectedDate] = useState(edit ? editInfo.start_date : startDate);
-  const [endSelectedDate, setEndSelectedDate] = useState(edit ? editInfo.end_date : addHours(startDate, 1));
+  var sqlTimeArr = sqlTime.split(":");
+   
+  return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
+}
+
+// const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) => {
+const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
+  const [startSelectedDate, setStartSelectedDate] = useState(edit ? sqlToJsDate(editInfo.start_date,editInfo.start_time) : startDate);
+  const [endSelectedDate, setEndSelectedDate] = useState(edit ? sqlToJsDate(editInfo.end_date,editInfo.end_time) : addHours(startDate, 1));
   const [event, setEvent] = useState( edit ? editInfo : {
     user_id: '',
     event_name: '',
@@ -39,10 +52,11 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     'value': '',
   });
 
-  var img;
+  const [img, setImg] = useState()
   const fileSelectedHandler = uploadedFile => {
+    let img = uploadedFile.target.files[0];
+
     if (window.FileReader) {
-      img = uploadedFile.target.files[0];
       let reader = new FileReader();
       reader.onload = function (e) {
         setFile({
@@ -61,6 +75,8 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     } else {
      alert("Your browser does not support for preview")
     }
+    console.log(img);
+    setImg(img);
   }
 
   //from https://stackoverflow.com/questions/18229022/how-to-show-current-time-in-javascript-in-the-format-hhmmss/18229123
@@ -85,6 +101,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
   const submitHandler = async e => {
     e.preventDefault();
     let data = new FormData();
+    console.log(img);
     if(img) data.append('img', img);
     Object.keys(event).forEach(key => data.append(key, event[key]));
     console.log(event);
@@ -99,6 +116,35 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     //setReload(!reload);
   }
 
+  const editHandler = async e => {
+    e.preventDefault();
+    let data = new FormData();
+    Object.keys(event).forEach(key => data.append(key, event[key]));
+    console.log(user.user_id);
+    data.append('user_id',user.user_id);
+    await fetch(getaddr()+'edit_event', {
+      method: 'POST',
+      headers: {
+        'auth': token,
+        //'Content-Type': 'multipart/form-data',
+      },
+      body: data,
+    });
+    console.log(img);
+    if(!img) return;
+    let event_pic = new FormData();
+    console.log(img);
+    event_pic.append('img', img);
+    event_pic.append('event_id',event.event_id);
+    await fetch(getaddr()+'event_pic', {
+      method: 'POST',
+      headers: {
+        'auth': token,
+        //'Content-Type': 'multipart/form-data',
+      },
+      body: event_pic,
+    });
+  }
    // handling the input of the event form
    const onChangeHandler = (e) => {
     const ticketCheckbox = document.getElementById('create-event-form').elements.namedItem('free');
@@ -199,7 +245,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
               </select>
             </div>
             <div className="create-event-form--input" style={{gridRow: '2 / span 2', gridColumn: '1', paddingRight: '5px', paddingLeft: '0px'}}>
-              <textarea className="" name="description" placeholder="Description..." onChange={onChangeHandler} value={edit ? editInfo.description : event.description}></textarea>
+              <textarea className="" name="description" placeholder="Description..." onChange={onChangeHandler} value={event.description}></textarea>
             </div>
             <div className="create-event-form--input" style={{gridRow: '1', gridColumn: '2', paddingRight: '0', paddingLeft: '5px'}}>
               <span className="create-event-form--input-prepend flex-center">

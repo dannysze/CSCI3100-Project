@@ -21,21 +21,24 @@ const Eventrecord = ({ event, onClick, index }) => {
 
     // const [edit, toggleEdit] = useState(false)
     const [editForm, setEditForm] = useState({
-        'show': false,
-        'start_date': event.start_date,
-        'end_date': event.end_date,
+        show: false, 
+        start_date: event.start_date,
+        end_date: event.end_date,
     });
-
+    
     const formInfo = {
-        'show': true,
+        show: true,
         // event.start_date: event.start_date,
-        'start_date': new Date(),
-        'end_date': new Date(),
-        'event_name': event.name,
-        'venue': event.venue,
-        'capacity': event.capacity,
-        'ticket': event.ticket,
-        'description': event.description,
+        start_time: event.start_time,
+        start_date: event.start_date, 
+        end_time: event.end_time,
+        end_date: event.end_date,
+        event_name: event.name,
+        event_id: event.event_id,
+        venue: event.venue,
+        capacity: event.capacity,
+        ticket: event.ticket,
+        description: event.description, 
     }
     const showRecordDetail = () => {
         toggleShowDetail(!showDetail);
@@ -49,8 +52,8 @@ const Eventrecord = ({ event, onClick, index }) => {
     }, [])
 
     // DELETE events API 
-    const deleteEvent = async (event) => {
-        fetch(getaddr() + 'user_events/' + event.id, {
+    const deleteEvent = async () => {
+        fetch(getaddr()+'user_events/'+event.event_id, {
             method: 'DELETE'
         }).then(res => {
             res.json()
@@ -87,12 +90,13 @@ const Eventrecord = ({ event, onClick, index }) => {
 
         <li className='record-container'>
             <CSSTransition
-                in={editForm['show']}
+                in={editForm.show}
                 timeout={300}
                 classNames={"create-event-form-"}
                 unmountOnExit
-            >
-                <EventForm dismissHandler={() => setEditForm({ 'show': false, 'start_date': editForm['start_date'] })} startDate={editForm['start_date']} edit={true} editInfo={editForm} editHandler={editEvent} />
+            >   
+                <EventForm dismissHandler={() => setEditForm({show: false, start_date: editForm.start_date})} startDate={editForm.start_date} edit={true} editInfo={editForm}/>
+                {/* <EventForm dismissHandler={() => setEditForm({'show': false, 'start_date': editForm['start_date']})} startDate={editForm['start_date']} edit={true} editInfo={editForm} editHandler={editEvent}/> */}
             </CSSTransition>
             {/* shows the titlw of the joined event */}
             <div className='record-title' onClick={showRecordDetail}><span className='record' style={showDetail ? { whiteSpace: 'normal' } : {}}>{event.name}</span><span style={showDetail ? { transform: 'rotate(180deg)' } : { transform: 'rotate(0deg)' }} className="record-title-icon"><CaretDownFill /></span></div>
