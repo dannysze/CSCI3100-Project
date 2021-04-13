@@ -310,9 +310,10 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
 // Retrieve joined events
 app.get('/joined_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
-    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
+    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, venue, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
+        
 
         res.status(200).send(result);
         console.log(result);
