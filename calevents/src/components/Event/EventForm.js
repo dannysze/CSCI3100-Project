@@ -87,7 +87,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     let data = new FormData();
     if(img) data.append('img', img);
     Object.keys(event).forEach(key => data.append(key, event[key]));
-    
+    console.log(event);
     await fetch(getaddr()+'create_event', {
       method: 'POST',
       headers: {
