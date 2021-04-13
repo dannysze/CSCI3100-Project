@@ -90,6 +90,10 @@
   grid-row: 6;
 }
 
+.day:nth-of-type(n + 36):nth-of-type(-n + 42) {
+  grid-row: 7;
+}
+
 .day:nth-of-type(7n + 1) {
   grid-column: 1/1;
 }
@@ -129,7 +133,7 @@
 
 .day--disabled {
   color: rgba(152, 160, 166, 0.6);
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
 }
 
 .calendar--today {
@@ -165,6 +169,7 @@
   white-space: nowrap;
   margin-top: -5px;
   /* color: #ffffff; */
+  
   font-weight: 500;
 }
 

@@ -5,6 +5,18 @@ import getaddr from '../getaddr'
 import '../../styles/components/Event/Events.css'
 import { FormButton } from "../CustomButton.js";
 
+const sqlToJsDate = (sqlDate, sqlTime) => {
+  
+  var sqlDateArr1 = sqlDate.split("-");
+  var sYear = sqlDateArr1[0];
+  var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
+  var sDay = sqlDateArr1[2];
+
+  var sqlTimeArr = sqlTime.split(":");
+   
+  return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
+}
+
 function Events({ height }) {
   const [events, setEvents] = useState([]);
   const [showEvent, setShow] = useState({ toggle: false, event: {} });
@@ -13,7 +25,12 @@ function Events({ height }) {
   useEffect(() => {
     const getEvents = async () => {
       const eventsFromServer = await fetchEvents()
-      setEvents(eventsFromServer)
+      const upcomingEvents = eventsFromServer.filter(upcomingEvent => {
+        if (sqlToJsDate(upcomingEvent.start_date, upcomingEvent.start_time) >= new Date()) {
+          return upcomingEvent
+        }  
+      })
+      setEvents(upcomingEvents)
     }
     getEvents()
   }, [])
