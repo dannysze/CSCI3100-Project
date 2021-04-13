@@ -207,6 +207,7 @@ const multer = require('multer');
 // for randomizing file name
 const uuid = require('uuid').v4;
 const { DATE } = require('mysql/lib/protocol/constants/types');
+const { event } = require('jquery');
 // customize file name
 const storage = multer.diskStorage({
     // set destination of file upload
@@ -309,9 +310,10 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
 // Retrieve joined events
 app.get('/joined_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
-    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
+    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, venue, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
+        
 
         res.status(200).send(result);
         console.log(result);
@@ -417,61 +419,63 @@ app.post('/join_event', function(req, res){
 // Change image location will be handled separately.
 app.post('/edit_event', function(req, res) {
     // variables from the request
-    var field = req.body['field'];
     var user_id = req.body['user_id'];
-    var new_val = req.body['new_val'];
+    var event_name = req.body['event_name'];
+    var start_date = req.body['start_date'];
+    var start_time = req.body['start_time'];
+    var end_date = req.body['end_date'];
+    var end_time = req.body['end_time'];
+    var visible = req.body['visible'];
+    var repeat = req.body['repeat'];
+    var venue = req.body['venue'];
+    var capacity = req.body['capacity'];
+    var desc = req.body['description'];
+    var refund = req.body['refund'];
+    var refund_days = req.body['refund_days'];
+    var category = req.body['category'];
     var event_id = req.body['event_id'];
 
-    // store intermediate query attributes
-    var org_id;
-    // var old_capacity;
+    var sql = `SELECT user_id FROM csci3100.User where user_id = `+ user_id +`;`;
+    con.query(sql, function (err, result) {
+        if (err) throw err;
 
-    if(field == 'ticket' || field == 'organizer'){
-        res.send("You cannot change this information");
-        console.log("You cannot change this information");
-    }
+        // if the user is valid
+        if(result.length > 0){
+            sql = `SELECT * FROM csci3100.Event where event_id = `+ event_id +`;`;
+            // console.log(sql);
+            con.query(sql, function (err, result){
+                if (err) throw err;
+                
+                if(result.length > 0){
+                    org_id = result[0].organizer;
+                    // old_capacity = result[0].capacity;
+                    if(org_id == user_id){
+                        sql = `UPDATE csci3100.Event SET name = ?, start_date = ?,start_time = ?, end_date = ?, end_time = ?, visible = ?, repeat_every_week = ?, venue = ?, capacity = ?, description = ?, allow_refund = ?, days_for_refund = ?, category = ? WHERE event_id = ?`;
+                        
+                        // console.log(sql);
+                        con.query(sql, [event_name, start_date, start_time, end_date, end_time, visible, repeat, venue, capacity, desc, refund, refund_days, category, event_id], function (err, result){
+                            if (err) throw err;
 
-    else{
-        var sql = `SELECT user_id FROM csci3100.User where user_id = `+ user_id +`;`;
-        con.query(sql, function (err, result) {
-            if (err) throw err;
-
-            // if the user is valid
-            if(result.length > 0){
-                sql = `SELECT organizer, capacity FROM csci3100.Event where event_id = `+ event_id +`;`;
-                con.query(sql, function (err, result){
-                    if (err) throw err;
-                    
-                    if(result.length > 0){
-                        org_id = result[0].organizer;
-                        // old_capacity = result[0].capacity;
-                        if(org_id == user_id){
-                            sql = `UPDATE csci3100.Event SET `+ field +` = ? WHERE event_id = ?;`;
-                            
-                            console.log(sql);
-                            con.query(sql, [new_val, event_id], function (err, result){
-                                if (err) throw err;
-
-                                res.send(result);
-                                console.log(result);
-                            });
-                        }
-                        else{
-                            res.send("You are not allowed to edit this event");
-                            console.log("You are not allowed to edit this event");                            
-                        }
+                            res.status(200).send("ok");
+                            // console.log(result);
+                        });
                     }
                     else{
-                        res.send("This event does not exist");
-                        console.log("This event does not exist");
+                        res.status(403).send("You are not allowed to edit this event");
+                        // console.log("You are not allowed to edit this event");                            
                     }
-                });
-            }
-            else{
-                res.send("The user id is invalid");
-            }
-        });
-    }
+                }
+                else{
+                    res.status(404).send("This event does not exist");
+                    // console.log("This event does not exist");
+                }
+            });
+        }
+        else{
+            res.status(402).send("The user id is invalid");
+        }
+    });
+    
 });
 
 // change event picture
