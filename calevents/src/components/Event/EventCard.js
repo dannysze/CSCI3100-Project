@@ -4,7 +4,7 @@ import { FormButton } from "../CustomButton.js";
 
 
 const EventCard = ({ event, onClick }) => {
-    console.log(event)
+    // console.log(event)
     return (
         <div className='card-container'>
             <div className='image-container'>
