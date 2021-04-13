@@ -1,3 +1,6 @@
+/* This is the css file for modifying the style of the record card*/
+
+/* the container for creating the record card */
 .record-container{
     position: relative;
     width: 95%;
@@ -9,6 +12,7 @@
     list-style: none;
 }
 
+/* modify the style of the bar that shows event detail in record*/
 .record-title {
     padding: 6px;
     display: flex;
@@ -20,10 +24,12 @@
     transition: all 0.15s ease-in-out;
 }
 
+/* add effect on the title bar when hover the bar  */
 .record-title:hover {
     background-color: rgba(200, 162, 200, 0.6);
     margin-bottom: 10px;
 }
+
 
 .record-title-icon {
     transition: all 0.3s ease-in-out;
@@ -43,6 +49,7 @@
     transition: all 0.5s ease-in-out;
 }
 
+/* the container for showing the record details */
 .record-info{
     height: 0px;
     overflow: hidden;
@@ -51,18 +58,21 @@
     transition: all 0.5s ease-in-out;
 }
 
+/* some common style for event date, time, venue and organizer on event record */
 .date, .time, .venue, .organizer{
     font-size: 16px;
     padding-left: 6px;
     font-weight: 300;
 }
 
+/* modify style on date in record card */
 .date {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+/* modify style on time in record card */
 .time {
     text-align: right;
     margin-left: auto;
@@ -71,6 +81,7 @@
     padding-right: 8px
 }
 
+/* modify style on the word ""Description:*/
 .re-description-head{
     padding-left: 6px;
     padding-bottom: 3px;
@@ -80,23 +91,27 @@
     line-height: 1em;
 }
 
+/* modify the sytle on description */
 .description{
     padding-left: 6px;
     padding-bottom: 6px;
     font-weight: 300;    
 }
 
+
 .record-container em {
     font-weight: 500;
     font-style: normal;
 }
 
+/* modify style for the delete(refund) button */
 .record-button-group {
     display: flex;
     justify-content: space-around;
     align-items: center;
     margin-bottom: 10px;
 }
+
 
 .record-button {
     margin: 0 !important;

@@ -59,12 +59,13 @@
 
 
 
-
+/* pop-up-bar style */
 .pop-up-bar{
     background-color: none;
     
 }
 
+/* some style for the words on pop-up bar */
 .pop-up-bar h1{
     font-size: 30px;
     /* font-style: oblique; */
@@ -76,12 +77,13 @@
 
 }
 
+/* container for event image and information except decription of the event */
 .row-container{
     padding-left: 30px;
     height: auto;
 }
 
-
+/* container for the event image */
 .pop-img-container{
     border:solid;
     border-radius: 11px;
@@ -96,6 +98,7 @@
     
 }
 
+/* container for information */
 .pop-info-container{
     position: relative;
     margin: auto;
@@ -109,6 +112,7 @@
     overflow: hidden;
 }
 
+/* modify style for event title */
 .pop-up-title{   
     position: relative;
     font-weight: 350;
@@ -119,13 +123,14 @@
     /* margin-bottom: 10px; */
 }
 
+/* modify style for event information */
 .pop-info{
     position: relative;
     bottom: -5px;
     font-size: 18px;
     font-weight: 300;
 }
-
+/* modify style for the word "description" */
 .pop-description-head{
     position: relative;
     font-size: 25px;
@@ -143,6 +148,7 @@
 
 }
 
+/* modify stle on the event description paragraph */
 .pop-description{
     position:relative;
     border:solid;
@@ -156,7 +162,7 @@
     
 }
 
-.pop-button{
+/* .pop-button{
     position: relative;
     margin:10px 5px 10px 5px;
     width:100px;
@@ -165,17 +171,18 @@
     border-color: antiquewhite;
     border-radius: 11px;
     background-color: rgb(217, 83, 79);
-    /* margin-left: -30px; */
+    // margin-left: -30px; 
     font-weight: 300;
     font-size: 26px;
     transition: 0.3s;
     animation: ease-in-out;
-}
+} */
 
-.pop-button:hover{
+/* .pop-button:hover{
     transform: scale(1.1);
-}
+} */
 
+/* modify on position of the button */
 .pop-button-organizer{
     /* position: relative;
     margin:10px 5px 10px 5px;

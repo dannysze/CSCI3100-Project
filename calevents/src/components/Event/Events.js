@@ -6,15 +6,15 @@ import '../../styles/components/Event/Events.css'
 import { FormButton } from "../CustomButton.js";
 
 const sqlToJsDate = (sqlDate, sqlTime) => {
-  
+
   var sqlDateArr1 = sqlDate.split("-");
   var sYear = sqlDateArr1[0];
   var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
   var sDay = sqlDateArr1[2];
 
   var sqlTimeArr = sqlTime.split(":");
-   
-  return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
+
+  return new Date(sYear, sMonth, sDay, sqlTimeArr[0], sqlTimeArr[1], sqlTimeArr[2]);
 }
 
 function Events({ height }) {
@@ -28,7 +28,7 @@ function Events({ height }) {
       const upcomingEvents = eventsFromServer.filter(upcomingEvent => {
         if (sqlToJsDate(upcomingEvent.start_date, upcomingEvent.start_time) >= new Date()) {
           return upcomingEvent
-        }  
+        }
       })
       setEvents(upcomingEvents)
     }
@@ -58,30 +58,35 @@ function Events({ height }) {
         </div>
       </div>
 
-
+      {/* pop-up screen for showing complete selected event's information */}
       <Modal
         show={showEvent.toggle}
         onHide={() => setShow({ toggle: false, event: {} })}
         dialogClassName='custom-modal'
         aria-labelledby='example-custom-modal-styling-title'
       >
+        {/* the header bar of the pop-up screen */}
         <Modal.Header className="pop-up-bar" closeButton>
           {/* <Modal.Title id='example-custom-modal-styling-title'>
             {showEvent.event.name}
           </Modal.Title> */}
           <h1>E v e n t</h1>
         </Modal.Header>
-
+        {/* the body of the pop-up screen */}
         <Modal.Body>
-
+          {/* first part: row container to show the image and event information except event description */}
           <Row className="row-container">
+            {/* column container to show the image */}
             <Col className="pop-img-container" sm={4}>
-
+              {/* the  image */}
               <img src={showEvent.event.img_loc} alt="event-photo"></img>
 
             </Col >
+            {/* columen container for information of the event */}
             <Col className="pop-info-container" sm={7}>
+              {/* the title of the event */}
               <div className="pop-up-title">{showEvent.event.name}</div>
+              {/* Bootstrap listgroup to show the event information */}
               <ListGroup variant="flush">
                 <ListGroup.Item className="pop-info">Organizer: {showEvent.event.organizer}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Date: {showEvent.event.start_date === showEvent.event.end_date ? `${showEvent.event.start_date}` : `${showEvent.event.start_date}` + "-" + `${showEvent.event.end_date}`}</ListGroup.Item>
@@ -94,13 +99,16 @@ function Events({ height }) {
               </ListGroup>
             </Col>
           </Row>
+          {/* second part: row container for the word "Description" */}
           <Row >
             <Col>
               <div className="pop-description-head">Description</div>
             </Col>
           </Row>
+          {/* third part: row container for the description body */}
           <Row>
             <Col sm={12}>
+              {/* the discription */}
               <div className="pop-description" data-spy="scroll" >{showEvent.event.desc}</div>
             </Col>
           </Row>
@@ -108,11 +116,13 @@ function Events({ height }) {
             <Col sm={8}></Col>
             <Col sm={1}>
               {/* <button className="pop-button">Join</button> */}
-              <FormButton content="Join"/>
+              {/* the button for joining event */}
+              <FormButton content="Join" />
             </Col>
 
             <Col sm={3}>
               {/* <button className="pop-button-organizer">Contact Organizer</button> */}
+              {/* the button for contacting organizer */}
               <FormButton className="pop-button-organizer" content="Contact Organizer" />
             </Col>
           </Row>
