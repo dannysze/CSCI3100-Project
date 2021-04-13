@@ -71,6 +71,16 @@
   line-height: 75px;
   margin-top: 0;
   color: #000000;
+  position: relative;
+}
+
+#schedule--month {
+  position: absolute;
+  left: 99px;
+  top: -.5em;
+  color: #282828;
+  font-size: 1.2em;
+  /* right: 0; */
 }
 
 .all-day-events--slots {

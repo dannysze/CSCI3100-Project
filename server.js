@@ -845,7 +845,7 @@ app.put('/reset_password', function(req, res){
         }else res.status(400).send({error:'No recovery request record'});
     })
 });
-
+ 
 // Delete event
 app.delete('/user_events/:eID', function(req, res){
     var parti = '(';

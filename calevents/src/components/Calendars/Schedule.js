@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { CalendarButton } from '../CustomButton';
 import EventForm from '../Event/EventForm';
-import { getDate, getDay, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes, getMinutes, getHours, addHours, differenceInMinutes } from 'date-fns';
+import { getDate, getDay, getMonth, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes, getMinutes, getHours, addHours, differenceInMinutes } from 'date-fns';
 import { CSSTransition } from 'react-transition-group';
 import useToken from '../../useToken';
 import getaddr from '../getaddr';
@@ -9,6 +9,7 @@ import { UserContext } from '../../UserContext';
 import '../../styles/components/Calendars/Schedule.css';
 
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const monthNames = ['January', 'Feburay', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const box = [...Array(48).keys()];
 
 const takeWeek = (date = new Date()) => {
@@ -83,7 +84,7 @@ const Schedule = () => {
   }, [scheduleInfo, user]);
 
   const fetchEvents = async () => {
-    const res = await fetch(getaddr()+'user_events/'+user.user_id, {
+    const res = await fetch(getaddr()+'joined_events/'+user.user_id, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -261,6 +262,7 @@ const Schedule = () => {
       </CSSTransition>
       <div className="schedule-header">
         <div className="timeslots timeslots-button">
+          <span id="schedule--month">{monthNames[getMonth(scheduleInfo.weekStart)]}</span>
           <CalendarButton classes="calendar-button-left" clickHandler={previousWeek}/>
           <CalendarButton classes="calendar-button-reset" clickHandler={currentWeek}/>
           <CalendarButton classes="calendar-button-right" clickHandler={nextWeek}/>

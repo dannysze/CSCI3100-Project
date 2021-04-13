@@ -83,14 +83,13 @@ function Events({ height }) {
             <Col className="pop-info-container" sm={7}>
               <div className="pop-up-title">{showEvent.event.name}</div>
               <ListGroup variant="flush">
-                <ListGroup.Item className="pop-info">Organizer: {showEvent.event.organizer}</ListGroup.Item>
+                <ListGroup.Item className="pop-info">Organizer: {showEvent.event.username}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Date: {showEvent.event.start_date === showEvent.event.end_date ? `${showEvent.event.start_date}` : `${showEvent.event.start_date}` + "-" + `${showEvent.event.end_date}`}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Time: {showEvent.event.start_time} - {showEvent.event.end_time}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Venue: {showEvent.event.venue}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Maximum Number of Participant: {showEvent.event.capacity === null ? "Unlimited" : `${showEvent.event.capacity}`}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Fee: {showEvent.event.ticket === 0 ? "Free" : `${showEvent.event.ticket}`}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Days for refund: {showEvent.event.days_for_refund === null ? "Not Allow" : `${showEvent.event.days_for_refund}`}</ListGroup.Item>
-
               </ListGroup>
             </Col>
           </Row>
@@ -101,7 +100,7 @@ function Events({ height }) {
           </Row>
           <Row>
             <Col sm={12}>
-              <div className="pop-description" data-spy="scroll" >{showEvent.event.desc}</div>
+              <div className="pop-description" data-spy="scroll" >{showEvent.event.description}</div>
             </Col>
           </Row>
           <Row>
@@ -116,12 +115,6 @@ function Events({ height }) {
               <FormButton className="pop-button-organizer" content="Contact Organizer" />
             </Col>
           </Row>
-
-
-
-
-
-
         </Modal.Body>
       </Modal>
     </div >

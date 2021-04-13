@@ -102,7 +102,7 @@ const Eventrecord = ({ event, onClick, index }) => {
                 </div>
                 <hr style={{ margin: '.5em'}}/>
                 <div className="re-description-head">Description:</div>
-                <div className="description">{event.desc}</div>
+                <div className="description">{event.description}</div>
                 <div className="record-button-group">
                     {(event.visible === 1 && user.type === 0) ? <FormButton classes="record-button" clickHandler={userRefund} content="refund" disabled={true} /> : <FormButton classes="record-button" clickHandler={deleteEvent} content="delete"/>
                     }

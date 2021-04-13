@@ -12,7 +12,7 @@ const EventCard = ({ event, onClick }) => {
             </div>
             <h3 className='title'>{event.name}</h3>
             <div className="info-container">
-                <div className='organizer'>By {event.organizer}</div>
+                <div className='organizer'>Organizerd by <b>{event.username}</b></div>
                 <div className='datetime'>Time:&nbsp;{event.start_time.substring(0, 5)}&nbsp;-&nbsp;{event.end_time.substring(0, 5)}</div>
                 <div className='venue'>Date:&nbsp;{event.start_date}</div>
                 <div className='venue'>Venue:&nbsp;{event.venue}</div>

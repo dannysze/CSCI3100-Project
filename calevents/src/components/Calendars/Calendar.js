@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { startOfMonth, startOfWeek, endOfMonth, endOfWeek, startOfDay, addDays, getDate, getMonth, getYear, addMonths, subMonths, getWeekOfMonth, getDay, differenceInDays, differenceInCalendarDays, differenceInCalendarWeeks, getDaysInMonth } from 'date-fns';
+import { Modal } from 'react-bootstrap';
 import { CalendarButton } from '../CustomButton';
 import { CSSTransition } from 'react-transition-group';
 import EventForm from '../Event/EventForm';
+import EventCard from '../Event/EventCard';
 import getaddr from '../getaddr'
 import '../../styles/components/Calendars/Calendar.css';
 
@@ -71,6 +73,10 @@ const Calendar = ({ heightHandler }) => {
     'show': false,
     'startDate': new Date(),
   });
+  const [eventCardModal, setEventCardModal] = useState({
+    'show': false,
+    'events': []
+  });
 
   // change the height of upcoming events according to the calendar
   useEffect(() => {
@@ -86,7 +92,7 @@ const Calendar = ({ heightHandler }) => {
     }
     getEvents();
     // console.log(events)
-  }, [calendarInfo]);
+  }, [calendarInfo], [events]);
   
   const fetchEvents = async () => {
     const res = await fetch(getaddr()+'search_events', {
@@ -155,13 +161,7 @@ const Calendar = ({ heightHandler }) => {
       } else {
         span = [diffDays]; 
       }
-      // console.log(span)
-      // console.log(`${start}, ${end}`)
-      // console.log(`${startRow} - ${endRow} - ${colNum} - ${span}`);
       
-      // let pos = 'center'
-      // console.log(dayRecord)
-      // let display = 'block';
       let curPos = {
         'center': true,
         'end': true,
@@ -181,10 +181,13 @@ const Calendar = ({ heightHandler }) => {
             'hide': 0,
             'row': startRow + differenceInCalendarWeeks(i, start),
             'column': getDay(i) + 1,
+            'events': []
           }
         }
-        // console.log(i)
+        dayRecord[i]['events'].push(event);
+        
       }
+      // console.log(dayRecord);
       let display = 'block';
       // console.log(JSON.stringify(dayRecord[new Date(2021, 4, 18)]));
 
@@ -234,6 +237,7 @@ const Calendar = ({ heightHandler }) => {
           gridRow: `${dayRecord[key]['row']}`,
           alignSelf: 'start',
         }
+        // console.log(dayRecord[key]['events'])
           tagsArr.push(<CalendarTag styles={style} hide={dayRecord[key]['hide']} key={key} />)
       } else {
       }
@@ -266,6 +270,14 @@ const Calendar = ({ heightHandler }) => {
     });
   }
 
+  const showEventCardModal = (date) => {
+    if (dayRecord[date]) {
+      // console.log(dayRecord[date]['events'])
+      setEventCardModal({ 'show': true, 'events': dayRecord[date]['events']});
+    } else setEventCardModal({ 'show': true, 'events': []});
+     
+  }
+
   return (
     <div className="calendar-container">
       <CSSTransition
@@ -286,10 +298,36 @@ const Calendar = ({ heightHandler }) => {
       </div>
       <div className="calendar">
         {dayNames.map((day, index) => (<span className="day-name" key={index} style={day === "Sun" ? {color: "rgb(217, 83, 79)"} : {}}>{day}</span>))}
-        {calendarInfo['calendarArr'].map((item, index) => <CalendarItems disabled={item.disabled} name={(item.day)} today={item.today} sunday={item.sunday} key={index} clickHandler={createEventForm}/>)}
+        {calendarInfo['calendarArr'].map((item, index) => {
+          // console.log(item)
+          return (<CalendarItems 
+            disabled={item.disabled} 
+            name={(item.day)} 
+            today={item.today} 
+            sunday={item.sunday} 
+            key={index} 
+            doubleClickHandler={createEventForm}
+            clickHandler={showEventCardModal}
+            />)
+        })}
         {stickEvents()}
         {stickTags()}
       </div>
+      <Modal
+        show={eventCardModal['show']}
+        onHide={() => setEventCardModal({ 'show': false , 'events': []})}
+        dialogClassName="calendar-event-modal"
+      >
+        <Modal.Header closeButton className="calendar-event-modal-title">More Events...</Modal.Header>
+        <Modal.Body>
+          <div className="calendar-event-list-modal-container">
+            {console.log(eventCardModal['events'])}
+            {eventCardModal['events'].length != 0 ? eventCardModal['events'].map((event, index) => {
+              return <EventCard event={event} index={index} />
+            }) : <h1>There is no more events on this day</h1>}
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   )
 }
@@ -309,10 +347,16 @@ const CalendarHeader = ({ month, year, previousMonth, nextMonth }) => {
 
 const CalendarItems = (props) => {
 
-  const [startDate, setStartDate] = useState(props.name);
+  const mouseOverHandler = (event) => {
+    // console.log(props.name);
+    var delay = setTimeout(() => {
+      props.clickHandler(props.name)
+    }, 1000)
+    event.target.addEventListener('mouseleave', () => {clearTimeout(delay)})
+  }
 
   return (
-    <div className={`day ${props.disabled ? 'day--disabled' : ''}`} style={props.sunday ? {color: `rgba(217, 83, 79, ${props.disabled ? 0.6 : 1})`} : {}} onClick={() => props.clickHandler(startDate)}>
+    <div className={`day ${props.disabled ? 'day--disabled' : ''}`} style={props.sunday ? {color: `rgba(217, 83, 79, ${props.disabled ? 0.6 : 1})`} : {}} onDoubleClick={() => props.doubleClickHandler(props.name)} onMouseOver={mouseOverHandler}>
       <span className={props.today ? "calendar--today" : ""}>{getDate(props.name)}</span>
     </div>
   )
