@@ -5,6 +5,7 @@ import { CalendarButton } from '../CustomButton';
 import { CSSTransition } from 'react-transition-group';
 import EventForm from '../Event/EventForm';
 import EventCard from '../Event/EventCard';
+import { EventModal } from '../Event/Events';
 import getaddr from '../getaddr'
 import '../../styles/components/Calendars/Calendar.css';
 
@@ -74,7 +75,7 @@ const Calendar = ({ heightHandler }) => {
     'startDate': new Date(),
   });
   const [eventCardModal, setEventCardModal] = useState({
-    'show': false,
+    'toggle': false,
     'events': []
   });
 
@@ -273,9 +274,17 @@ const Calendar = ({ heightHandler }) => {
   const showEventCardModal = (date) => {
     if (dayRecord[date]) {
       // console.log(dayRecord[date]['events'])
-      setEventCardModal({ 'show': true, 'events': dayRecord[date]['events']});
-    } else setEventCardModal({ 'show': true, 'events': []});
+      setEventCardModal({ 'toggle': true, 'events': dayRecord[date]['events']});
+    } else setEventCardModal({ 'toggle': true, 'events': []});
      
+  }
+
+  const [eventModal, setEventModal] = useState({ 'toggle': false, 'event': {}})
+
+  const dismissEventCardModal = (e) => {
+    setEventCardModal({ 'toggle': false , 'events': []})
+    setEventModal({ 'toggle': true, 'event': e})
+    console.log(e)
   }
 
   return (
@@ -314,20 +323,21 @@ const Calendar = ({ heightHandler }) => {
         {stickTags()}
       </div>
       <Modal
-        show={eventCardModal['show']}
-        onHide={() => setEventCardModal({ 'show': false , 'events': []})}
+        show={eventCardModal['toggle']}
+        onHide={() => setEventCardModal({ 'toggle': false , 'events': []})}
         dialogClassName="calendar-event-modal"
       >
         <Modal.Header closeButton className="calendar-event-modal-title">More Events...</Modal.Header>
         <Modal.Body>
           <div className="calendar-event-list-modal-container">
-            {console.log(eventCardModal['events'])}
-            {eventCardModal['events'].length != 0 ? eventCardModal['events'].map((event, index) => {
-              return <EventCard event={event} index={index} />
+            {/* {console.log(eventCardModal['events'])} */}
+            {eventCardModal['events'].length != 0 ? eventCardModal['events'].map((ev, index) => {
+              return <EventCard event={ev} key={index} onClick={() => dismissEventCardModal(ev)} />
             }) : <h1>There is no more events on this day</h1>}
           </div>
         </Modal.Body>
       </Modal>
+      <EventModal showEvent={eventModal} setShow={setEventModal}/>
     </div>
   )
 }

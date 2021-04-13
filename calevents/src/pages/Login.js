@@ -121,7 +121,7 @@ const Login = () => {
       setSignupResult({'errorMsg':'Please select user type', 'alert':true});
       return;
     }
-    if(!valid.username||!valid.password||!valid.email|!valid.userType){
+    if(!valid.username||!valid.password||!valid.email){
       return;
     }
     try{
