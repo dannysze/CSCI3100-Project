@@ -30,7 +30,7 @@ var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'calevents3100@gmail.com',
-      pass: 'Calevents-csci3100'
+      pass: 'CaleventsInfo'
     }
 });
 
@@ -99,6 +99,7 @@ const checkAuth = (req, res, next) => {
 // });
 
 //for login.return jwt token with payload being userid after successful login.
+// tested
 app.post('/login', function(req, res) {
     console.log(req.body);
     var username = req.body['username'];
@@ -131,6 +132,7 @@ app.post('/login', function(req, res) {
 );
 //for signup. return jwt token with payload being userid after successful signup.
 //modify from /createuser
+// tested
 app.post('/signup', function(req, res) {
     // variables from the request
     var username = req.body['username'];
@@ -308,20 +310,28 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
 
 
 // Retrieve joined events
+// tested
 app.get('/joined_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
     var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, venue, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
         
+        if(result.length > 0){
+            res.status(200).send(result);
+            // console.log(result);
+        }
+        else{
+            res.status(200).send("No events Found");
+            // console.log(result);
+        }
 
-        res.status(200).send(result);
-        console.log(result);
     });
 });
 
 
 // Join Event
+// tested
 app.post('/join_event', function(req, res){
     // variables from the request
     var user_id = req.body['user_id'];
@@ -342,7 +352,7 @@ app.post('/join_event', function(req, res){
         // check if the event exist and obtain event and organizer data 
         if(result.length > 0){
             usr_bal = result[0].account_balance;
-            sql = `SELECT ticket, capacity, organizer FROM csci3100.Event where event_id = `+ event_id +`;`;
+            sql = `SELECT ticket, capacity, organizer FROM csci3100.Event where event_id = `+ event_id +` AND visible = 1;`;
             con.query(sql, function (err, result){
                 if (err) throw err;
 
@@ -378,30 +388,30 @@ app.post('/join_event', function(req, res){
                                         INSERT INTO csci3100.Event_Join (user_id, event_id) VALUES(`+ user_id +`, `+ event_id +`);`;
                                         con.query(sql, function (err, result){
                                             if (err) throw err;
-                                            res.send("Joined Activity, transaction done");
-                                            console.log("Joined Activity, transaction done");
+                                            res.status(200).send("Joined Activity, transaction done");
+                                            // console.log("Joined Activity, transaction done");
                                         });
                                     }
                                     else{
-                                        res.send("Cannot join activity");
-                                        console.log("Cannot join activity");                        
+                                        res.status(400).send("Cannot join activity");
+                                        // console.log("Cannot join activity");                        
                                     }
                                 }
                                 else{
-                                    res.send("You have already enrolled in this event");
-                                    console.log("Cannot join You have already enrolled in this event"); 
+                                    res.status(400).send("You have already enrolled in this event");
+                                    // console.log("Cannot join You have already enrolled in this event"); 
                                 }
                             });
                         }
                         else{
-                            res.send("Invalid organizer");
+                            res.status(400).send("Invalid organizer");
                             console.log("Invalid organizer");
                         }
                     });
                 }
                 else{
-                    res.send("No such event");
-                    console.log("No such event");
+                    res.status(400).send("No such event or the event is not public");
+                    // console.log("No such event or the event is not public");
                 } 
             });
         }
@@ -514,6 +524,7 @@ app.post('/event_pic', upload.single('img'),function(req, res){
 })
 
 // Add value to user balance
+// tested
 app.post('/add_value', function(req, res) {
 //app.post('/add_value', checkAuth, function(req, res) {
     
@@ -578,19 +589,20 @@ app.post('/add_value', function(req, res) {
                         }
                     }else{
                         res.status(400).send({error:"Card number does not exist"});
-                        console.log("Card number does not exist");
+                        // console.log("Card number does not exist");
                     }
                 });
             }
             else{      
-                res.send("Invalid User");
-                console.log("Invalid User");
+                res.status(400).send("Invalid User");
+                // console.log("Invalid User");
             }
         });
     //});
 });
 
 // Retrieve all public events
+// tested
 app.get('/search_events', function(req, res){
     var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE visible = 1 ORDER BY start_date ASC;`;
     con.query(sql, function (err, result) {
@@ -608,6 +620,7 @@ app.get('/search_events', function(req, res){
 });
 
 // Retrieve event with given ID
+// tested
 app.get('/event/:eID',function(req, res){
     var eID = req.params['eID'];
     var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE event_id = ?;`;
@@ -632,6 +645,7 @@ app.get('/event/:eID',function(req, res){
 });
 
 // Retrieve user private events and public events
+// tested
 app.get('/user_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
     var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE organizer = ? ORDER BY start_date ASC;`;
@@ -646,23 +660,29 @@ app.get('/user_events/:uID', function(req, res){
             }catch{
                 result[0].img_loc = "";
             }
-            res.send(result);
+            res.status(200).send(result);
         }
         else{
-            res.send("No events event id");
+            res.status(400).send("No events or the user does not exist");
         }
     });
 });
 
 // Retrieve user information
+// tested
 app.get('/user_info/:uID', function(req, res){
     var u_ID = req.params['uID'];
     var sql = `SELECT username, email, type, account_balance FROM csci3100.User WHERE user_id = ?;`;
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
 
-        res.send(result);
-        console.log(result);
+        if(result.length > 0){
+            res.status(200).send(result);
+            // console.log(result);
+        }
+        else{
+            res.status(400).send("User does not exist");
+        }
     });
 });
 
