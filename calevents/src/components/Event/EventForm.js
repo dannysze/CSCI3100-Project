@@ -86,10 +86,6 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     e.preventDefault();
     let data = new FormData();
     if(img) data.append('img', img);
-    setEvent({...event,start_time:toSqlTime(startSelectedDate),start_date:toSqlDate(startSelectedDate)});
-    setEvent({...event,end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate)});
-    //if user is normal user, it would be private.if user is organizer, it would be public.
-    setEvent({...event, visible:user.type});
     Object.keys(event).forEach(key => data.append(key, event[key]));
     
     await fetch(getaddr()+'create_event', {
@@ -134,7 +130,10 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
         setEvent({...event, [e.target.name]: 1, refund_days: 1});
       }
     } else {
-      setEvent({...event, [e.target.name]: e.target.value});
+      setEvent({...event, [e.target.name]: e.target.value, 
+                          start_time:toSqlTime(startSelectedDate),start_date:toSqlDate(startSelectedDate),
+                          end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate),
+                          visible:user.type});
     }
     console.log(event);
   }
