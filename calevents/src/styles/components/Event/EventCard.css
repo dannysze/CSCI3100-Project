@@ -1,20 +1,12 @@
-
-.eventCard{
-    background-color: white;
-    margin: 20px auto;
-    padding: 25px;
-    cursor: pointer;
-    color: #282828;
-    border: 1px solid #282828;
-    
-    /* box-shadow: 3px 3px 5px grey; */
-}
-
+/* this is a css file for modifing details of the event cards that show in the upcoming column in home page */
+ 
+/* the date and time in the event card */
 .datetime{
     font-size: 18px;
     text-align: right;
 }
 
+/* the event title that shows in the event card */
 .title{
     font-size: 25px;
     font-weight: 300;
@@ -38,22 +30,7 @@
     padding-left: 5px;
 }
 
-/* multi-line truncate from web */
-.desc{
-    color:grey;
-    display: block; 
-    display: -webkit-box;
-    max-width: 100%;
-    height: 14*1.4*3px; 
-    margin: 0 auto;
-    font-size: 14px;
-    line-height: 1.4;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
+/* The details of the container for the event card */
 .card-container{
     position: relative;
     border-radius: 11px;
@@ -65,19 +42,24 @@
     color: #282828;
     border: groove;
     /* height: 470px; */
+    display: flex;
+    flex-direction: column;
 }
 
+/* The container that showing  the image in the card*/
 .image-container{
     overflow: hidden;
     display: grid;
 }
 
+/* The size and showing option of the image in the card */
 .image-container img{
     overflow: hidden;
     height: 170px;
     width: auto
 }
 
+/* The container for showing different informations of the event in the card */
 .info-container{
     overflow: hidden;
     border-top-color: #d9534f;
@@ -85,6 +67,7 @@
     padding: 5px 10px;
 }
 
+/* modify the style of the part that shows the event organizer in the card */
 .organizer{
     font-size: 15px;
     font-weight: 350;
@@ -96,6 +79,7 @@
     padding: 3px 3px 5px 5px;
 }
 
+/* modify the style of the part that shows the date and time of the event in the card*/
 .datetime{
     font-size: 15px;
     font-weight: 350;
@@ -103,6 +87,8 @@
     padding: 3px 3px 5px 5px;
     
 }
+
+/* modify the style of the part that shows the venue in the card */
 .venue{
     font-size: 15px;
     font-weight: 350;
@@ -114,6 +100,7 @@
     padding: 3px 3px 5px 5px;
 }
 
+/* modify the style of the part that shows the word "Description:" in the card*/
 .description-head{
     font-size: 20px;
     font-weight: 400;
@@ -127,6 +114,7 @@
     padding-left: 5px;
 }
 
+/* modify the style of the part that shows  */
 .description-body{
     font-size: 15px;
     font-weight: 300;
@@ -146,12 +134,18 @@
     /* padding-top: 0; */
     /* margin-bottom: 0; */
 }
+
+/* the container for the button inside the card */
 .card-btn{
-    margin: auto;
+    margin-top: auto;
+    margin-left: auto;
+    margin-right: auto;
+    /* margin: auto; */
     width: 90%;
     padding: 10px 0;
 }
 
+/* modify the style of the button inside the card */
 .card-btn button{
     background-color: rgba(217, 83, 79, 0.9);
     border: none;
@@ -166,6 +160,7 @@
     /* margin-top: 1px ; */
 }
 
+/* create effect for the button when user hover on the button */
  .card-btn button:hover{
     transform: scale(1.05);
     background-color: rgba(217, 83, 79, 1);

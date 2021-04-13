@@ -1,3 +1,4 @@
+/* the container for the result card */
 .SR-card-container{
     position: relative;
     border-radius: 11px;
@@ -10,11 +11,11 @@
     border: groove;
     height: 470px;
 }
+
+/* the container for the event image in the result card */
 .SR-img-container{
     position: relative;
     overflow: hidden;
-    
-    
     display: grid;
     width: 100%;
     height:200px;
@@ -22,12 +23,14 @@
     border-radius: 11px;
 }
 
+/* the image and some edit on spacing */
 .SR-img-container img{
     overflow:hidden;
     /* border:solid; */
     margin-top: -120px;
 }
 
+/* modify the style on the title of the event in result card */
 .SR-title{
     /* border:solid; */
     height:80px;
@@ -40,6 +43,7 @@
     margin-left: 10px;
 }
 
+/* the container for the event information in result card */
 .SR-info-container{
     position:relative;
     font-size: 16px;
@@ -50,30 +54,35 @@
 
 }
 
+/* modify the style for organizer */
 .SR-Organizer{
     /* border:solid; */
     width:80%;
     height:25px;
 }
 
+/* modify the style for date */
 .SR-Date{
     /* border:solid; */
     width:50%;
     height:25px;
 }
 
+/* modify the style for time */
 .SR-Time{
     /* border:solid; */
     width:50%;
     height:25px;
 }
 
+/* modify the style for venue */
 .SR-Venue{
     /* border:solid; */
     width:80%;
     height:40px;
 }
 
+/* modify the style and spzcing of the fee */
 .SR-fee{
     /* border:solid; */
     border-radius: 11px;
@@ -89,7 +98,7 @@
     
 }
 
-.SR-Button-Container{
+/* .SR-Button-Container{
     width:80%;
     height:70px;
     border:solid;
@@ -97,12 +106,14 @@
     
     
     
-}
+} */
 
+/* container for more button, modify on spacing */
 .SR-More-Con{
     margin-left:30px;
 }
 
+/* container for Join button, modify on spacing */
 .SR-Join-Con{
     margin-left:20px;
     /* margin-right: auto; */
