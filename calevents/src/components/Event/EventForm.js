@@ -99,7 +99,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
   }
 
   const submitHandler = async e => {
-    e.preventDefault();
+    // e.preventDefault();
     let data = new FormData();
     console.log(img);
     if(img) data.append('img', img);
@@ -113,6 +113,8 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
       },
       body: data,
     });
+    dismissHandler();
+    window.location.reload(true);
     //setReload(!reload);
   }
 
@@ -181,7 +183,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
                           end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate),
                           visible:user.type});
     }
-    console.log(event);
+    // console.log(event);
   }
   
   return (
