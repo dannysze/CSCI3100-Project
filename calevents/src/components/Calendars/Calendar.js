@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { startOfMonth, startOfWeek, endOfMonth, endOfWeek, startOfDay, addDays, getDate, getMonth, getYear, addMonths, subMonths, getWeekOfMonth, getDay, differenceInDays, differenceInCalendarDays, differenceInCalendarWeeks } from 'date-fns';
+import { startOfMonth, startOfWeek, endOfMonth, endOfWeek, startOfDay, addDays, getDate, getMonth, getYear, addMonths, subMonths, getWeekOfMonth, getDay, differenceInDays, differenceInCalendarDays, differenceInCalendarWeeks, getDaysInMonth } from 'date-fns';
 import { CalendarButton } from '../CustomButton';
 import { CSSTransition } from 'react-transition-group';
 import EventForm from '../Event/EventForm';
@@ -111,12 +111,14 @@ const Calendar = ({ heightHandler }) => {
       // end = end_date || endOfWeek(endOfMonth(startOfDay(date)))
       let end_date = sqlToJsDate(event.end_date, event.end_time);
       
-      if (end_date < calendarInfo.calendarStart || start_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
+      if (end_date < calendarInfo.calendarArr[0].day || start_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
         // console.log(start_date, end_date);
         return
-      } else if (start_date < calendarInfo.calendarStart) {
-        start_date = calendarInfo.calendarStart;
-      } else if (end_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
+      } 
+      if (start_date < calendarInfo.calendarArr[0].day) {
+        start_date = calendarInfo.calendarArr[0].day;
+      } 
+      if (end_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
         end_date = calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day;
       }
       
@@ -124,11 +126,19 @@ const Calendar = ({ heightHandler }) => {
       let end = startOfDay(end_date);
       // console.log(start_date, end_date);
       let startRow = getWeekOfMonth(start) + 1;
-      let endRow = getWeekOfMonth(end) + 1;
       let colNum = getDay(start) + 1;
       let diffDays = differenceInDays(end, start) + 1;
       let diffWeeks = differenceInCalendarWeeks(end, start);
       // console.log(`${diffWeeks} - ${diffDays}`)
+      
+      if (start_date < calendarInfo['calendarStart']) {
+        startRow = 2;
+      } 
+
+      if (start_date > endOfMonth(calendarInfo['calendarStart'])) {
+        startRow = getWeekOfMonth(endOfMonth(calendarInfo['calendarStart'])) + 1
+      }
+
       let span;
       if (diffWeeks > 0) {
         span = [...Array(diffWeeks + 1)].map((_, index) => {
@@ -146,8 +156,8 @@ const Calendar = ({ heightHandler }) => {
         span = [diffDays]; 
       }
       // console.log(span)
-      console.log(`${start}, ${end}`)
-      console.log(`${startRow} - ${endRow} - ${colNum} - ${span}`);
+      // console.log(`${start}, ${end}`)
+      // console.log(`${startRow} - ${endRow} - ${colNum} - ${span}`);
       
       // let pos = 'center'
       // console.log(dayRecord)
@@ -170,7 +180,7 @@ const Calendar = ({ heightHandler }) => {
             'frequency': 1,
             'hide': 0,
             'row': startRow + differenceInCalendarWeeks(i, start),
-            'column': (colNum + differenceInCalendarDays(i, start)) % 7,
+            'column': getDay(i) + 1,
           }
         }
         // console.log(i)
@@ -224,8 +234,6 @@ const Calendar = ({ heightHandler }) => {
           gridRow: `${dayRecord[key]['row']}`,
           alignSelf: 'start',
         }
-        console.log(key)
-        console.log(dayRecord[key]);
           tagsArr.push(<CalendarTag styles={style} hide={dayRecord[key]['hide']} key={key} />)
       } else {
       }

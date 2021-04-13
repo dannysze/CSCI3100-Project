@@ -97,7 +97,7 @@ const Schedule = () => {
       
       setEvents(eventsFromServer);
     }
-    console.log(user)
+    // console.log(user)
     getEvents();
   }, [scheduleInfo]);
 
@@ -115,20 +115,21 @@ const Schedule = () => {
   let eventRecord = {};
   const stickScheduleEvents = () => {
     eventRecord = {};
-    const scheduleEventBlocks = events.map((scheduleEvent, index) => {
+    const thisWeekEvents = events.filter(thisWeekEvent => {
+      let start_date = sqlToJsDate(thisWeekEvent.start_date, thisWeekEvent.start_time);
+      // let end_date = new Date(2021, 3, 12, 22, 30, 0)
+      let end_date = sqlToJsDate(thisWeekEvent.end_date, thisWeekEvent.end_time);
+      if (differenceInCalendarDays(end_date, start_date) > 0) {
+      } else if (start_date > scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day || end_date < scheduleInfo['weekStart']) {
+      } else return thisWeekEvent;
+    })
+    const scheduleEventBlocks = thisWeekEvents.map((scheduleEvent, index) => {
     // const scheduleEventBlocks = [...Array(3)].map((scheduleEvent, index) => {
       
       // let start_date = new Date(2021, 3, 12, 9, 0, 0);
       let start_date = sqlToJsDate(scheduleEvent.start_date, scheduleEvent.start_time);
       // let end_date = new Date(2021, 3, 12, 22, 30, 0)
       let end_date = sqlToJsDate(scheduleEvent.end_date, scheduleEvent.end_time);
-      if (differenceInCalendarDays(end_date, start_date) > 0) {
-        return
-      }
-
-      if (start_date > scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day || end_date < scheduleInfo['weekStart']) {
-        return
-      }
 
       let colNum = getDay(start_date) + 2;
       // console.log(`${start} - ${end}`)

@@ -117,8 +117,8 @@ const Eventrecord = ({ event, onClick, index }) => {
                 <div className="organizer"><em>Organizer:</em>&nbsp;{event.organizer}</div>
                 <div className="venue"><em>Venue:</em>&nbsp;{event.venue}</div>
                 <div className="date">
-                    {event.start_date === event.end_date ? `${event.start_date}` : `${event.start_date}` + "-" + `${event.end_date}`}
-                    <span className="time">{event.start_time.substring(0, 5)}-{event.end_time.substring(0, 5)}</span>
+                    {event.start_date === event.end_date ? `${event.start_date}` : `${event.start_date}` + " to " + `${event.end_date}`}
+                    <span className="time">{event.start_time.substring(0, 5)} - {event.end_time.substring(0, 5)}</span>
                 </div>
                 <hr style={{ margin: '.5em'}}/>
                 <div className="re-description-head">Description:</div>
