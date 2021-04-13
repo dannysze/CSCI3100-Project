@@ -196,8 +196,8 @@
 }
 
 .task--Festival {
-  border-left-color: rgba(255, 206, 245, 1);
-  background-color: rgba(255, 206, 245, 0.8);
+  border-left-color: rgba(255, 206, 0, 1);
+  background-color: rgba(255, 206, 0, 0.8);
 }
 
 .calendar-event-modal {
