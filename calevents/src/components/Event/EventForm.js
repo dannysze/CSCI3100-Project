@@ -77,8 +77,8 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
 
   const toSqlDate = (date) => {
     let y = date.getFullYear();
-    let m = checkTime(date.getMonth());
-    let d = checkTime(date.getDay());
+    let m = checkTime(date.getMonth()+1);
+    let d = checkTime(date.getDate());
     return [y, m, d].join('-');
   }
 
@@ -86,12 +86,8 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
     e.preventDefault();
     let data = new FormData();
     if(img) data.append('img', img);
-    setEvent({...event,start_time:toSqlTime(startSelectedDate),start_date:toSqlDate(startSelectedDate)});
-    setEvent({...event,end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate)});
-    //if user is normal user, it would be private.if user is organizer, it would be public.
-    setEvent({...event, visible:user.type});
     Object.keys(event).forEach(key => data.append(key, event[key]));
-    
+    console.log(event);
     await fetch(getaddr()+'create_event', {
       method: 'POST',
       headers: {
@@ -134,7 +130,10 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) =
         setEvent({...event, [e.target.name]: 1, refund_days: 1});
       }
     } else {
-      setEvent({...event, [e.target.name]: e.target.value});
+      setEvent({...event, [e.target.name]: e.target.value, 
+                          start_time:toSqlTime(startSelectedDate),start_date:toSqlDate(startSelectedDate),
+                          end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate),
+                          visible:user.type});
     }
     console.log(event);
   }

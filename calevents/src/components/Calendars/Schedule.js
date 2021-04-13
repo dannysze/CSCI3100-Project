@@ -69,37 +69,18 @@ const Schedule = () => {
   const [events, setEvents] = useState([]);
 
   const {token} = useToken();
-    const {user, setUser} = useContext(UserContext);
-    //this gets the user info by token, change to /userinfo/:uid for general user
-    const getUser = async () => {
-      try{
-        //change getaddr() to getaddr(isLocal=false) to make it use remote address
-        //basically passing the token by the header
-        let res = await fetch(getaddr()+'user', {
-          method: 'GET',
-          headers: {
-            'auth': token,
-            'Content-Type': 'application/json',
-          },
-          //body: JSON.stringify({token:token}),
-        });
-        let body = await res.json();
-        setUser(body);
-      }catch(err){
-        console.log(err);
-      }
-    }
+  const {user, setUser} = useContext(UserContext);
 
   useEffect(() => {
-    getUser();
+    // getUser();
     const getEvents = async () => {
       const eventsFromServer = await fetchEvents();
-      
+      // console.log(eventsFromServer);
       setEvents(eventsFromServer);
     }
     // console.log(user)
     getEvents();
-  }, [scheduleInfo]);
+  }, [scheduleInfo, user]);
 
   const fetchEvents = async () => {
     const res = await fetch(getaddr()+'user_events/'+user.user_id, {
@@ -109,12 +90,14 @@ const Schedule = () => {
       }
     })
     const data = await res.json()
+
     return data
   }
 
   let eventRecord = {};
   const stickScheduleEvents = () => {
     eventRecord = {};
+    // console.log(events)
     const thisWeekEvents = events.filter(thisWeekEvent => {
       let start_date = sqlToJsDate(thisWeekEvent.start_date, thisWeekEvent.start_time);
       // let end_date = new Date(2021, 3, 12, 22, 30, 0)
