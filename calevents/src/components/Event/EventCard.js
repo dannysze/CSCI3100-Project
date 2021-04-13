@@ -2,6 +2,7 @@
 import PropTypes from 'prop-types'
 import "../../styles/components/Event/EventCard.css"
 import { FormButton } from "../CustomButton.js";
+import { EventModal } from '../Event/Events'
 
 
 const EventCard = ({ event, onClick }) => {
@@ -20,7 +21,7 @@ const EventCard = ({ event, onClick }) => {
             <div className="info-container">
                 <div className='organizer'>Organizerd by <b>{event.username}</b></div>
                 <div className='datetime'>Time:&nbsp;{event.start_time.substring(0, 5)}&nbsp;-&nbsp;{event.end_time.substring(0, 5)}</div>
-                <div className='venue'>Date:&nbsp;{event.start_date}</div>
+                <div className='venue'>Date: {event.start_date === event.end_date ? `${event.start_date}` : `${event.start_date}` + "  to  " + `${event.end_date}`}</div>
                 <div className='venue'>Venue:&nbsp;{event.venue}</div>
                 <h3 className='description-head'>Description:</h3>
                 <p className='description-body'>{event.description}</p>

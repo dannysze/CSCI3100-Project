@@ -54,11 +54,21 @@ function Events({ height }) {
         <div className='events' style={{ height: `${height - 61}px` }}>
           {events.map((event, idx) => (
             <EventCard key={idx} event={event} onClick={() => setShow({ toggle: true, event: event })} />
-          ))}
+            ))}
         </div>
       </div>
+      <EventModal showEvent={showEvent} setShow={setShow}/>
+    </div>
+  )
+}
 
-      {/* pop-up screen for showing complete selected event's information */}
+export default Events;  
+
+const EventModal = ({ showEvent, setShow }) => {
+
+  return (
+    <>
+    {/* pop-up screen for showing complete selected event's information */}
       <Modal
         show={showEvent.toggle}
         onHide={() => setShow({ toggle: false, event: {} })}
@@ -89,8 +99,8 @@ function Events({ height }) {
               {/* Bootstrap listgroup to show the event information */}
               <ListGroup variant="flush">
                 <ListGroup.Item className="pop-info">Organizer: {showEvent.event.username}</ListGroup.Item>
-                <ListGroup.Item className="pop-info">Date: {showEvent.event.start_date === showEvent.event.end_date ? `${showEvent.event.start_date}` : `${showEvent.event.start_date}` + "-" + `${showEvent.event.end_date}`}</ListGroup.Item>
-                <ListGroup.Item className="pop-info">Time: {showEvent.event.start_time} - {showEvent.event.end_time}</ListGroup.Item>
+                <ListGroup.Item className="pop-info">Date: {showEvent.event.start_date === showEvent.event.end_date ? `${showEvent.event.start_date}` : `${showEvent.event.start_date}` + "  to  " + `${showEvent.event.end_date}`}</ListGroup.Item>
+                <ListGroup.Item className="pop-info">Time: {showEvent.event.start_time}&nbsp;-&nbsp;{showEvent.event.end_time}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Venue: {showEvent.event.venue}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Maximum Number of Participant: {showEvent.event.capacity === null ? "Unlimited" : `${showEvent.event.capacity}`}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Fee: {showEvent.event.ticket === 0 ? "Free" : `${showEvent.event.ticket}`}</ListGroup.Item>
@@ -127,8 +137,8 @@ function Events({ height }) {
           </Row>
         </Modal.Body>
       </Modal>
-    </div >
-  );
+    </>
+  )
 }
 
-export default Events;
+export { EventModal }
