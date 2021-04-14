@@ -541,8 +541,8 @@ app.post('/event_pic', upload.single('img'),function(req, res){
                             console.log(err);
                         }
                     });
-                    res.status(200).send("ok");
                 }
+                res.status(200).send("ok");
             });
         }
         else{
@@ -704,7 +704,7 @@ app.get('/event/:eID',function(req, res){
                 var imageAsBase64 = 'data:image/' + pwd.extname(result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
                 result[0].img_loc = imageAsBase64;
             }catch{
-                result[0].img_loc = "";
+                result[0].img_loc = 'data:image/' + pwd.extname('empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
             }
             res.status(200).send(result);
         }
@@ -729,7 +729,7 @@ app.get('/user_events/:uID', function(req, res){
                 var imageAsBase64 = 'data:image/' + pwd.extname(result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
                 result[0].img_loc = imageAsBase64;
             }catch{
-                result[0].img_loc = "";
+                result[0].img_loc = 'data:image/' + pwd.extname('empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
             }
             res.status(200).send(result);
         }
@@ -775,7 +775,7 @@ app.get('/user', function(req, res) {
                     var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
                     result.img_loc = imageAsBase64;
                 }catch{
-                    result.img_loc = "";
+                    result.img_loc = 'data:image/' + pwd.extname('empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
                 }
                 res.status(200).send(result);
             }else{
