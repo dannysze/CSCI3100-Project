@@ -638,8 +638,20 @@ app.get('/search_events', function(req, res){
         if (err) throw err;
 
         if(result.length > 0){
+            for(let i in result){
+                try{
+                    var imageAsBase64 = 'data:image/' + pwd.extname("uploads/" + result[i].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[i].img_loc, 'base64');
+                    result[i].img_loc = imageAsBase64;
+                }catch{
+                    result[i].img_loc = 'data:image/' + pwd.extname('uploads/empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
+                }
+                // console.log(result[i])
+                // console.log("______________________________________________________________-");
+            }
+            // console.log(result);
+            
+            
             res.status(200).send(result);
-            console.log(result);
         }
         else{
             res.status(404).send("No events");
@@ -674,6 +686,16 @@ app.get('/filter_events', function(req, res){
             if (err) throw err;
     
             if(result.length > 0){
+                for(let i in result){
+                    try{
+                        var imageAsBase64 = 'data:image/' + pwd.extname("uploads/" + result[i].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[i].img_loc, 'base64');
+                        result[i].img_loc = imageAsBase64;
+                    }catch{
+                        result[i].img_loc = 'data:image/' + pwd.extname('uploads/empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
+                    }
+                    // console.log(result[i])
+                    // console.log("______________________________________________________________-");
+                }
                 res.status(200).send(result);
                 console.log(result);
             }
