@@ -59,7 +59,7 @@ describe('test http requests', ()=>{
         it('It should not get any events because the user has not joined any events', (done) => {
             const uID = 100;
             chai.request(server).get('/joined_events/' + uID).end((err, response) => {
-                response.should.have.status(200);
+                response.should.have.status(400);
                 response.text.should.be.eq("No events Found");
                 done();
             });
@@ -86,20 +86,20 @@ describe('test http requests', ()=>{
                 done();
             });
         });
-    //     it('Should succesfully sign up a new user and return a token', (done) => {
-    //         const user = {
-    //             username: "testing_acc",
-    //             email: "testing@email.com",
-    //             password: "123456",
-    //             type: 0
-    //         }
-    //         chai.request(server).post('/signup').send(user).end((err, response) => {
-    //             response.should.have.status(200);
-    //             response.body.should.be.a('object');
-    //             // console.log(response);
-    //             done();
-    //         });
-    //     });
+        it('Should succesfully sign up a new user and return a token', (done) => {
+            const user = {
+                username: "testing_acc",
+                email: "testing@email.com",
+                password: "123456",
+                type: 0
+            }
+            chai.request(server).post('/signup').send(user).end((err, response) => {
+                response.should.have.status(200);
+                response.body.should.be.a('object');
+                // console.log(response);
+                done();
+            });
+        });
     });
 
     describe('test /login for users to login', ()=>{
@@ -183,18 +183,18 @@ describe('test http requests', ()=>{
             });
         });
 
-    //     it('Should enrol the user in the given event', (done) => {
-    //         const form = {
-    //             user_id: 65,
-    //             event_id: 6
-    //         }
-    //         chai.request(server).post('/join_event').send(form).end((err, response) => {
-    //             // console.log(response);
-    //             response.should.have.status(200);
-    //             response.text.should.be.eq("Joined Activity, transaction done");
-    //             done();
-    //         });
-    //     });
+        it('Should enrol the user in the given event', (done) => {
+            const form = {
+                user_id: 65,
+                event_id: 6
+            }
+            chai.request(server).post('/join_event').send(form).end((err, response) => {
+                // console.log(response);
+                response.should.have.status(200);
+                response.text.should.be.eq("Joined Activity, transaction done");
+                done();
+            });
+        });
     });
 
     
@@ -306,19 +306,19 @@ describe('test http requests', ()=>{
             });
         });
 
-        // it('Should add the user account balance', (done) => {
-        //     const form = {
-        //         user_id: 65,
-        //         card_id: 1,
-        //         card_pw: "632926491938"
-        //     }
-        //     chai.request(server).post('/add_value').send(form).end((err, response) => {
-        //         // console.log(response);
-        //         response.should.have.status(200);
-        //         response.body.should.have.property('success');
-        //         done();
-        //     });
-        // });
+        it('Should add the user account balance', (done) => {
+            const form = {
+                user_id: 65,
+                card_id: 1,
+                card_pw: "632926491938"
+            }
+            chai.request(server).post('/add_value').send(form).end((err, response) => {
+                // console.log(response);
+                response.should.have.status(200);
+                response.body.should.have.property('success');
+                done();
+            });
+        });
     });
     describe('get public events by /filter_events with search criteria', ()=>{
         it('It should get all the events with cost at most 1000 which occur between 2021-04-01 and 2021-04-30 with category "Whole-person Development" with name having "mother as substring"', (done) => {
