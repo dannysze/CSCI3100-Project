@@ -44,7 +44,7 @@ const SearchResultCard = ({ event = {
                 <div className="SR-title">{event.name}</div>
                 {/* the container for the information of the event in result card */}
                 <div className="SR-info-container">
-                    <div className="SR-Organizer">{event.organizer}</div>
+                    <div className="SR-Organizer">{event.username}</div>
                     <div className="SR-Date">Date:&nbsp;{event.start_date}</div>
                     <div className="SR-Time">Time:&nbsp;{event.start_time}</div>
                     <div className="SR-Venue">Venue:&nbsp;{event.venue}</div>

@@ -44,9 +44,11 @@
 /* modify the style on the title of the event in result card */
 .SR-title{
     /* border:solid; */
-    height:80px;
+    /* height:80px; */
+    white-space: nowrap;
+    text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     word-break: break-word;
     font-size: 25px;
     font-style: oblique;

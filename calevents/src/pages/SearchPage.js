@@ -41,7 +41,7 @@ const SearchPage = () => {
     'max': 0,
     'category': []
   }
-  const categories = ['Academic', 'Sport', 'Music', 'Health', 'Festival']
+  const categories = ['Academic', 'Sport', 'Music', 'Health', 'Festival', 'Career', 'Others']
 
   const [startSelectedDate, setStartSelectedDate] = useState(new Date());
   const [endSelectedDate, setEndSelectedDate] = useState(new Date());

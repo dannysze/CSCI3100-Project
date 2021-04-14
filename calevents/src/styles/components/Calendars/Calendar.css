@@ -227,7 +227,7 @@
 }
 
 
-.task-- {
+.task--Others {
   /* border-left: none; */
   border-left-color: #ff8018;
   color: #ffffff;
@@ -272,4 +272,6 @@
   font-style: oblique;
   display: inline-block;
   margin-right: 3px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

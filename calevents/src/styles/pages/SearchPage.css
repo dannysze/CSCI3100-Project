@@ -26,7 +26,7 @@
     position:relative;
     /* height:200px; */
     min-height: 200px;
-    width: 1000px;
+    width: 1200px;
     /* border:solid; */
     border-radius: 11px;
     margin-left: auto;
@@ -181,7 +181,7 @@
     font-weight: 350;
     height:30px;
     /* border:solid; */
-    width:80%;
+    width:96%;
     background-color: rgb(65, 65, 99, 0.2);
     /* border-top-right-radius:11px ; */
     border-radius: 11px;
@@ -201,7 +201,7 @@
 
 .Search-results {
     padding: 0;
-    min-width: 1000px;
-    width: 1000px;
+    min-width: 1200px;
+    width: 1200px;
     margin: 0 auto;
 }
