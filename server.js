@@ -314,7 +314,7 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
 // tested
 app.get('/joined_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
-    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, venue, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
+    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, venue, ticket, TEMP.img_loc as img_loc, U.username as organizer, U.user_id as organizer_id FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
         
@@ -389,35 +389,36 @@ app.post('/join_event', function(req, res){
                                         INSERT INTO csci3100.Event_Join (user_id, event_id) VALUES(`+ user_id +`, `+ event_id +`);`;
                                         con.query(sql, function (err, result){
                                             if (err) throw err;
-                                            res.status(200).send("Joined Activity, transaction done");
+                                            res.status(200).send({success:"Joined Activity, transaction done"});
                                             // console.log("Joined Activity, transaction done");
                                         });
                                     }
                                     else{
-                                        res.status(400).send("Cannot join activity");
+                                        if(usr_bal<cost) res.status(400).send({error:"Not enough account balance.You may redeem gift cards to top up."});
+                                        if(old_capacity<=0) res.status(400).send({error:"The event is full"});
                                         // console.log("Cannot join activity");                        
                                     }
                                 }
                                 else{
-                                    res.status(400).send("You have already enrolled in this event");
+                                    res.status(400).send({error:"You have already enrolled in this event"});
                                     // console.log("Cannot join You have already enrolled in this event"); 
                                 }
                             });
                         }
                         else{
-                            res.status(400).send("Invalid organizer");
+                            res.status(400).send({error:"Invalid organizer"});
                             console.log("Invalid organizer");
                         }
                     });
                 }
                 else{
-                    res.status(400).send("No such event or the event is not public");
+                    res.status(400).send({error:"No such event or the event is not public"});
                     // console.log("No such event or the event is not public");
                 } 
             });
         }
         else{
-            res.send("Invalid User");
+            res.send({error:"Invalid User"});
             console.log("Invalid User");
         }
     });    
@@ -429,7 +430,7 @@ app.post('/join_event', function(req, res){
 // Editing all information of an event except ticket and organizer
 // Change image location will be handled separately.
 var textOnly = multer();
-app.post('/edit_event', function(req, res) {
+app.post('/edit_event', textOnly.none(), function(req, res) {
 // app.post('/edit_event', textOnly.none(), function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
@@ -818,8 +819,10 @@ app.post('/refund/:eID', function(req, res){
         if (result1.length > 0)
             con.query(sql2, [req.params['eID']], function(err, result2){
                 if (err) throw err;
-                if (result2.length > 0)
-                    if (result2[0].allow_refund && result2[0].days_for_refund > 0){
+                if (result2.length > 0){
+                    let current_datetime = new Date();
+                    let start_datetime = new Date(result2[0].start_date + ' ' + result2[0].start_time);
+                    if (result2[0].allow_refund && (result2[0].days_for_refund > 0) && (current_datetime <= start_datetime)){
                         var sql3 = `DELETE FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?`;
                         con.query(sql3, [req.body['user_id'], req.params['eID']], function(err, result3){
                             if (err) throw err;
@@ -839,6 +842,7 @@ app.post('/refund/:eID', function(req, res){
                         })
                     }else
                         res.status(400).send({error: 'The event is not refundable.'});
+                }
             })
         else
             res.status(400).send({error: 'You have not joined this event.'});
@@ -994,7 +998,7 @@ app.delete('/user_events/:eID', function(req, res){
                                 for(let i in result){
                                     send_email(result[i].email, subject, content);
                                 }
-                                res.send("Event deleted, refund is done, email is sent to participants");
+                                res.status(200).send({error:"Event deleted, refund is done, email is sent to participants"});
                             });
                         });
                     }
@@ -1012,7 +1016,7 @@ app.delete('/user_events/:eID', function(req, res){
                                     }
                                 });
                             }
-                            res.send("Event deleted");
+                            res.status(200).send({success:"Event deleted"});
                         });
                     }
 
@@ -1020,7 +1024,7 @@ app.delete('/user_events/:eID', function(req, res){
             });
         }
         else{
-            res.send("Invalid event ID");
+            res.status(400).send({error:"Invalid event ID"});
         }
     });
 });
