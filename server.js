@@ -778,8 +778,10 @@ app.post('/refund/:eID', function(req, res){
         if (result1.length > 0)
             con.query(sql2, [req.params['eID']], function(err, result2){
                 if (err) throw err;
-                if (result2.length > 0)
-                    if (result2[0].allow_refund && result2[0].days_for_refund > 0){
+                if (result2.length > 0){
+                    let current_datetime = new Date();
+                    let start_datetime = new Date(result2[0].start_date + ' ' + result2[0].start_time);
+                    if (result2[0].allow_refund && (result2[0].days_for_refund > 0) && (current_datetime <= start_datetime)){
                         var sql3 = `DELETE FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?`;
                         con.query(sql3, [req.body['user_id'], req.params['eID']], function(err, result3){
                             if (err) throw err;
@@ -799,6 +801,7 @@ app.post('/refund/:eID', function(req, res){
                         })
                     }else
                         res.status(400).send({error: 'The event is not refundable.'});
+                }
             })
         else
             res.status(400).send({error: 'You have not joined this event.'});
