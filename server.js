@@ -653,6 +653,7 @@ app.get('/filter_events', function(req, res){
     var max_cost = req.query['max'];
     var start_date = req.query['start_date'];
     var end_date = req.query['end_date'];
+    var name = req.query['name'];
 
 
     // console.log(category);
@@ -660,13 +661,13 @@ app.get('/filter_events', function(req, res){
     console.log(arr);
     var str = '('
     if(arr.length > 0){
-        for(i in str){
+        for(let i in arr){
             str += '\'' + arr[i] + '\',';
         }
         str = str.substring(0, str.length - 1);
         str += ')'; 
-        // console.log(str);
-        var sql = `SELECT * FROM csci3100.Event WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND category IN `+str+` ORDER BY start_date ASC;`;
+        console.log(str);
+        var sql = `SELECT * FROM csci3100.Event WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND name LIKE '%`+ name +`%' AND category IN `+str+` ORDER BY start_date ASC;`;
         console.log(sql);
         con.query(sql, [min_cost, max_cost, start_date, end_date, str], function (err, result) {
             if (err) throw err;
@@ -682,7 +683,6 @@ app.get('/filter_events', function(req, res){
         });
     }
     else{
-        str = "()";
         res.status(404).send("No events");
     }
 
