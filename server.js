@@ -345,7 +345,7 @@ app.post('/join_event', function(req, res){
     var org_id;
     var org_bal;
 
-    // check if user exit
+    // check if user exist
     var sql = `SELECT account_balance FROM csci3100.User where user_id = `+ user_id +`;`;
     con.query(sql, function (err, result){
         if (err) throw err;
@@ -648,13 +648,14 @@ app.get('/search_events', function(req, res){
     });
 });
 
+// getting events with given search criteria
+// tested
 app.get('/filter_events', function(req, res){
     var min_cost = req.query['min'];
     var max_cost = req.query['max'];
     var start_date = req.query['start_date'];
     var end_date = req.query['end_date'];
     var name = req.query['name'];
-
 
     // console.log(category);
     var arr = JSON.parse(req.query.category);
@@ -666,9 +667,9 @@ app.get('/filter_events', function(req, res){
         }
         str = str.substring(0, str.length - 1);
         str += ')'; 
-        console.log(str);
-        var sql = `SELECT * FROM csci3100.Event WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND name LIKE '%`+ name +`%' AND category IN `+str+` ORDER BY start_date ASC;`;
-        console.log(sql);
+        // console.log(str);
+        var sql = `SELECT * FROM csci3100.Event WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND name LIKE '%`+ name +`%' AND category IN `+str+` AND visible = 1 ORDER BY start_date ASC;`;
+        // console.log(sql);
         con.query(sql, [min_cost, max_cost, start_date, end_date, str], function (err, result) {
             if (err) throw err;
     
@@ -682,6 +683,7 @@ app.get('/filter_events', function(req, res){
     
         });
     }
+    // No category chosen
     else{
         res.status(404).send("No events");
     }
