@@ -267,18 +267,18 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
               <span className="create-event-form--input-prepend flex-center" style={{padding: '9px 8px'}}>
                 <CashStack />
               </span>
-              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} min="0" value={event.ticket} />
+              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} min="0" value={event.ticket} disabled={edit}/>
               <span className="create-event-form--input-append">
                 <label className="create-event-form--input-label">
-                  <input type="checkbox" name="free" onChange={onChangeHandler} checked={event.ticket === 0}/>&nbsp;Free
+                  <input type="checkbox" name="free" onChange={onChangeHandler} checked={event.ticket === 0} disabled={edit}/>&nbsp;Free
                 </label>
               </span>
             </div>
             <div className="create-event-form--input create-event-form--checkbox" style={{gridRow: '3', gridColumn: '2', paddingRight: '0px'}}>
-              <input type="number" name="refund_days" placeholder="Refund before" onChange={onChangeHandler} style={{paddingLeft: '16px'}} min="0" />
+              <input type="number" name="refund_days" placeholder="Refund before" onChange={onChangeHandler} style={{paddingLeft: '16px'}} min="0" disabled={edit}/>
               <span className="create-event-form--input-append">
                 <label className="create-event-form--input-label">
-                  <input type="checkbox" name="refund" onChange={onChangeHandler} value={1} checked={event.refund > 0} />&nbsp;Allow refund
+                  <input type="checkbox" name="refund" onChange={onChangeHandler} value={1} checked={event.refund > 0} disabled={edit}/>&nbsp;Allow refund
                 </label>
               </span>
             </div>

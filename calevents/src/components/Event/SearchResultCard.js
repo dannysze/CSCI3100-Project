@@ -4,6 +4,7 @@ import "../../styles/components/Event/SearchResultCard.css"
 import PropTypes from 'prop-types';
 import { FormButton } from "../CustomButton.js";
 import { Container, Row, Col, Modal, ListGroup, Button, ListGroupItem } from 'react-bootstrap'
+import { EventModal } from './Events'
 
 
 const SearchResultCard = ({ event = {
@@ -23,6 +24,10 @@ const SearchResultCard = ({ event = {
     refund_days: 0,
     category: '',
   }, onClick }) => {
+
+    const [showMore, setShowMore] = useState({ 'toggle': false , 'event': {}});
+
+    // console.log(event.start_time, event.end_time);
 
     return (
         // the container for the result card
@@ -48,7 +53,7 @@ const SearchResultCard = ({ event = {
                 {/* the column container for More button */}
                 <Col className="SR-More-Con flex-center" md={6}>
                     {/* imported more button */}
-                    <FormButton content="More" />
+                    <FormButton content="More" clickHandler={() => setShowMore({'toggle': true, 'event': event})} />
                 </Col>
                 {/* the column container for Join button */}
                 <Col className="SR-Join-Con flex-center" md={6}>
@@ -57,7 +62,7 @@ const SearchResultCard = ({ event = {
                 </Col>
             </Row>
 
-
+            <EventModal showEvent={showMore} setShow={setShowMore} />
         </div>
     )
 }
