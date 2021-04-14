@@ -240,6 +240,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
                 onChangeHandler={(date) => {setEndSelectedDate(date)}}
                 startDate={endSelectedDate}
                 placeholder="Select End Time"
+                minDate={startSelectedDate}
               />
             </div>
           </div>

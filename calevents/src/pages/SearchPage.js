@@ -140,6 +140,7 @@ const SearchPage = () => {
                 startDate={endSelectedDate}
                 placeholder="Select Start Time"
                 showTime={false}
+                minDate={startSelectedDate}
               />
             </div>
           </Col>

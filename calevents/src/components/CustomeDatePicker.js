@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const CustomDatePicker = ({ onChangeHandler, placeholder, startDate, showTime = true }) => {
+const CustomDatePicker = ({ onChangeHandler, placeholder, startDate, showTime = true, minDate = false}) => {
 
   return (
     <DatePicker
@@ -11,6 +11,7 @@ const CustomDatePicker = ({ onChangeHandler, placeholder, startDate, showTime = 
       dateFormat={`MM/dd/yyyy  ${showTime ? 'hh:mmaa' : ''}`}
       placeholderText={placeholder}
       showTimeInput={showTime}
+      minDate={minDate}
     />
   )
 }
