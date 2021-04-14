@@ -701,10 +701,10 @@ app.get('/event/:eID',function(req, res){
         if(result.length > 0){
             //send base64 url for the image
             try{
-                var imageAsBase64 = 'data:image/' + pwd.extname(result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
+                var imageAsBase64 = 'data:image/' + pwd.extname("uploads/" + result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
                 result[0].img_loc = imageAsBase64;
             }catch{
-                result[0].img_loc = 'data:image/' + pwd.extname('empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
+                result[0].img_loc = 'data:image/' + pwd.extname('uploads/empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
             }
             res.status(200).send(result);
         }
@@ -726,10 +726,10 @@ app.get('/user_events/:uID', function(req, res){
         if(result.length > 0){
             //send base64 url for the image
             try{
-                var imageAsBase64 = 'data:image/' + pwd.extname(result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
+                var imageAsBase64 = 'data:image/' + pwd.extname("uploads/"+result[0].img_loc).substr(1) + ';base64,' + fs.readFileSync('uploads/'+result[0].img_loc, 'base64');
                 result[0].img_loc = imageAsBase64;
             }catch{
-                result[0].img_loc = 'data:image/' + pwd.extname('empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
+                result[0].img_loc = 'data:image/' + pwd.extname('uploads/empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
             }
             res.status(200).send(result);
         }
@@ -775,7 +775,7 @@ app.get('/user', function(req, res) {
                     var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
                     result.img_loc = imageAsBase64;
                 }catch{
-                    result.img_loc = 'data:image/' + pwd.extname('empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
+                    result.img_loc = 'data:image/' + pwd.extname('uploads/empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
                 }
                 res.status(200).send(result);
             }else{
