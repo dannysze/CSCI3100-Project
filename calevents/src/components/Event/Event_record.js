@@ -17,6 +17,8 @@ const Eventrecord = ({ event, onClick, index }) => {
     const [height, setHeight] = useState('');
     const [deleted, setDeleted] = useState(false);
     useEffect(() => {
+        console.log(user.type);
+        console.log(event.visible);
         setHeight(document.getElementsByClassName('record-info')[index].scrollHeight)
     }, [])
 
@@ -54,17 +56,18 @@ const Eventrecord = ({ event, onClick, index }) => {
 
     // DELETE events API 
     const deleteEvent = async () => {
-        if (window.confirm('Are you sure to delete this event?')) {
-            fetch(getaddr()+'user_events/'+event.event_id, {
-                method: 'DELETE'
-            }).then(res => {
-                res.json()
-            }).then(res => {
-                console.log(res)
-            }).then(_ => {
-                window.location.reload()
-            })
-        }
+        let r = window.confirm("Are you sure to delete this event?");
+        if (r==false) return;
+        let res = await fetch(getaddr()+'user_events/'+event.event_id,  {
+            method: 'Delete',
+            headers: {
+                'auth': token,
+            },
+        });
+        let result = await res.json();
+        if(!res.ok)alert(result['error']);
+        else alert(result['success']);
+        window.location.reload();
     }
 
     // Edit event API
@@ -76,15 +79,21 @@ const Eventrecord = ({ event, onClick, index }) => {
     // User request for refunding
     const userRefund = async (e) => {
         e.preventDefault()
-        let data = new FormData();
-        data.append('user_id', user.user_id);
-        await fetch(`${getaddr()}refund/${event.event_id}`, {
+        let r = window.confirm("You sure you want to quit?");
+        if (r==false) return;
+        console.log(user.user_id);
+        let res = await fetch(`${getaddr()}refund/${event.event_id}`, {
             method: 'POST',
             headers: {
                 'auth': token,
+                'Content-Type': 'application/json',
             },
-            body: data
+            body: JSON.stringify({user_id:user.user_id}),
         });
+        let result = await res.json();
+        if(!res.ok)alert(result['error']);
+        else alert(result['success']);
+
     }
 
     const toggleEditForm = (event) => {
@@ -114,12 +123,15 @@ const Eventrecord = ({ event, onClick, index }) => {
                 </div>
                 <hr style={{ margin: '.5em' }} />
                 <div className="re-description-head">Description:</div>
-                <div className="description">{event.description}</div>
+                <div className="description">{!event.description?'No description':event.description}</div>
                 {/* the buttons for delete(cancel) the joined event, and edit the joined event */}
                 <div className="record-button-group">
-                    {(event.visible === 1 && user.type === 0) ? <FormButton classes="record-button" clickHandler={userRefund} content="refund" disabled={true} /> : <FormButton classes="record-button" clickHandler={deleteEvent} content="delete" />
-                    }
+                    {(event.organizer_id!=user.user_id) ? <FormButton classes="record-button" clickHandler={userRefund} content={event.ticket!=0?"Refund":"Quit"} disabled={true} /> 
+                    :<>
+                    <FormButton classes="record-button" clickHandler={deleteEvent} content="delete" />
                     <FormButton classes="record-button" clickHandler={toggleEditForm} content="edit" />
+                    </> 
+                    }
                 </div>
             </div>
         </li>

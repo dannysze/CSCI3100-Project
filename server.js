@@ -429,7 +429,7 @@ app.post('/join_event', function(req, res){
 // Editing all information of an event except ticket and organizer
 // Change image location will be handled separately.
 var textOnly = multer();
-app.post('/edit_event', function(req, res) {
+app.post('/edit_event', textOnly.none(), function(req, res) {
 // app.post('/edit_event', textOnly.none(), function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
