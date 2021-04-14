@@ -48,11 +48,11 @@ const SearchPage = () => {
   const [searchInfo, setSearchInfo] = useState(initialSearchInfo);
   const history = useHistory();
 
+  const [searchResult, setSearchResult] = useState([]); 
   useEffect(() => {
     document.title = 'Search Page';
     
-  }, [searchInfo, history])
-
+  }, [searchInfo, history, searchResult]);
 
 
   const onChangeHandler = (event) => {
@@ -78,7 +78,7 @@ const SearchPage = () => {
   const submitSearch = async (event) => {
     const params = new URLSearchParams();
 
-    params.append('event_name', searchInfo['event_name']);
+    params.append('name', searchInfo['event_name']);
     params.append('min', searchInfo['min']);
     params.append('max', searchInfo['max']);
     params.append('start_date', startSelectedDate.toJSON().split('T')[0]);
@@ -86,7 +86,7 @@ const SearchPage = () => {
     params.append('category', JSON.stringify(searchInfo['category']));
     console.log(params.toString());
 
-    fetch(getaddr()+'filter_events'+params.toString(), {
+    fetch(getaddr()+'filter_events/?'+params.toString(), {
       headers: {
         'content-type': 'application/json',
         'Accept': 'application/json',
@@ -95,6 +95,7 @@ const SearchPage = () => {
       return response.json();
     }).then(data => {
       console.log(JSON.stringify(data));
+      setSearchResult(data);
     })
   }
 
@@ -154,10 +155,12 @@ const SearchPage = () => {
         </Row>
       </Row>
       <Row className="Search-results">
-        <Col xs={6} md={4}><SearchResultCard /></Col>
-        <Col xs={6} md={4}><SearchResultCard /></Col>
-        <Col xs={6} md={4}><SearchResultCard /></Col>
-        <Col xs={6} md={4}><SearchResultCard /></Col>
+        {searchResult.length === 0 ? <h1>No matching results</h1> : 
+          searchResult.map((event, index) => (
+            <Col xs={6} md={4}>
+              <SearchResultCard event={event} key={index} />
+            </Col>
+          ))}
       </Row>
       <Footer />
     </Container>

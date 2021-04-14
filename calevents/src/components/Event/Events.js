@@ -98,7 +98,7 @@ const EventModal = ({ showEvent, setShow }) => {
     {/* pop-up screen for showing complete selected event's information */}
       <Modal
         show={showEvent.toggle}
-        onHide={() => {setShow({ toggle: false, event: {} })}}
+        onHide={() => setShow({ toggle: false, event: {} })}
         dialogClassName='custom-modal'
         aria-labelledby='example-custom-modal-styling-title'
       >
