@@ -428,7 +428,8 @@ app.post('/join_event', function(req, res){
 // Editing all information of an event except ticket and organizer
 // Change image location will be handled separately.
 var textOnly = multer();
-app.post('/edit_event', textOnly.none(), function(req, res) {
+app.post('/edit_event', function(req, res) {
+// app.post('/edit_event', textOnly.none(), function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
@@ -446,6 +447,9 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
     var category = req.body['category'];
     var event_id = req.body['event_id'];
 
+    var parti_no;
+    var old_capacity;
+
     var sql = `SELECT user_id FROM csci3100.User where user_id = `+ user_id +`;`;
     con.query(sql, function (err, result) {
         if (err) throw err;
@@ -459,22 +463,45 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
                 
                 if(result.length > 0){
                     org_id = result[0].organizer;
-                    // old_capacity = result[0].capacity;
-                    if(org_id == user_id){
-                        sql = `UPDATE csci3100.Event SET name = ?, start_date = ?,start_time = ?, end_date = ?, end_time = ?, visible = ?, repeat_every_week = ?, venue = ?, capacity = ?, description = ?, allow_refund = ?, days_for_refund = ?, category = ? WHERE event_id = ?`;
-                        
-                        // console.log(sql);
-                        con.query(sql, [event_name, start_date, start_time, end_date, end_time, visible, repeat, venue, capacity, desc, refund, refund_days, category, event_id], function (err, result){
-                            if (err) throw err;
+                    old_capacity = result[0].capacity;
 
-                            res.status(200).send("ok");
-                            // console.log(result);
-                        });
-                    }
-                    else{
-                        res.status(403).send("You are not allowed to edit this event");
-                        // console.log("You are not allowed to edit this event");                            
-                    }
+                    
+                        // find the number of participants
+                    sql = `SELECT COUNT(user_id) AS count FROM csci3100.Event_Join WHERE event_id = ?`;
+
+                    con.query(sql, [event_id], function(err, result){
+                        if (err) throw err;
+
+                        if(result.length > 0){
+                            parti_no = result[0].count;
+                            // console.log(parti_no);
+                            if(org_id == user_id){
+                                if(capacity >= parti_no){
+                                    sql = `UPDATE csci3100.Event SET name = ?, start_date = ?,start_time = ?, end_date = ?, end_time = ?, visible = ?, repeat_every_week = ?, venue = ?, capacity = ?, description = ?, allow_refund = ?, days_for_refund = ?, category = ? WHERE event_id = ?`;
+                                    
+                                    // console.log(sql);
+                                    // console.log(capacity - parti_no);
+                                    con.query(sql, [event_name, start_date, start_time, end_date, end_time, visible, repeat, venue, capacity - parti_no, desc, refund, refund_days, category, event_id], function (err, result){
+                                        if (err) throw err;
+        
+                                        res.status(200).send("ok");
+                                        // console.log(result);
+                                    });
+                                }
+                                else{
+                                    res.status(400).send("The new capacity should be larger than the number of participants now");    
+                                }
+                            }
+                            else{
+                                res.status(403).send("You are not allowed to edit this event");
+                                // console.log("You are not allowed to edit this event");                            
+                            }
+                        }
+                        else{
+                            res.status(404).send("This event does not exist");
+                        }                    
+                    });
+                    
                 }
                 else{
                     res.status(404).send("This event does not exist");
@@ -872,8 +899,8 @@ app.delete('/user_events/:eID', function(req, res){
             ori_ticket = result[0].ticket;
             organizer = result[0].organizer;
             oldpath = result[0].img_loc;
-            var sql = `SELECT user_id FROM csci3100.Event_Join WHERE event_id = ?;`;
-            con.query(sql, [req.params['eID']], function (err, result) {
+            var sql = `SELECT user_id FROM csci3100.Event_Join WHERE event_id = ? AND NOT(user_id = ?) ;`;
+            con.query(sql, [req.params['eID'], organizer], function (err, result) {
                 if (err) throw err;
                 
                 // construct the list of participant user_id
