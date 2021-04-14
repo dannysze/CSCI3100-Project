@@ -116,7 +116,7 @@ const SearchPage = () => {
           {priceRange.map((price, index) => (
             <Col xs key={index}>
               <input type="radio" className="p-choice-1" name="price" value={`${price.min}-${price.max}`} onChange={onChangeHandler}></input>
-              <label for="p-choice-1">&nbsp;{price.name}</label><br></br>
+              <label htmlFor="p-choice-1">&nbsp;{price.name}</label><br></br>
             </Col>
           ))}
         </Row>
@@ -149,7 +149,7 @@ const SearchPage = () => {
           {categories.map((category, index) => (
             <Col xs key={index}>
               <input type="checkbox" className="c-choice-1" value={category} name="category" onChange={onChangeHandler}></input>
-              <label for="c-choice-1">&nbsp;{category}</label><br></br>
+              <label htmlFor="c-choice-1">&nbsp;{category}</label><br></br>
             </Col>
           ))}
         </Row>

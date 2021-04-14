@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 5px 0;
+  /* padding: 1px 0; */
   background-color: rgb(65, 65, 99);
   color: aliceblue;
   width: 100%

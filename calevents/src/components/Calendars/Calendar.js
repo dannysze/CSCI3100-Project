@@ -225,7 +225,7 @@ const Calendar = ({ heightHandler }) => {
             display: display
           }
           return (
-            <CalendarEvent key={idx} classes={`task--${event.category}`} styles={style} name={event.name} />
+            <CalendarEvent key={idx} classes={`task--${event.category.split(' ')[0]}`} styles={style} name={event.name} />
           )
         })
       )
@@ -327,13 +327,13 @@ const Calendar = ({ heightHandler }) => {
         {stickEvents()}
         {stickTags()}
       </div>
-      <div>
-          <div style={{textAlign:'right', fontWeight: "350", fontStyle:"oblique"}}>*<b>Click</b> to check events of the day.<b>Double Click</b>  to create public event (Only for organizer).</div>
-          {['Sport', 'Music', 'Academic', 'Health', 'Festival'].map((item, index) => (
-                    <div style={{  fontWeight: "350", fontStyle:"oblique"}}>
-                      <span className={`task--${item} dot`}></span> {item}
+      <div className="flex-center" style={{justifyContent: 'space-between', fontSize: '.8em'}}>
+          {['Sport', 'Music', 'Academic', 'Health', 'Festival', 'Career-related', 'Whole-person development', 'Others'].map((item, index) => (
+                    <div className="calendar-labels">
+                      <span className={`task--${item === 'Others' ? '' : item} dot`}></span> {item}
                     </div>
             ))}     
+          <div classNames="calendar-tips">*<b>Hover</b> to check events of the day. <b>Double Click</b>  to create public event (Only for organizer).</div>
       </div>
       <Modal
         show={eventCardModal['toggle']}

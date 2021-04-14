@@ -41,7 +41,7 @@ const SearchResultCard = ({ event = {
                     <img src={event.img_loc} alt="event image"></img>
                 </div>
                 {/* the part that show the title */}
-                <div className="SR-title">{event.title}</div>
+                <div className="SR-title">{event.name}</div>
                 {/* the container for the information of the event in result card */}
                 <div className="SR-info-container">
                     <div className="SR-Organizer">{event.organizer}</div>
@@ -49,15 +49,6 @@ const SearchResultCard = ({ event = {
                     <div className="SR-Time">Time:&nbsp;{event.start_time}</div>
                     <div className="SR-Venue">Venue:&nbsp;{event.venue}</div>
                 </div>
-                {/* the row container for the buttons */}
-                {/* <Row> */}
-                    {/* the column container for More button */}
-                    {/* <Col className="SR-More-Con flex-center" md={12}> */}
-                        {/* imported more button */}
-                        {/* <FormButton content="More" clickHandler={() => setShowMore({'toggle': true, 'event': event})} /> */}
-                    {/* </Col> */}
-                {/* </Row> */}
-
             </div>
             <EventModal showEvent={showMore} setShow={setShowMore} />
         </>

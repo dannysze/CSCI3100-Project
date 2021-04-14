@@ -144,7 +144,7 @@ const Schedule = () => {
       console.log(scheduleEvent)
       console.log(scheduleEvent.category)
       return (
-        <section className={`block--events task task--${scheduleEvent.category}`} style={style}>
+        <section className={`block--events task task--${scheduleEvent.category.split(' ')[0]}`} style={style}>
           <div className="block--events-title">{scheduleEvent.name}</div>
           <div className="">{`${startHour}:${('0'+startMinute).slice(-2)} - ${endHour}:${('0'+endMinute).slice(-2)}`}</div>
         </section>
@@ -212,7 +212,7 @@ const Schedule = () => {
       // console.log(style);
       // console.log(allDayEventRecord)
       return (
-        <section className={`task task--${allDayEvent.category} all-day-events--bar`} style={style}>{allDayEvent.name}</section>
+        <section className={`task task--${allDayEvent.category.split(' ')[0]} all-day-events--bar`} style={style}>{allDayEvent.name}</section>
       )
     })
     // console.log(scheduleInfo)

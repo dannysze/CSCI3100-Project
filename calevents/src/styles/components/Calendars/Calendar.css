@@ -19,7 +19,7 @@
 
 .calendar-header {
   text-align: center;
-  padding: 20px 0;
+  padding: 15px 0;
   /* background-image: linear-gradient(to bottom, rgb(217, 83, 79), rgb(217, 83, 79)); */
   /* background-color: rgb(217, 83, 79); */
   /* color: #fef0db; */
@@ -137,7 +137,7 @@
 }
 
 .calendar--today {
-  background-color: #ff0000;
+  background-color: #ff0000c5;
   color: #ffffff;
   font-weight: 600;
   display: inline-block;
@@ -175,7 +175,8 @@
 }
 
 .task--Sport, .task--danger {
-  border-left-color: rgba(255, 36, 5, 1);
+  border-left-color: #ff7ca1;
+  color: #ffffff;
   /* background: rgba(254, 240, 219, 0.7); */
   /* color: rgba(253, 180, 77, 0.88); */
   /* background-color: rgba(242, 36, 5, 0.9); */
@@ -183,27 +184,54 @@
 }
 
 .task--Music {
-  border-left-color: rgba(234, 114, 245, 1);
+  border-left-color: #8f4eff;
+  color: #ffffff;
   /* background-color: rgba(234, 114, 245, 0.9); */
   background: linear-gradient(to right, #a16bfe, #deb0df);
 }
 
 .task--Academic {
-  border-left-color: rgba(0, 171, 56, 1);
+  border-left-color: #43c26f;
+  color: #ffffff;
   /* background-color: rgba(0, 171, 56, 0.9); */
   background: linear-gradient(to right, #6de195, #c4e759)
 }
 
-.task--Career {
-  border-left-color: rgba(7, 185, 252, 1);
+.task--Career-related {
+  border-left-color: #3a8fff;
+  color: #ffffff;
   /* background-color: rgba(7, 185, 252, 0.9); */
-  background: linear-gradient(to right, #6cacff, #8debff)
+  background: linear-gradient(to right, #6cacff, #43dbfd);
 }
 
 .task--Festival {
-  border-left-color: rgba(255, 206, 0, 1);
+  border-left-color: #ff1352;
+  color: #ffffff;
   /* background-color: rgba(255, 206, 0, 0.9); */
-  background: linear-gradient(to right, rgb(246, 168, 255), #f1eef9)
+  /* background: linear-gradient(to right, rgb(246, 168, 255), #f1eef9) */
+  background: linear-gradient(to right, #ff4e7d, #e84b7c, #e56497, #df7bae, #fda0dd);
+}
+
+.task--Whole-person {
+  border-left-color: #ee3e27;
+  color: #ffffff;
+  /* background-color: rgba(7, 185, 252, 0.9); */
+  background: linear-gradient(to left, #ff8181,#fc614f, #ff5741);
+}
+
+.task--Health {
+  /* border-left: none; */
+  color: #929292;
+  border-left-color: #fffb23;
+  background-image: linear-gradient(to right, #fffb5a, #fcf686, #f8f2ab, #f8eea5);
+}
+
+
+.task-- {
+  /* border-left: none; */
+  border-left-color: #ff8018;
+  color: #ffffff;
+  background-image: linear-gradient(to right, #ff943c, #f4a13b, #ecbc68, #f7d169);
 }
 
 .calendar-event-modal {
@@ -228,4 +256,20 @@
   width: 13px;
   border-radius: 50%;
   display: inline-block;
+}
+
+.calendar-tips {
+  text-align: right;
+  font-weight: 350; 
+  font-style: oblique;
+  width: auto;
+  margin-left: auto;
+  text-align: right;
+}
+
+.calendar-labels {
+  font-weight: 350; 
+  font-style: oblique;
+  display: inline-block;
+  margin-right: 3px;
 }

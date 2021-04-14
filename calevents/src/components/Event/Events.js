@@ -125,7 +125,7 @@ const EventModal = ({ showEvent, setShow }) => {
               <div className="pop-up-title">{showEvent.event.name}</div>
               {/* Bootstrap listgroup to show the event information */}
               <ListGroup variant="flush">
-                <ListGroup.Item className="pop-info">Organizer: {showEvent.event.username}</ListGroup.Item>
+                <ListGroup.Item className="pop-info">Organizer: {showEvent.event.username||showEvent.event.organizer}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Date: {showEvent.event.start_date === showEvent.event.end_date ? `${showEvent.event.start_date}` : `${showEvent.event.start_date}` + "  to  " + `${showEvent.event.end_date}`}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Time: {showEvent.event.start_time}&nbsp;-&nbsp;{showEvent.event.end_time}</ListGroup.Item>
                 <ListGroup.Item className="pop-info">Venue: {showEvent.event.venue}</ListGroup.Item>
