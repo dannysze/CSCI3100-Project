@@ -301,6 +301,7 @@ const Schedule = () => {
         })}
         {stickScheduleEvents()}
       </div>
+      <div style={{textAlign:'right', fontWeight: "350", fontStyle:"oblique"}}>*<b>Click</b> to create event (Private for normal user/Public for organizer).</div>
     </div>
   )
 }
