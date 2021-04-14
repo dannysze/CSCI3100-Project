@@ -320,6 +320,20 @@ describe('test http requests', ()=>{
         //     });
         // });
     });
-
-        
+    describe('get public events by /filter_events with search criteria', ()=>{
+        it('It should get all the events with cost at most 1000 which occur between 2021-04-01 and 2021-04-30 with category "Whole-person Development" with name having "mother as substring"', (done) => {
+            chai.request(server).get('/filter_events?min=0&max=1000&start_date=2021-04-01&end_date=2021-04-30&category=["Whole-person Development"]&name=mother').end((err, response) => {
+                response.should.have.status(200);
+                response.body.should.be.a('array');
+                done();
+            });
+        });
+        it('It should get no events because no events meet the search criteria', (done) => {
+            chai.request(server).get('/filter_events?min=0&max=1000&start_date=2021-04-01&end_date=2021-04-30&category=["sports"]&name=mother').end((err, response) => {
+                response.should.have.status(404);
+                response.text.should.be.eq("No events");
+                done();
+            });
+        });
+    });      
 });
