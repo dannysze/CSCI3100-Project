@@ -222,3 +222,10 @@
   grid-template-columns: 1fr 1fr 1fr;
   grid-auto-rows: auto;
 }
+
+.dot{
+  height: 13px;
+  width: 13px;
+  border-radius: 50%;
+  display: inline-block;
+}

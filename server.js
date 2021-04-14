@@ -210,6 +210,7 @@ const multer = require('multer');
 const uuid = require('uuid').v4;
 const { DATE } = require('mysql/lib/protocol/constants/types');
 const { event } = require('jquery');
+const { start } = require('repl');
 // customize file name
 const storage = multer.diskStorage({
     // set destination of file upload
@@ -313,7 +314,7 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
 // tested
 app.get('/joined_events/:uID', function(req, res){
     var u_ID = req.params['uID'];
-    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, venue, TEMP.img_loc as img_loc, U.username as organizer FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
+    var sql = `SELECT event_id, name, start_date, start_time, end_date, end_time, description, venue, ticket, TEMP.img_loc as img_loc, U.username as organizer, U.user_id as organizer_id FROM csci3100.User U, (SELECT * FROM csci3100.Event E NATURAL JOIN csci3100.Event_Join J WHERE J.user_id = ?) TEMP WHERE U.user_id = TEMP.organizer;`
     con.query(sql, [u_ID], function(err, result){
         if (err) throw err;
         
@@ -388,35 +389,36 @@ app.post('/join_event', function(req, res){
                                         INSERT INTO csci3100.Event_Join (user_id, event_id) VALUES(`+ user_id +`, `+ event_id +`);`;
                                         con.query(sql, function (err, result){
                                             if (err) throw err;
-                                            res.status(200).send("Joined Activity, transaction done");
+                                            res.status(200).send({success:"Joined Activity, transaction done"});
                                             // console.log("Joined Activity, transaction done");
                                         });
                                     }
                                     else{
-                                        res.status(400).send("Cannot join activity");
+                                        if(usr_bal<cost) res.status(400).send({error:"Not enough account balance.You may redeem gift cards to top up."});
+                                        if(old_capacity<=0) res.status(400).send({error:"The event is full"});
                                         // console.log("Cannot join activity");                        
                                     }
                                 }
                                 else{
-                                    res.status(400).send("You have already enrolled in this event");
+                                    res.status(400).send({error:"You have already enrolled in this event"});
                                     // console.log("Cannot join You have already enrolled in this event"); 
                                 }
                             });
                         }
                         else{
-                            res.status(400).send("Invalid organizer");
+                            res.status(400).send({error:"Invalid organizer"});
                             console.log("Invalid organizer");
                         }
                     });
                 }
                 else{
-                    res.status(400).send("No such event or the event is not public");
+                    res.status(400).send({error:"No such event or the event is not public"});
                     // console.log("No such event or the event is not public");
                 } 
             });
         }
         else{
-            res.send("Invalid User");
+            res.send({error:"Invalid User"});
             console.log("Invalid User");
         }
     });    
@@ -429,6 +431,7 @@ app.post('/join_event', function(req, res){
 // Change image location will be handled separately.
 var textOnly = multer();
 app.post('/edit_event', textOnly.none(), function(req, res) {
+// app.post('/edit_event', textOnly.none(), function(req, res) {
     // variables from the request
     var user_id = req.body['user_id'];
     var event_name = req.body['event_name'];
@@ -446,6 +449,9 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
     var category = req.body['category'];
     var event_id = req.body['event_id'];
 
+    var parti_no;
+    var old_capacity;
+
     var sql = `SELECT user_id FROM csci3100.User where user_id = `+ user_id +`;`;
     con.query(sql, function (err, result) {
         if (err) throw err;
@@ -459,22 +465,45 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
                 
                 if(result.length > 0){
                     org_id = result[0].organizer;
-                    // old_capacity = result[0].capacity;
-                    if(org_id == user_id){
-                        sql = `UPDATE csci3100.Event SET name = ?, start_date = ?,start_time = ?, end_date = ?, end_time = ?, visible = ?, repeat_every_week = ?, venue = ?, capacity = ?, description = ?, allow_refund = ?, days_for_refund = ?, category = ? WHERE event_id = ?`;
-                        
-                        // console.log(sql);
-                        con.query(sql, [event_name, start_date, start_time, end_date, end_time, visible, repeat, venue, capacity, desc, refund, refund_days, category, event_id], function (err, result){
-                            if (err) throw err;
+                    old_capacity = result[0].capacity;
 
-                            res.status(200).send("ok");
-                            // console.log(result);
-                        });
-                    }
-                    else{
-                        res.status(403).send("You are not allowed to edit this event");
-                        // console.log("You are not allowed to edit this event");                            
-                    }
+                    
+                        // find the number of participants
+                    sql = `SELECT COUNT(user_id) AS count FROM csci3100.Event_Join WHERE event_id = ?`;
+
+                    con.query(sql, [event_id], function(err, result){
+                        if (err) throw err;
+
+                        if(result.length > 0){
+                            parti_no = result[0].count;
+                            // console.log(parti_no);
+                            if(org_id == user_id){
+                                if(capacity >= parti_no){
+                                    sql = `UPDATE csci3100.Event SET name = ?, start_date = ?,start_time = ?, end_date = ?, end_time = ?, visible = ?, repeat_every_week = ?, venue = ?, capacity = ?, description = ?, allow_refund = ?, days_for_refund = ?, category = ? WHERE event_id = ?`;
+                                    
+                                    // console.log(sql);
+                                    // console.log(capacity - parti_no);
+                                    con.query(sql, [event_name, start_date, start_time, end_date, end_time, visible, repeat, venue, capacity - parti_no, desc, refund, refund_days, category, event_id], function (err, result){
+                                        if (err) throw err;
+        
+                                        res.status(200).send("ok");
+                                        // console.log(result);
+                                    });
+                                }
+                                else{
+                                    res.status(400).send("The new capacity should be larger than the number of participants now");    
+                                }
+                            }
+                            else{
+                                res.status(403).send("You are not allowed to edit this event");
+                                // console.log("You are not allowed to edit this event");                            
+                            }
+                        }
+                        else{
+                            res.status(404).send("This event does not exist");
+                        }                    
+                    });
+                    
                 }
                 else{
                     res.status(404).send("This event does not exist");
@@ -619,6 +648,46 @@ app.get('/search_events', function(req, res){
     });
 });
 
+app.get('/filter_events', function(req, res){
+    var min_cost = req.query['min'];
+    var max_cost = req.query['max'];
+    var start_date = req.query['start_date'];
+    var end_date = req.query['end_date'];
+    var name = req.query['name'];
+
+
+    // console.log(category);
+    var arr = JSON.parse(req.query.category);
+    console.log(arr);
+    var str = '('
+    if(arr.length > 0){
+        for(let i in arr){
+            str += '\'' + arr[i] + '\',';
+        }
+        str = str.substring(0, str.length - 1);
+        str += ')'; 
+        console.log(str);
+        var sql = `SELECT * FROM csci3100.Event WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND name LIKE '%`+ name +`%' AND category IN `+str+` ORDER BY start_date ASC;`;
+        console.log(sql);
+        con.query(sql, [min_cost, max_cost, start_date, end_date, str], function (err, result) {
+            if (err) throw err;
+    
+            if(result.length > 0){
+                res.status(200).send(result);
+                console.log(result);
+            }
+            else{
+                res.status(404).send("No events");
+            }
+    
+        });
+    }
+    else{
+        res.status(404).send("No events");
+    }
+
+});
+
 // Retrieve event with given ID
 // tested
 app.get('/event/:eID',function(req, res){
@@ -750,8 +819,10 @@ app.post('/refund/:eID', function(req, res){
         if (result1.length > 0)
             con.query(sql2, [req.params['eID']], function(err, result2){
                 if (err) throw err;
-                if (result2.length > 0)
-                    if (result2[0].allow_refund && result2[0].days_for_refund > 0){
+                if (result2.length > 0){
+                    let current_datetime = new Date();
+                    let start_datetime = new Date(result2[0].start_date + ' ' + result2[0].start_time);
+                    if (result2[0].allow_refund && (result2[0].days_for_refund > 0) && (current_datetime <= start_datetime)){
                         var sql3 = `DELETE FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?`;
                         con.query(sql3, [req.body['user_id'], req.params['eID']], function(err, result3){
                             if (err) throw err;
@@ -771,6 +842,7 @@ app.post('/refund/:eID', function(req, res){
                         })
                     }else
                         res.status(400).send({error: 'The event is not refundable.'});
+                }
             })
         else
             res.status(400).send({error: 'You have not joined this event.'});
@@ -872,79 +944,87 @@ app.delete('/user_events/:eID', function(req, res){
             ori_ticket = result[0].ticket;
             organizer = result[0].organizer;
             oldpath = result[0].img_loc;
-            var sql = `SELECT user_id FROM csci3100.Event_Join WHERE event_id = ?;`;
-            con.query(sql, [req.params['eID']], function (err, result) {
+            var sql = `SELECT user_id FROM csci3100.Event_Join WHERE event_id = ? AND NOT(user_id = ?) ;`;
+            con.query(sql, [req.params['eID'], organizer], function (err, result) {
                 if (err) throw err;
                 
                 // construct the list of participant user_id
                 no_of_parti = result.length
-                console.log(no_of_parti);
+                // console.log(no_of_parti);
                 for(let i in result){
                     parti += result[i].user_id + ',';
                 }
-                // if there are participants
-                if(result.length > 0){
-                    parti = parti.substring(0, parti.length - 1);
-                    parti += ')'; 
-                    
-                    // refund to user's account
-                    // delete join record
-                    // delete event
-                    var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
-                            UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
-                            DELETE FROM csci3100.Event_Join WHERE event_id = ?;
-                            DELETE FROM csci3100.Event WHERE event_id = ?;`
-                    con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
-                        if (err) throw err;
 
-                        // delete event image
-                        if(oldpath){
-                            fs.unlink('uploads/' + oldpath, (err) => {
-                                if (err){
-                                    console.log(err);
-                                }
-                            });
-                        }
-                        // send an email notification to affected participants
-                        var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
+                // remove organizer enrollment record
+                sql = `DELETE FROM csci3100.Event_Join WHERE event_id = ? AND user_id = ?`;
+                con.query(sql, [req.params['eID'], organizer], function(err, result){
+                    if (err) throw err;
+                    // if there are participants
+                    if(result.length > 0){
+                        parti = parti.substring(0, parti.length - 1);
+                        parti += ')'; 
+                        
+                        
+                        // refund to user's account
+                        // delete join record
+                        // delete event
+                        var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
+                                UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
+                                DELETE FROM csci3100.Event_Join WHERE event_id = ?;
+                                DELETE FROM csci3100.Event WHERE event_id = ?;`
+                        con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
+                            if (err) throw err;
 
-                        con.query(sql, function (err, result){
-                            var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
-                            var content = `<p>Dear participant,</p>
-                                            <br>
-                                            <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
-                                            cancelled and a refund has been made. Please check your new account balance. If 
-                                            you have any enquiries, please don't hesitate to contact us.</p>
-                                            <br>
-                                            <p>Yours Sincerely,<br>CalEvents Admins</p>`
-                            for(let i in result){
-                                send_email(result[i].email, subject, content);
+                            // delete event image
+                            if(oldpath){
+                                fs.unlink('uploads/' + oldpath, (err) => {
+                                    if (err){
+                                        console.log(err);
+                                    }
+                                });
                             }
-                            res.send("Event deleted, refund is done, email is sent to participants");
-                        });
-                    });
-                }
-                // if there are no participants
-                else{
-                    var sql = `DELETE FROM csci3100.Event WHERE event_id = ?;`
-                    con.query(sql, [req.params['eID']], function (err, result) {
-                        if (err) throw err;
+                            // send an email notification to affected participants
+                            var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
 
-                        // delete event image
-                        if(oldpath){
-                            fs.unlink('uploads/' + oldpath, (err) => {
-                                if (err){
-                                    console.log(err);
+                            con.query(sql, function (err, result){
+                                var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
+                                var content = `<p>Dear participant,</p>
+                                                <br>
+                                                <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
+                                                cancelled and a refund has been made. Please check your new account balance. If 
+                                                you have any enquiries, please don't hesitate to contact us.</p>
+                                                <br>
+                                                <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                                for(let i in result){
+                                    send_email(result[i].email, subject, content);
                                 }
+                                res.status(200).send({error:"Event deleted, refund is done, email is sent to participants"});
                             });
-                        }
-                        res.send("Event deleted");
-                    });
-                }       
+                        });
+                    }
+                    // if there are no participants
+                    else{
+                        var sql = `DELETE FROM csci3100.Event WHERE event_id = ?;`
+                        con.query(sql, [req.params['eID']], function (err, result) {
+                            if (err) throw err;
+
+                            // delete event image
+                            if(oldpath){
+                                fs.unlink('uploads/' + oldpath, (err) => {
+                                    if (err){
+                                        console.log(err);
+                                    }
+                                });
+                            }
+                            res.status(200).send({success:"Event deleted"});
+                        });
+                    }
+
+                });
             });
         }
         else{
-            res.send("Invalid event ID");
+            res.status(400).send({error:"Invalid event ID"});
         }
     });
 });

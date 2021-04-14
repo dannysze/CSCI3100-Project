@@ -43,6 +43,7 @@ const History = () => {
                 <Eventrecord key={index} event={event} index={index} />
             )
           })}
+          {events.length===0&&<h1 className="history--title">No joined/organized event</h1>}
         </ul>
       </div>
     </div>
