@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import { startOfMonth, startOfWeek, endOfMonth, endOfWeek, startOfDay, addDays, getDate, getMonth, getYear, addMonths, subMonths, getWeekOfMonth, getDay, differenceInDays, differenceInCalendarDays, differenceInCalendarWeeks, getDaysInMonth } from 'date-fns';
 import { Modal } from 'react-bootstrap';
 import { CalendarButton } from '../CustomButton';
@@ -6,8 +6,11 @@ import { CSSTransition } from 'react-transition-group';
 import EventForm from '../Event/EventForm';
 import EventCard from '../Event/EventCard';
 import { EventModal } from '../Event/Events';
-import getaddr from '../getaddr'
+import getaddr from '../getaddr';
 import '../../styles/components/Calendars/Calendar.css';
+import {UserContext} from '../../UserContext';
+import useToken from '../../useToken';
+import { Container, Row, Col } from 'react-bootstrap';
 
 // constants store the names of the calendar
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -62,6 +65,8 @@ const sqlToJsDate = (sqlDate, sqlTime) => {
 
 const Calendar = ({ heightHandler }) => {
 
+  const {user, setUser} = useContext(UserContext);
+  const {token, setToken} = useToken();
   // initial information of the calendar (day of visit)
   const today = startOfDay(new Date());
   const initialInfo = { 
@@ -315,12 +320,20 @@ const Calendar = ({ heightHandler }) => {
             today={item.today} 
             sunday={item.sunday} 
             key={index} 
-            doubleClickHandler={createEventForm}
+            doubleClickHandler={user.type==1?createEventForm:()=>{}}            
             clickHandler={showEventCardModal}
             />)
         })}
         {stickEvents()}
         {stickTags()}
+      </div>
+      <div>
+          <div style={{textAlign:'right', fontWeight: "350", fontStyle:"oblique"}}>*<b>Click</b> to check events of the day.<b>Double Click</b>  to create public event (Only for organizer).</div>
+          {['Sport', 'Music', 'Academic', 'Health', 'Festival'].map((item, index) => (
+                    <div style={{  fontWeight: "350", fontStyle:"oblique"}}>
+                      <span className={`task--${item} dot`}></span> {item}
+                    </div>
+            ))}     
       </div>
       <Modal
         show={eventCardModal['toggle']}
