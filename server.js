@@ -905,69 +905,77 @@ app.delete('/user_events/:eID', function(req, res){
                 
                 // construct the list of participant user_id
                 no_of_parti = result.length
-                console.log(no_of_parti);
+                // console.log(no_of_parti);
                 for(let i in result){
                     parti += result[i].user_id + ',';
                 }
-                // if there are participants
-                if(result.length > 0){
-                    parti = parti.substring(0, parti.length - 1);
-                    parti += ')'; 
-                    
-                    // refund to user's account
-                    // delete join record
-                    // delete event
-                    var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
-                            UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
-                            DELETE FROM csci3100.Event_Join WHERE event_id = ?;
-                            DELETE FROM csci3100.Event WHERE event_id = ?;`
-                    con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
-                        if (err) throw err;
 
-                        // delete event image
-                        if(oldpath){
-                            fs.unlink('uploads/' + oldpath, (err) => {
-                                if (err){
-                                    console.log(err);
-                                }
-                            });
-                        }
-                        // send an email notification to affected participants
-                        var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
+                // remove organizer enrollment record
+                sql = `DELETE FROM csci3100.Event_Join WHERE event_id = ? AND user_id = ?`;
+                con.query(sql, [req.params['eID'], organizer], function(err, result){
+                    if (err) throw err;
+                    // if there are participants
+                    if(result.length > 0){
+                        parti = parti.substring(0, parti.length - 1);
+                        parti += ')'; 
+                        
+                        
+                        // refund to user's account
+                        // delete join record
+                        // delete event
+                        var sql = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = `+ organizer +`;
+                                UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id IN `+ parti +`;
+                                DELETE FROM csci3100.Event_Join WHERE event_id = ?;
+                                DELETE FROM csci3100.Event WHERE event_id = ?;`
+                        con.query(sql, [ori_ticket * no_of_parti, ori_ticket, req.params['eID'], req.params['eID']], function (err, result) {
+                            if (err) throw err;
 
-                        con.query(sql, function (err, result){
-                            var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
-                            var content = `<p>Dear participant,</p>
-                                            <br>
-                                            <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
-                                            cancelled and a refund has been made. Please check your new account balance. If 
-                                            you have any enquiries, please don't hesitate to contact us.</p>
-                                            <br>
-                                            <p>Yours Sincerely,<br>CalEvents Admins</p>`
-                            for(let i in result){
-                                send_email(result[i].email, subject, content);
+                            // delete event image
+                            if(oldpath){
+                                fs.unlink('uploads/' + oldpath, (err) => {
+                                    if (err){
+                                        console.log(err);
+                                    }
+                                });
                             }
-                            res.send("Event deleted, refund is done, email is sent to participants");
-                        });
-                    });
-                }
-                // if there are no participants
-                else{
-                    var sql = `DELETE FROM csci3100.Event WHERE event_id = ?;`
-                    con.query(sql, [req.params['eID']], function (err, result) {
-                        if (err) throw err;
+                            // send an email notification to affected participants
+                            var sql = `SELECT email FROM csci3100.User WHERE user_id IN `+ parti +`;`;
 
-                        // delete event image
-                        if(oldpath){
-                            fs.unlink('uploads/' + oldpath, (err) => {
-                                if (err){
-                                    console.log(err);
+                            con.query(sql, function (err, result){
+                                var subject = "Refund for Cancellation of Event with id " + req.params['eID'];
+                                var content = `<p>Dear participant,</p>
+                                                <br>
+                                                <p>We are sorry to inform you that the event with id `+ req.params['eID'] +` is 
+                                                cancelled and a refund has been made. Please check your new account balance. If 
+                                                you have any enquiries, please don't hesitate to contact us.</p>
+                                                <br>
+                                                <p>Yours Sincerely,<br>CalEvents Admins</p>`
+                                for(let i in result){
+                                    send_email(result[i].email, subject, content);
                                 }
+                                res.send("Event deleted, refund is done, email is sent to participants");
                             });
-                        }
-                        res.send("Event deleted");
-                    });
-                }       
+                        });
+                    }
+                    // if there are no participants
+                    else{
+                        var sql = `DELETE FROM csci3100.Event WHERE event_id = ?;`
+                        con.query(sql, [req.params['eID']], function (err, result) {
+                            if (err) throw err;
+
+                            // delete event image
+                            if(oldpath){
+                                fs.unlink('uploads/' + oldpath, (err) => {
+                                    if (err){
+                                        console.log(err);
+                                    }
+                                });
+                            }
+                            res.send("Event deleted");
+                        });
+                    }
+
+                });
             });
         }
         else{
