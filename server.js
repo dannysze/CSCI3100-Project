@@ -210,6 +210,7 @@ const multer = require('multer');
 const uuid = require('uuid').v4;
 const { DATE } = require('mysql/lib/protocol/constants/types');
 const { event } = require('jquery');
+const { start } = require('repl');
 // customize file name
 const storage = multer.diskStorage({
     // set destination of file upload
@@ -644,6 +645,46 @@ app.get('/search_events', function(req, res){
         }
 
     });
+});
+
+app.get('/filter_events', function(req, res){
+    var min_cost = req.query['min'];
+    var max_cost = req.query['max'];
+    var start_date = req.query['start_date'];
+    var end_date = req.query['end_date'];
+
+
+    // console.log(category);
+    var arr = JSON.parse(req.query.category);
+    console.log(arr);
+    var str = '('
+    if(arr.length > 0){
+        for(i in str){
+            str += '\'' + arr[i] + '\',';
+        }
+        str = str.substring(0, str.length - 1);
+        str += ')'; 
+        // console.log(str);
+        var sql = `SELECT * FROM csci3100.Event WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND category IN `+str+` ORDER BY start_date ASC;`;
+        console.log(sql);
+        con.query(sql, [min_cost, max_cost, start_date, end_date, str], function (err, result) {
+            if (err) throw err;
+    
+            if(result.length > 0){
+                res.status(200).send(result);
+                console.log(result);
+            }
+            else{
+                res.status(404).send("No events");
+            }
+    
+        });
+    }
+    else{
+        str = "()";
+        res.status(404).send("No events");
+    }
+
 });
 
 // Retrieve event with given ID
