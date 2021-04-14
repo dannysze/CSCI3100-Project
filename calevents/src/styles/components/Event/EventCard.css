@@ -49,14 +49,14 @@
 /* The container that showing  the image in the card*/
 .image-container{
     overflow: hidden;
-    display: grid;
+    text-align: center;
 }
 
 /* The size and showing option of the image in the card */
 .image-container img{
     overflow: hidden;
-    height: 170px;
-    width: auto
+    height: auto;
+    width: 100%;
 }
 
 /* The container for showing different informations of the event in the card */

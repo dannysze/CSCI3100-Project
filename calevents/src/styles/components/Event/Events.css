@@ -85,17 +85,29 @@
 
 /* container for the event image */
 .pop-img-container{
-    border:solid;
-    border-radius: 11px;
-    border-color: Gainsboro;
+    /* border:solid; */
+    /* border-color: Gainsboro; */
     position:relative;
     height:300px;
-    
     overflow: hidden;
-    margin-left:25px;
-    margin-right: 15px;
+    /* margin-left:25px; */
+    /* margin-right: 15px; */
     margin-top: 35px;
-    
+    padding: 0;
+    border-radius: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pop-img-container img {
+    text-align: center;
+    border-radius: 11px;
+    height: auto;
+    /* position: absolute; */
+    width: 100%;
+    /* width: 500px; */
+    margin: auto;
 }
 
 /* container for information */

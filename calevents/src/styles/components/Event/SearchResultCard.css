@@ -34,8 +34,11 @@
 /* the image and some edit on spacing */
 .SR-img-container img{
     overflow:hidden;
+    width: auto;
+    height: 200px;
+    margin: auto;
     /* border:solid; */
-    margin-top: -120px;
+    /* margin-top: -120px; */
 }
 
 /* modify the style on the title of the event in result card */

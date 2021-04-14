@@ -225,7 +225,7 @@ const Calendar = ({ heightHandler }) => {
             display: display
           }
           return (
-            <CalendarEvent key={idx} classes={`task--${event.category.split(' ')[0]}`} styles={style} name={event.name} />
+            <CalendarEvent key={idx} classes={`task--${event.category === null ? "" : event.category.split(' ')[0]}`} styles={style} name={event.name} />
           )
         })
       )
@@ -289,7 +289,7 @@ const Calendar = ({ heightHandler }) => {
   const dismissEventCardModal = (e) => {
     setEventCardModal({ 'toggle': false , 'events': []})
     setEventModal({ 'toggle': true, 'event': e})
-    console.log(e)
+    // console.log(e)
   }
 
   return (

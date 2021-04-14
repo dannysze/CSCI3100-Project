@@ -13,7 +13,7 @@ const EventCard = ({ event, onClick }) => {
         <div className='card-container'>
             {/* create space and show image inside the card */}
             <div className='image-container'>
-                <img src={event.img_loc === null ? '' : event.img_loc} alt="event photo"></img>
+                <img src={event.img_loc} alt="event photo"></img>
             </div>
             {/* shows the event's title in the card */}
             <h3 className='title'>{event.name}</h3>
