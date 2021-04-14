@@ -668,7 +668,7 @@ app.get('/filter_events', function(req, res){
         str = str.substring(0, str.length - 1);
         str += ')'; 
         // console.log(str);
-        var sql = `SELECT * FROM csci3100.Event WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND name LIKE '%`+ name +`%' AND category IN `+str+` AND visible = 1 ORDER BY start_date ASC;`;
+        var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND name LIKE '%`+ name +`%' AND category IN `+str+` AND visible = 1 ORDER BY start_date ASC;`;
         // console.log(sql);
         con.query(sql, [min_cost, max_cost, start_date, end_date, str], function (err, result) {
             if (err) throw err;
