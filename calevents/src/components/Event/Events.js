@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useContext} from 'react'
 import { Container, Row, Col, Modal, ListGroup, Button, ListGroupItem } from 'react-bootstrap'
 import EventCard from './EventCard'
-import getaddr from '../getaddr'
 import '../../styles/components/Event/Events.css'
-import { FormButton } from "../CustomButton.js";
+import { FormButton } from "../CustomButton.js"
+import {UserContext} from '../../UserContext'
+import useToken from '../../useToken'
+import getaddr from '../../components/getaddr'
+
 
 const sqlToJsDate = (sqlDate, sqlTime) => {
-
+  if(!sqlDate||!sqlTime) return;
   var sqlDateArr1 = sqlDate.split("-");
   var sYear = sqlDateArr1[0];
   var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
@@ -17,40 +20,13 @@ const sqlToJsDate = (sqlDate, sqlTime) => {
   return new Date(sYear, sMonth, sDay, sqlTimeArr[0], sqlTimeArr[1], sqlTimeArr[2]);
 }
 
-function Events({ height }) {
-  const [events, setEvents] = useState([]);
+function Events({ height, events, title}) {
   const [showEvent, setShow] = useState({ toggle: false, event: {} });
-
-  //temporarily it will fetch all events since backend is still in progress
-  useEffect(() => {
-    const getEvents = async () => {
-      const eventsFromServer = await fetchEvents()
-      const upcomingEvents = eventsFromServer.filter(upcomingEvent => {
-        if (sqlToJsDate(upcomingEvent.start_date, upcomingEvent.start_time) >= new Date()) {
-          return upcomingEvent
-        }
-      })
-      setEvents(upcomingEvents)
-    }
-    getEvents()
-  }, [])
-
-  const fetchEvents = async () => {
-    const res = await fetch(getaddr() + 'search_events', {
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      }
-    })
-    const data = await res.json()
-
-    return data
-  }
 
   return (
     <div className='Events' >
       <div className="outer" style={{ width: "100%" }}>
-        <h1>Upcoming</h1>
+        <h1>{title}</h1>
         <div className='events' style={{ height: `${height - 61}px` }}>
           {events.map((event, idx) => (
             <EventCard key={idx} event={event} onClick={() => setShow({ toggle: true, event: event })} />
@@ -64,14 +40,65 @@ function Events({ height }) {
 
 export default Events;  
 
+
 const EventModal = ({ showEvent, setShow }) => {
+  const {user, setUser} = useContext(UserContext);
+  const {token, setToken} = useToken();
+  const [confirm,setConfirm] = useState(0);
+
+  // //may need date conversion
+  const compareTime = (joinedEvent) => {
+      let event = showEvent.event;
+      if(((joinedEvent.start_time >= event.start_time && joinedEvent.start_time <= event.end_time)&&(joinedEvent.start_date >= event.start_date && joinedEvent.start_date <= event.end_date))
+          || ((joinedEvent.end_time >= event.start_time && joinedEvent.end_time <= event.end_time)&&(joinedEvent.end_date >= event.start_date && joinedEvent.end_date <= event.end_date)))
+      return true;
+  };
+
+  const checkTimeClash = async () => {
+      let joinedEvents = await (await fetch(getaddr()+'joined_events/' + user.user_id)).json();
+      let clashedEvents  = joinedEvents.filter(
+          joinedEvent => {return compareTime(joinedEvent);});
+      console.log(clashedEvents);
+      return clashedEvents;
+  };
+
+  const joinEvent = async () => {
+    try{
+        let res = await fetch(getaddr()+'join_event', {
+          method: 'POST',
+          headers: {
+            'auth': token,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({user_id:user.user_id,event_id:showEvent.event.event_id}),
+        });
+        let body = await res.json();
+        if (!res.ok){
+              alert(body['error']);
+        }else{
+            let clashes = await checkTimeClash();
+            console.log(clashes);
+            clashes.length>0
+            ? alert('You has successfully joined the event but please note that the event coincides in time with some of the joined events.\nYou can check in schedule.')
+            : alert('You has successfully joined the event.');
+        }
+      }catch(err){
+        console.log(err);
+      }
+  };
+
+
+  const checkJoinable = () => {
+    return sqlToJsDate(showEvent.event.start_date, showEvent.event.start_time) >= new Date()&&user.type===0;
+  };
+
 
   return (
     <>
     {/* pop-up screen for showing complete selected event's information */}
       <Modal
         show={showEvent.toggle}
-        onHide={() => setShow({ toggle: false, event: {} })}
+        onHide={() => {setShow({ toggle: false, event: {} })}}
         dialogClassName='custom-modal'
         aria-labelledby='example-custom-modal-styling-title'
       >
@@ -126,9 +153,8 @@ const EventModal = ({ showEvent, setShow }) => {
             <Col sm={1}>
               {/* <button className="pop-button">Join</button> */}
               {/* the button for joining event */}
-              <FormButton content="Join" />
+              {checkJoinable()&&<FormButton content="Join" clickHandler={joinEvent}/>}
             </Col>
-
             <Col sm={3}>
               {/* <button className="pop-button-organizer">Contact Organizer</button> */}
               {/* the button for contacting organizer */}
