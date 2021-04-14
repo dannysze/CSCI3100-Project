@@ -141,9 +141,10 @@ const Schedule = () => {
         gridColumn: `${colNum}`,
         gridRow: `${rowStart} / span ${rowSpan}`,
       }
-
+      console.log(scheduleEvent)
+      console.log(scheduleEvent.category)
       return (
-        <section className="block--events task task--danger" style={style}>
+        <section className={`block--events task task--${scheduleEvent.category}`} style={style}>
           <div className="block--events-title">{scheduleEvent.name}</div>
           <div className="">{`${startHour}:${('0'+startMinute).slice(-2)} - ${endHour}:${('0'+endMinute).slice(-2)}`}</div>
         </section>

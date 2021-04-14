@@ -1,5 +1,6 @@
 /* the container for the result card */
 .SR-card-container{
+    cursor:pointer;
     position: relative;
     border-radius: 11px;
     max-width: 450px;
@@ -10,6 +11,13 @@
     color: #282828;
     /* border: groove; */
     /* height: 470px; */
+    transform: scale(1);
+    transition: all 0.2s ease-in-out;
+}
+
+.SR-card-container:hover {
+    transform: scale(1.01);
+    box-shadow : 0px 3px 20px -5px; 
 }
 
 /* the container for the event image in the result card */
