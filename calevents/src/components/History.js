@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { CSSTransition } from 'react-transition-group'
 import Eventrecord from './Event/Event_record';
 import getaddr from './getaddr';
 import useToken from '../useToken';
@@ -12,8 +13,6 @@ const History = () => {
   const {user, setUser} = useContext(UserContext);
 
   useEffect(() => {
-    // getUser();
-    // console.log(user)
     const getEvents = async () => {
       const eventsFromServer = await fetchEvents()
       setEvents(eventsFromServer)
@@ -40,7 +39,9 @@ const History = () => {
       <div className="history--list">
         <ul>
           {events.map((event, index) => {
-            return <Eventrecord key={index} event={event} index={index} />
+            return (
+                <Eventrecord key={index} event={event} index={index} />
+            )
           })}
         </ul>
       </div>

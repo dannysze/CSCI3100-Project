@@ -48,7 +48,7 @@ const Header = () => {
 
   return (
     <div className="header">
-      <h1 style={{left: '10px', position: 'absolute'}}>CalEvent</h1>
+      <h1 style={{left: '30px', position: 'absolute'}}>CalEvent</h1>
       <CSSTransition
         in={showRedeem}
         timeout={500}

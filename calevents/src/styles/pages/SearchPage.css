@@ -7,7 +7,7 @@
 }
 
 .logo-container{
-    width:15%;
+    /* width:15%; */
     height:100%;
     font-size: 30px;
     font-weight: 300;
@@ -24,53 +24,61 @@
 
 .Search-box-container{
     position:relative;
-    height:200px;
+    /* height:200px; */
     min-height: 200px;
-    min-width: 1000px;
     width: 1000px;
     /* border:solid; */
     border-radius: 11px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 30px;
+    margin-top: 10px;
     /* background-color: rgb(65, 65, 99,0.85); */
     box-shadow : 0px 0px 15px -5px;
 }
 .Search-bar-container{
-    height:50px;
+    /* height:50px; */
     /* border:solid; */
+    /* margin-left: -15px; */
+    width: 100%;
+    /* justify-content: center; */
 }
 .Search-bar{
+    width: 100%;
+    display: flex;
+    align-items: center;
     /* margin-left:-14px; */
     border:none;
-    
+    display: flex;
+    padding: 0 !important;
 }
-.Search-bar input{
-    width:950px;
+.Search-bar-container input{
+    /* width:950px; */
     height:50px;
+    flex-basis: 90%;
     
     font-size:20px;
     background-color: rgb(65, 65, 99, 0.2);
     /* box-shadow : 0px 0px 2px -1px; */
-    border-radius: 11px;
+    border-radius: 11px 0 0 0;
     border:none;
 
 }
 
 .Search-button{
-    margin-left: 42px;
+    /* margin-left: 42px; */
+    flex: 1;
     height:50px;
-    width:100px;
-    border-left: none;
+    /* width:100px; */
+    border: none;
     border-top-right-radius: 11px;
-    border-bottom-right-radius: 11px;
+    /* border-bottom-right-radius: 11px; */
     background-color: rgb(65, 65, 99);
     color:aliceblue;
 }
 
 .Price-container{
     position:relative;
-    margin-top: -20px;
+    /* margin-top: -20px; */
     margin-left: 10px;
     font-size: 20px;
     font-weight: 350;
@@ -78,8 +86,9 @@
     /* border:solid; */
     width:80%;
     background-color: rgb(65, 65, 99, 0.2);
-    border-top-right-radius:11px ;
-    border-bottom-right-radius:11px ;
+    /* border-top-right-radius:11px ;
+    border-bottom-right-radius:11px ; */
+    border-radius: 11px;
     /* box-shadow : 0px 0px 15px -5px;*/
     
 } 
@@ -127,16 +136,19 @@
 
 .Date-container{
     position: relative;
-    margin-top: -20px;
+    /* margin-top: -20px; */
     margin-left: 10px;
     font-size: 20px;
     font-weight: 350;
     height:30px;
     /* border:solid; */
-    width:80%;
-    background-color: rgb(65, 65, 99, 0.2);
+    /* width:80%; */
+    /* background-color: rgb(65, 65, 99, 0.2); */
     border-top-right-radius:11px ;
     border-bottom-right-radius:11px ;
+    /* justify-content: flex-start; */
+    display: flex;
+    justify-content: space-between !important;
     /* box-shadow : 0px 0px 15px -5px;*/
 }
 
@@ -144,14 +156,28 @@
     background-color: rgb(65, 65, 99);
     color:aliceblue;
     height:30px;
+    line-height: 30px;
+    padding: 0 1em;
     border-top-left-radius: 11px;
     border-bottom-left-radius: 11px;
+    white-space: nowrap;
     text-align: center;
+}
+
+.Datepicker-container {
+    display: flex;
+    align-items: center;
+    padding-left: 0;
+    
+}
+
+.Datepicker-container input {
+    height: 30px;
 }
 
 .Category-container{
     position:relative;
-    margin-top: -20px;
+    /* margin-top: -20px; */
     margin-left: 10px;
     font-size: 20px;
     font-weight: 350;
@@ -159,8 +185,9 @@
     /* border:solid; */
     width:80%;
     background-color: rgb(65, 65, 99, 0.2);
-    border-top-right-radius:11px ;
-    border-bottom-right-radius:11px ;
+    /* border-top-right-radius:11px ; */
+    border-radius: 11px;
+    /* border-bottom-right-radius:11px ; */
     /* box-shadow : 0px 0px 15px -5px;*/
 }
 
@@ -172,4 +199,11 @@
     
     border-top-left-radius: 11px;
     border-bottom-left-radius: 11px;
+}
+
+.Search-results {
+    padding: 0;
+    min-width: 1000px;
+    width: 1000px;
+    margin: 0 auto;
 }

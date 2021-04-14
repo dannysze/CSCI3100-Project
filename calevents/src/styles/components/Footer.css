@@ -1,4 +1,5 @@
 .footer {
+  box-sizing: border-box;
   margin-top: auto;
   display: flex;
   align-items: center;
@@ -6,12 +7,15 @@
   padding: 5px 0;
   background-color: rgb(65, 65, 99);
   color: aliceblue;
+  width: 100%
 }
 
 .footer h1{
   font-weight: 300;
   font-size: 30px;
-  margin-left: -210px;
+  /* margin-left: -210px; */
+  /* align-self: flex-start; */
+  /* margin-left: 0; */
 }
 
 .footer p{

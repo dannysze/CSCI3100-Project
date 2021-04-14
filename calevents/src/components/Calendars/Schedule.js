@@ -211,7 +211,7 @@ const Schedule = () => {
       // console.log(style);
       // console.log(allDayEventRecord)
       return (
-        <section className="task task--warning all-day-events--bar" style={style}>{allDayEvent.name}</section>
+        <section className={`task task--${allDayEvent.category} all-day-events--bar`} style={style}>{allDayEvent.name}</section>
       )
     })
     // console.log(scheduleInfo)
