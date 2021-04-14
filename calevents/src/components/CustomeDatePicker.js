@@ -7,7 +7,7 @@ const CustomDatePicker = ({ onChangeHandler, placeholder, startDate }) => {
   return (
     <DatePicker
       selected={startDate}
-      onChange={onChangeHandler}
+      onChange={date => onChangeHandler(date)}
       dateFormat="MM/dd/yyyy  hh:mmaa"
       placeholderText={placeholder}
       showTimeInput

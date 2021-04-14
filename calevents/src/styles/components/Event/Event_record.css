@@ -10,6 +10,9 @@
     color: #282828;
     height: auto;
     list-style: none;
+    /* transform: translateX(100%); */
+    /* opacity: 0; */
+    transition: all 0.7s ease-in-out;
 }
 
 /* modify the style of the bar that shows event detail in record*/
@@ -121,4 +124,5 @@
 
 .record-button::before {
 }
+
 

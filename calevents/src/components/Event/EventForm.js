@@ -122,7 +122,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
     e.preventDefault();
     let data = new FormData();
     Object.keys(event).forEach(key => data.append(key, event[key]));
-    console.log(user.user_id);
+    // console.log(user.user_id);
     data.append('user_id',user.user_id);
     await fetch(getaddr()+'edit_event', {
       method: 'POST',
@@ -132,8 +132,12 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
       },
       body: data,
     });
-    console.log(img);
-    if(!img) return;
+    // console.log(img);
+    if(!img) {
+      dismissHandler();
+      window.location.reload(true);    
+      return;
+    }
     let event_pic = new FormData();
     console.log(img);
     event_pic.append('img', img);
@@ -146,6 +150,8 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
       },
       body: event_pic,
     });
+    dismissHandler();
+    window.location.reload(true);
   }
    // handling the input of the event form
    const onChangeHandler = (e) => {
@@ -179,8 +185,10 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
       }
     } else {
       setEvent({...event, [e.target.name]: e.target.value, 
-                          start_time:toSqlTime(startSelectedDate),start_date:toSqlDate(startSelectedDate),
-                          end_time:toSqlTime(endSelectedDate),end_date:toSqlDate(endSelectedDate),
+                          start_time:toSqlTime(startSelectedDate),
+                          start_date:toSqlDate(startSelectedDate),
+                          end_time:toSqlTime(endSelectedDate),
+                          end_date:toSqlDate(endSelectedDate),
                           visible:user.type});
     }
     // console.log(event);
@@ -210,19 +218,19 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
               <span className="create-event-form--input-prepend flex-center">
                 <CalendarEvent />
               </span>
-              <input type="text" name="event_name" placeholder="Event" onChange={onChangeHandler} value={edit ? editInfo.event_name : event.event_name} />
+              <input type="text" name="event_name" placeholder="Event" onChange={onChangeHandler} value={event.event_name} />
             </div>
             <div className="create-event-form--input">
               <span className="create-event-form--input-prepend flex-center">
                 <GeoAlt />
               </span>
-              <input type="text" name="venue" placeholder="Venue" onChange={onChangeHandler} value={edit ? editInfo.venue : event.venue} />
+              <input type="text" name="venue" placeholder="Venue" onChange={onChangeHandler} value={event.venue} />
             </div>
           </div>
           <div className="create-event-form--input-group">
             <div className="create-event-form--input create-event-form--datepicker">
               <CustomDatePicker
-                onChangeHandler={(date) => setStartSelectedDate(date)}
+                onChangeHandler={(date) => {setStartSelectedDate(date)}}
                 startDate={startSelectedDate}
                 placeholder="Select Start Time"
               />
@@ -253,13 +261,13 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
               <span className="create-event-form--input-prepend flex-center">
                 <People />
               </span>
-              <input type="number" name="capacity" placeholder="Capacity" onChange={onChangeHandler} value={edit ? editInfo.capacity : event.capacity} />
+              <input type="number" name="capacity" placeholder="Capacity" onChange={onChangeHandler} value={event.capacity} />
             </div>
             <div className="create-event-form--input create-event-form--checkbox" style={{gridRow: '2', gridColumn: '2', paddingRight: '0'}}>
               <span className="create-event-form--input-prepend flex-center" style={{padding: '9px 8px'}}>
                 <CashStack />
               </span>
-              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} min="0" value={edit ? editInfo.ticket : event.ticket} />
+              <input type="number" name="ticket" placeholder="Ticket" onChange={onChangeHandler} min="0" value={event.ticket} />
               <span className="create-event-form--input-append">
                 <label className="create-event-form--input-label">
                   <input type="checkbox" name="free" onChange={onChangeHandler} checked={event.ticket === 0}/>&nbsp;Free

@@ -9,6 +9,10 @@
   align-items: center;
 }
 
+.container-fluid {
+  padding: 0 !important;
+}
+
 ::-webkit-scrollbar {
   width: 4px;
 }

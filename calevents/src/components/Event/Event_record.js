@@ -15,6 +15,7 @@ const Eventrecord = ({ event, onClick, index }) => {
 
     const [showDetail, toggleShowDetail] = useState(false);
     const [height, setHeight] = useState('');
+    const [deleted, setDeleted] = useState(false);
     useEffect(() => {
         setHeight(document.getElementsByClassName('record-info')[index].scrollHeight)
     }, [])
@@ -53,13 +54,17 @@ const Eventrecord = ({ event, onClick, index }) => {
 
     // DELETE events API 
     const deleteEvent = async () => {
-        fetch(getaddr()+'user_events/'+event.event_id, {
-            method: 'DELETE'
-        }).then(res => {
-            res.json()
-        }).then(res => {
-            console.log(res)
-        })
+        if (window.confirm('Are you sure to delete this event?')) {
+            fetch(getaddr()+'user_events/'+event.event_id, {
+                method: 'DELETE'
+            }).then(res => {
+                res.json()
+            }).then(res => {
+                console.log(res)
+            }).then(_ => {
+                window.location.reload()
+            })
+        }
     }
 
     // Edit event API
@@ -87,7 +92,6 @@ const Eventrecord = ({ event, onClick, index }) => {
     }
     //the code below is the component to show the information of events that the user join
     return (
-
         <li className='record-container'>
             <CSSTransition
                 in={editForm.show}
