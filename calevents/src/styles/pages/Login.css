@@ -15,7 +15,9 @@
   flex: none;
   overflow: hidden;
   height: 75vh;
+  min-height: 700px;
   width: 60vw;
+  min-width: 500px;
 }
 
 .login-form, .signup-form, .reset-form {
@@ -32,7 +34,9 @@
 .login-overlay {
   position: absolute;
   height: 75vh;
+  min-height: 700px;
   width: 30vw;
+  min-width: 300px;
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
   padding: 100px 15px;

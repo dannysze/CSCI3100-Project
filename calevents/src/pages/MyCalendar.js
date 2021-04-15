@@ -18,10 +18,10 @@ const MyCalendar = () => {
       <Header />
       <Navbar />
       <Row className="main-content">
-        <Col sm={8}>
+        <Col xs={8}>
           <Schedule />
         </Col>
-        <Col sm={4}>
+        <Col xs={4}>
           <History />
         </Col>
       </Row>
