@@ -697,7 +697,7 @@ app.get('/filter_events', function(req, res){
                     // console.log("______________________________________________________________-");
                 }
                 res.status(200).send(result);
-                console.log(result);
+                // console.log(result);
             }
             else{
                 res.status(404).send("No events");
