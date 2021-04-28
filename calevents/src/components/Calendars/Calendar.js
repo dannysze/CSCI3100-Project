@@ -1,3 +1,5 @@
+// Calendar is the component at the main page
+// It display the public events created by organizers
 import React, { useState, useEffect, useContext} from 'react';
 import { startOfMonth, startOfWeek, endOfMonth, endOfWeek, startOfDay, addDays, getDate, getMonth, getYear, addMonths, subMonths, getWeekOfMonth, getDay, differenceInDays, differenceInCalendarDays, differenceInCalendarWeeks, getDaysInMonth } from 'date-fns';
 import { Modal } from 'react-bootstrap';
@@ -7,10 +9,9 @@ import EventForm from '../Event/EventForm';
 import EventCard from '../Event/EventCard';
 import { EventModal } from '../Event/Events';
 import getaddr from '../getaddr';
-import '../../styles/components/Calendars/Calendar.css';
 import {UserContext} from '../../UserContext';
 import useToken from '../../useToken';
-import { Container, Row, Col } from 'react-bootstrap';
+import '../../styles/components/Calendars/Calendar.css';
 
 // constants store the names of the calendar
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -51,18 +52,19 @@ const takeMonth = (date = new Date()) => {
   return days;
 }
 
+// sqlToJsDate convert the date from format in sql db (YYYY-MM-DD) to js Date obj
 const sqlToJsDate = (sqlDate, sqlTime) => {
-  
   var sqlDateArr1 = sqlDate.split("-");
   var sYear = sqlDateArr1[0];
   var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
   var sDay = sqlDateArr1[2];
-
   var sqlTimeArr = sqlTime.split(":");
-   
   return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
 }
 
+// Main component
+// props:
+// heightHandler: change the height of the upcoming event container depending on the height of the calendar
 const Calendar = ({ heightHandler }) => {
 
   const {user, setUser} = useContext(UserContext);
@@ -88,16 +90,11 @@ const Calendar = ({ heightHandler }) => {
   useEffect(() => {
     heightHandler();
     const getEvents = async () => {
+      // get the events from the datebase and store them in the state
       const eventsFromServer = await fetchEvents();
-      // console.log(JSON.stringify(eventsFromServer));
-      
-      // filter the events on this month (can be done here)
-      // console.log(eventsFromServer);
-      
       setEvents(eventsFromServer);
     }
     getEvents();
-    // console.log(events)
   }, [calendarInfo], [events]);
   
   const fetchEvents = async () => {
@@ -115,42 +112,42 @@ const Calendar = ({ heightHandler }) => {
   let dayRecord = {};
   const stickEvents = () => {
     dayRecord = {};
-    const eventsBars = events.map((event, index) => {
-      // console.log(event);
-    // const eventsBars = [...Array(3)].map((event, index) => {
+    const eventsBars = events.map((event) => {
+
+      // Convert the datetime in sql db to js date obj
       let start_date = sqlToJsDate(event.start_date, event.start_time);
-      // start = start_date || startOfWeek(startOfMonth(startOfDay(date)))
-      // end = end_date || endOfWeek(endOfMonth(startOfDay(date)))
       let end_date = sqlToJsDate(event.end_date, event.end_time);
       
+      // filtering the events that are not in the calendar range
       if (end_date < calendarInfo.calendarArr[0].day || start_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
-        // console.log(start_date, end_date);
         return
       } 
+      // if the startdate of the event is before the start of the calendar
+      // set the start date to the start of the calendar month
       if (start_date < calendarInfo.calendarArr[0].day) {
         start_date = calendarInfo.calendarArr[0].day;
       } 
+      // set the end day as above
       if (end_date > calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day) {
         end_date = calendarInfo.calendarArr[calendarInfo.calendarArr.length-1].day;
       }
-      
+      // get the start, end, duration and difference in calendar week of the event
       let start = startOfDay(start_date);
       let end = startOfDay(end_date);
-      // console.log(start_date, end_date);
       let startRow = getWeekOfMonth(start) + 1;
       let colNum = getDay(start) + 1;
       let diffDays = differenceInDays(end, start) + 1;
       let diffWeeks = differenceInCalendarWeeks(end, start);
-      // console.log(`${diffWeeks} - ${diffDays}`)
       
+      // set the calendar row that event should be started and ended
       if (start_date < calendarInfo['calendarStart']) {
         startRow = 2;
       } 
-
       if (start_date > endOfMonth(calendarInfo['calendarStart'])) {
         startRow = getWeekOfMonth(endOfMonth(calendarInfo['calendarStart'])) + 1
       }
 
+      // calculate the col span for each row
       let span;
       if (diffWeeks > 0) {
         span = [...Array(diffWeeks + 1)].map((_, index) => {
@@ -168,17 +165,21 @@ const Calendar = ({ heightHandler }) => {
         span = [diffDays]; 
       }
       
+      // Display rule:
+      // Show at most 2 events in one calendar day
+      // start earlier, display first
+
       let curPos = {
         'center': true,
         'end': true,
       }
+      // check if that day has events displayed
       for (let i = start; i <= end; i = addDays(i, 1)) {
         if (dayRecord[i]) {
+          // the number of events on that day
           dayRecord[i]['frequency']++;
-          
           curPos['center'] = curPos['center'] && dayRecord[i]['center']
           curPos['end'] = curPos['end'] && dayRecord[i]['end']
-
         } else {
           dayRecord[i] = {
             'center': true,
@@ -191,33 +192,28 @@ const Calendar = ({ heightHandler }) => {
           }
         }
         dayRecord[i]['events'].push(event);
-        
       }
-      // console.log(dayRecord);
-      let display = 'block';
-      // console.log(JSON.stringify(dayRecord[new Date(2021, 4, 18)]));
 
+      let display = 'block';
+      // check if the capacity of that day is full, if not, set the state of the of that position to false 
       if (curPos['center']) {
-        // console.log(startstart, end)
         for (let i = start; i <= end; i = addDays(i, 1)) {
           dayRecord[i]['center'] = false;
         }
       } else if (curPos['end']) {
-        // console.log(`end ${start} ${end}`);
         for (let i = start; i <= end; i = addDays(i, 1)) {
           dayRecord[i]['end'] = false;
         }
       } else {
+        // calculate the number of events should be hidden
         display = 'none'
         dayRecord[start]['hide']++;
       }
-      // console.log(dayRecord[new Date(2021, 3, 23)])
+      // decide the correct position to the current events
       let pos = curPos['center'] ? 'center' : (curPos['end'] ? 'end' : '');
       
-      // console.log(display, pos);
-      // console.log(dayRecord)
-      // console.log(JSON.stringify(dayRecord));
       return (span.map((colSpan, idx) => {
+        // set the CSS style to the event bar
           let style = {
             gridColumn: `${idx == 0 ? colNum : 1} / span ${colSpan}`,
             gridRow: `${startRow + idx}`,
@@ -233,17 +229,17 @@ const Calendar = ({ heightHandler }) => {
     return eventsBars;
   }
 
+  // stick the tag that indicating number of hidden events on that day
   const stickTags = () => {
     let tagsArr = [];
     for (let key in dayRecord) {
-      // console.log(dayRecord[key]['hide'])
       if (dayRecord[key]['hide'] !== 0) {
+        // style obj of the tag
         let style = {
           gridColumn: `${dayRecord[key]['column']}`,
           gridRow: `${dayRecord[key]['row']}`,
           alignSelf: 'start',
         }
-        // console.log(dayRecord[key]['events'])
           tagsArr.push(<CalendarTag styles={style} hide={dayRecord[key]['hide']} key={key} />)
       } else {
       }
@@ -269,6 +265,8 @@ const Calendar = ({ heightHandler }) => {
     });
   }
 
+  // double click event handler of the calendar box
+  // show create event form in modal pop up
   const createEventForm = (date) => {
     setEventForm({
       'show': true,
@@ -276,24 +274,27 @@ const Calendar = ({ heightHandler }) => {
     });
   }
 
+  // hover event handler of the calendar box
+  // show the modal including all the events cards (including hidden) 
   const showEventCardModal = (date) => {
     if (dayRecord[date]) {
-      // console.log(dayRecord[date]['events'])
       setEventCardModal({ 'toggle': true, 'events': dayRecord[date]['events']});
     } else setEventCardModal({ 'toggle': true, 'events': []});
      
   }
 
+  // initializing the event cards modal
   const [eventModal, setEventModal] = useState({ 'toggle': false, 'event': {}})
 
+  // click event handler of the event card in the event cards modal
   const dismissEventCardModal = (e) => {
     setEventCardModal({ 'toggle': false , 'events': []})
     setEventModal({ 'toggle': true, 'event': e})
-    // console.log(e)
   }
 
   return (
     <div className="calendar-container">
+      {/* Event form component with CSS transition */}
       <CSSTransition
         in={eventForm['show']}
         timeout={300}
@@ -302,6 +303,7 @@ const Calendar = ({ heightHandler }) => {
       >
         <EventForm dismissHandler={() => setEventForm({'show': false, 'startDate': eventForm['startDate']})} startDate={eventForm['startDate']} edit={false}/>
       </CSSTransition>
+      {/* The header of calendar */}
       <div className="calendar-header">
         <CalendarHeader 
           month={monthNames[getMonth(calendarInfo['calendarStart'])]} 
@@ -310,6 +312,7 @@ const Calendar = ({ heightHandler }) => {
           nextMonth={nextMonth}
         />
       </div>
+      {/* Main part of the calendar */}
       <div className="calendar">
         {dayNames.map((day, index) => (<span className="day-name" key={index} style={day === "Sun" ? {color: "rgb(217, 83, 79)"} : {}}>{day}</span>))}
         {calendarInfo['calendarArr'].map((item, index) => {
@@ -324,9 +327,11 @@ const Calendar = ({ heightHandler }) => {
             clickHandler={showEventCardModal}
             />)
         })}
+        {/* Components of the events bars and the tags */}
         {stickEvents()}
         {stickTags()}
       </div>
+      {/* The color label and the guide of calendar */}
       <div className="flex-center" style={{justifyContent: 'space-between', fontSize: '.8em'}}>
           {['Sport', 'Music', 'Academic', 'Health', 'Festival', 'Career-related', 'Whole-person development', 'Others'].map((item, index) => (
                     <div className="calendar-labels">
@@ -335,6 +340,7 @@ const Calendar = ({ heightHandler }) => {
             ))}     
           <div classNames="calendar-tips">*<b>Hover</b> to check events of the day. <b>Double Click</b>  to create public event (Only for organizer).</div>
       </div>
+      {/* bootstrap modal component for the event card modal */}
       <Modal
         show={eventCardModal['toggle']}
         onHide={() => setEventCardModal({ 'toggle': false , 'events': []})}
@@ -343,18 +349,19 @@ const Calendar = ({ heightHandler }) => {
         <Modal.Header closeButton className="calendar-event-modal-title">More Events...</Modal.Header>
         <Modal.Body>
           <div className="calendar-event-list-modal-container">
-            {/* {console.log(eventCardModal['events'])} */}
             {eventCardModal['events'].length != 0 ? eventCardModal['events'].map((ev, index) => {
               return <EventCard event={ev} key={index} onClick={() => dismissEventCardModal(ev)} />
             }) : <h1>There is no more events on this day</h1>}
           </div>
         </Modal.Body>
       </Modal>
+      {/* Event modal conataining the details of a events */}
       <EventModal showEvent={eventModal} setShow={setEventModal}/>
     </div>
   )
 }
 
+// component of the header of calendar
 const CalendarHeader = ({ month, year, previousMonth, nextMonth }) => {
   return (
     <>
@@ -368,10 +375,10 @@ const CalendarHeader = ({ month, year, previousMonth, nextMonth }) => {
   )
 }
 
+// component of each day box of the calendar 
 const CalendarItems = (props) => {
 
   const mouseOverHandler = (event) => {
-    // console.log(props.name);
     var delay = setTimeout(() => {
       props.clickHandler(props.name)
     }, 1000)
@@ -385,12 +392,14 @@ const CalendarItems = (props) => {
   )
 }
 
+// Event bars
 const CalendarEvent = ({ classes, name, styles }) => {
   return (
     <section className={`task ${classes}`} style={styles}>{name}</section>
   )
 }
 
+// Tags in the day box
 const CalendarTag = ({ styles, hide }) => {
   return (
     <section className='tag' style={styles}>{`${hide} more`}</section>

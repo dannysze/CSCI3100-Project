@@ -1,10 +1,10 @@
+/* CSS for the Footer Component */
 .footer {
   box-sizing: border-box;
   margin-top: auto;
   display: flex;
   align-items: center;
   justify-content: space-around;
-  /* padding: 1px 0; */
   background-color: rgb(65, 65, 99);
   color: aliceblue;
   width: 100%
@@ -13,9 +13,6 @@
 .footer h1{
   font-weight: 300;
   font-size: 30px;
-  /* margin-left: -210px; */
-  /* align-self: flex-start; */
-  /* margin-left: 0; */
 }
 
 .footer p{
@@ -24,20 +21,15 @@
   margin-top: 10px;
 }
 .footer a {
-  /* text-align: center; */
-  /* color: #222222; */
   color:aliceblue;
-  /* border: 3px solid black; */
   border-radius: 50%;
   padding: .5em;
-  /* font-size: 1em; */
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 10px;
   transition-duration: 0.4s;
   animation: linear;
-  
 }
 
 .footer a:hover {

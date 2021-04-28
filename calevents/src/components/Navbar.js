@@ -1,9 +1,11 @@
+// Navbar component used in every page
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import { CaretDownFill, House,  Search } from 'react-bootstrap-icons';
 import '../styles/components/Navbar.css';
 
+// Navbar items array
 const navItems = [
     {
       title:'Home',
@@ -23,6 +25,7 @@ const navItems = [
       cName: 'nav__menu-item'
     },
 ]
+// dropdown menu items
 const dropItems = [
   {
     title:'My Schedule',
@@ -31,15 +34,18 @@ const dropItems = [
   },
 ]
 
+// Main component
 const Navbar = () => {    
-  
+  // state of deopdown menu
   const [showDropdownMenu, setShowDropdownMenu] = useState(false);
-
+  
   return(
     <nav className='nav'>
       <ul className='nav__menu'>
+        {/* creating nav item in <ul> */}
         {navItems.map((item, index) => {
           return ( 
+            // check if there is a dropdown menu
             item.cName === 'drop nav__menu-item' ? 
               <li 
                 className={item.cName} 
@@ -68,6 +74,7 @@ const Navbar = () => {
                   </ul>
                 </CSSTransition>
               </li>
+              // normal nav item
             : <li className={`${item.cName}`} key={index}>
                 <Link to={item.url} key={index} className={"flex-center"}>{item.title}&nbsp;{item.icon}</Link>
               </li>

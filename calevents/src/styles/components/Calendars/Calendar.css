@@ -11,8 +11,6 @@
   width: 100%;
   margin: auto;
   overflow: hidden;
-  /* box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1); */
-  /* border-radius: 10px; */
   background: #fff;
   max-width: 1350px;
 }
@@ -20,9 +18,6 @@
 .calendar-header {
   text-align: center;
   padding: 15px 0;
-  /* background-image: linear-gradient(to bottom, rgb(217, 83, 79), rgb(217, 83, 79)); */
-  /* background-color: rgb(217, 83, 79); */
-  /* color: #fef0db; */
   color: #282828;
   border-top: 1px solid rgba(152, 160, 166, 0.6);
   border-bottom: 1px solid rgba(152, 160, 166, 0.6);
@@ -37,16 +32,14 @@
   margin: 5px 0 0 0;
   font-size: 13px;
   font-weight: 600;
-  /* color: #fef0db; */
   color: #282828;
-  /* color: rgba(152, 160, 166, 0.6); */
 }
 
 .calendar-header svg {
-  /* color: #fef0db; */
   color: #282828;
 }
 
+/* styling of the boxes of days */
 .day {
   border-bottom: 1px solid rgba(152, 160, 166, 0.6);
   border-right: 1px solid rgba(152, 160, 166, 0.6);
@@ -57,7 +50,6 @@
   box-sizing: border-box;
   color: #98a0a6;
   position: relative;
-  /* pointer-events: none; */
   z-index: 1;
   cursor: pointer;
 }
@@ -66,6 +58,7 @@
   background-color: rgba(152, 160, 166, 0.2);
 }
 
+/* Positioning of the calendar */
 .day:nth-of-type(7n + 7) {
   border-right: 0;
 }
@@ -133,7 +126,6 @@
 
 .day--disabled {
   color: rgba(152, 160, 166, 0.6);
-  /* background-color: #ffffff; */
 }
 
 .calendar--today {
@@ -149,6 +141,7 @@
   border-radius: 50%;
 }
 
+/* styling of the tags */
 .tag {
   position: relative;
   color: #98a0a6;
@@ -157,6 +150,7 @@
   padding: 16px 7px;
 }
 
+/* styling of the event bars */
 .task {
   border-left-width: 3px;
   padding: 8px 12px;
@@ -169,71 +163,59 @@
   white-space: nowrap;
   margin-top: -5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  /* color: #ffffff; */
-  
   font-weight: 500;
 }
 
+/* coloring the events bars */
 .task--Sport, .task--danger {
   border-left-color: #ff7ca1;
   color: #ffffff;
-  /* background: rgba(254, 240, 219, 0.7); */
-  /* color: rgba(253, 180, 77, 0.88); */
-  /* background-color: rgba(242, 36, 5, 0.9); */
   background: linear-gradient(to right, #f78fad, #fdeb82)
 }
 
 .task--Music {
   border-left-color: #8f4eff;
   color: #ffffff;
-  /* background-color: rgba(234, 114, 245, 0.9); */
   background: linear-gradient(to right, #a16bfe, #deb0df);
 }
 
 .task--Academic {
   border-left-color: #43c26f;
   color: #ffffff;
-  /* background-color: rgba(0, 171, 56, 0.9); */
   background: linear-gradient(to right, #6de195, #c4e759)
 }
 
 .task--Career-related {
   border-left-color: #3a8fff;
   color: #ffffff;
-  /* background-color: rgba(7, 185, 252, 0.9); */
   background: linear-gradient(to right, #6cacff, #43dbfd);
 }
 
 .task--Festival {
   border-left-color: #ff1352;
   color: #ffffff;
-  /* background-color: rgba(255, 206, 0, 0.9); */
-  /* background: linear-gradient(to right, rgb(246, 168, 255), #f1eef9) */
   background: linear-gradient(to right, #ff4e7d, #e84b7c, #e56497, #df7bae, #fda0dd);
 }
 
 .task--Whole-person {
   border-left-color: #ee3e27;
   color: #ffffff;
-  /* background-color: rgba(7, 185, 252, 0.9); */
   background: linear-gradient(to left, #ff8181,#fc614f, #ff5741);
 }
 
 .task--Health {
-  /* border-left: none; */
   color: #777777;
   border-left-color: #fffb23;
   background-image: linear-gradient(to right, #fffb5a, #fcf686, #f8f2ab, #f8eea5);
 }
 
-
 .task--Others {
-  /* border-left: none; */
   border-left-color: #ff8018;
   color: #ffffff;
   background-image: linear-gradient(to right, #ff943c, #f4a13b, #ecbc68, #f7d169);
 }
 
+/* styling of the card event modal */
 .calendar-event-modal {
   min-width: 1200px;
 }
@@ -251,6 +233,7 @@
   grid-auto-rows: auto;
 }
 
+/* styling of the calnedar labels and guidelines */
 .dot{
   height: 13px;
   width: 13px;

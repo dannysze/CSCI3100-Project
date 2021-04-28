@@ -1,3 +1,4 @@
+// My Page component
 import React, { useEffect, useState, useContext } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import Header from '../components/Header';
@@ -7,12 +8,15 @@ import History from '../components/History';
 import Footer from '../components/Footer';
 import '../styles/pages/MyCalendar.css'
 
+// Main component
 const MyCalendar = () => {
 
+  // setting the doc. title
   useEffect(() => {
     document.title = 'My Calendar';
   }, [])
 
+  // The basic layout of the page using BS4 grid
   return (
     <Container className="home" fluid>
       <Header />

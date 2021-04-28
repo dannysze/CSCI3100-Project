@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useContext} from 'react';
+// This is the form (modal) that used for creating events and editing events 
+import React, { useState, useContext} from 'react';
 import { addHours } from 'date-fns';
 import CustomDatePicker from '../CustomeDatePicker';
 import { Image, Tag, GeoAlt, CalendarEvent, People, CashStack } from 'react-bootstrap-icons';
@@ -6,24 +7,28 @@ import { CloseButton, FormButton } from '../CustomButton';
 import useToken from '../../useToken';
 import {UserContext} from '../../UserContext';
 import getaddr from '../getaddr';
-
 import '../../styles/components/Event/EventForm.css';
-import EventCard from './EventCard';
 
+// sqlToJsDate convert the date from format in sql db (YYYY-MM-DD) to js Date obj
 const sqlToJsDate = (sqlDate, sqlTime) => {
   if(!sqlDate||!sqlTime) return;
   var sqlDateArr1 = sqlDate.split("-");
   var sYear = sqlDateArr1[0];
   var sMonth = (Number(sqlDateArr1[1]) - 1).toString();
   var sDay = sqlDateArr1[2];
-
   var sqlTimeArr = sqlTime.split(":");
-   
   return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
 }
 
-// const EventForm = ({ dismissHandler, startDate, edit, editInfo, editHandler }) => {
+// The main component of the Eventform 
+// Props:
+// dismissHandler: click event for closing the event form modal
+// startDate: indicate the start date of the date picker in the form
+// edit: Indicate the event form is used for creating or editing
+// editInfo: if the form is for editing, the current event info is sent to here
 const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
+
+  // setting the props to the state (depending on the "edit" props)
   const [startSelectedDate, setStartSelectedDate] = useState(edit ? sqlToJsDate(editInfo.start_date,editInfo.start_time) : startDate);
   const [endSelectedDate, setEndSelectedDate] = useState(edit ? sqlToJsDate(editInfo.end_date,editInfo.end_time) : addHours(startDate, 1));
   const [event, setEvent] = useState( edit ? editInfo : {
@@ -63,7 +68,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
           ...file,
           'src': e.target.result,
         })
-        
+        // to displat the uploaded image preview
         document.getElementsByClassName('create-event-form--image-upload')[0].style.display = 'none';
         document.getElementsByClassName('create-event-form--image-wrapper')[0].style.display = 'block';
       }
@@ -84,6 +89,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
     return (i < 10) ? "0" + i : i;
   }
 
+  // change the js Date obj to our sql db time (hh:mm:ss) string
   const toSqlTime = (date) =>{
     let h = checkTime(date.getHours());
     let m = checkTime(date.getMinutes());
@@ -91,6 +97,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
     return [h, m, s].join(':');
   }
 
+  // change the js Date obj to our sql db date (yyyy-mm-dd) string
   const toSqlDate = (date) => {
     let y = date.getFullYear();
     let m = checkTime(date.getMonth()+1);
@@ -191,15 +198,18 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
                           end_date:toSqlDate(endSelectedDate),
                           visible:user.type});
     }
-    // console.log(event);
   }
   
   return (
+    //  The event form will be displayed in the modal pop up
     <div className="create-event-form--background flex-center" onClick={dismissHandler}>
       <div className="create-event-form--container" onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={dismissHandler} style={{fontSize: '2em', top: '10px', left: '10px'}} />
         <h1 className="create-event-form--title">{edit ? 'edit' : 'create'} event</h1>
+        {/* The <form> component with different input fields in the event form */}
         <form id="create-event-form">
+          {/* File image upload field
+           */}
           <div className="create-event-form--image-upload-container flex-center">
             <input type="file" accept="image/*" onChange={fileSelectedHandler} />
             <div className="create-event-form--image-upload">
@@ -209,17 +219,19 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
             <div className="create-event-form--image-wrapper">
               <img className="create-event-form--uploaded-image" src={file.src} alt="Your image" />
               <div className="create-event-form--remove-imgae-button">
-               {/* <FormButton content="Remove" classes={'remove-button'}/> */}
               </div>
             </div>
           </div>
+          {/* A form row with 2 input fields */}
           <div className="create-event-form--input-group">
+            {/* Event name field */}
             <div className="create-event-form--input">
               <span className="create-event-form--input-prepend flex-center">
                 <CalendarEvent />
               </span>
               <input type="text" name="event_name" placeholder="Event" onChange={onChangeHandler} value={event.event_name} />
             </div>
+            {/* Event venue field */}
             <div className="create-event-form--input">
               <span className="create-event-form--input-prepend flex-center">
                 <GeoAlt />
@@ -227,7 +239,9 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
               <input type="text" name="venue" placeholder="Venue" onChange={onChangeHandler} value={event.venue} />
             </div>
           </div>
+          {/* Second row */}
           <div className="create-event-form--input-group">
+            {/* Start date picker */}
             <div className="create-event-form--input create-event-form--datepicker">
               <CustomDatePicker
                 onChangeHandler={(date) => {setStartSelectedDate(date)}}
@@ -235,6 +249,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
                 placeholder="Select Start Time"
               />
             </div>
+            {/* End date picker */}
             <div className="create-event-form--input">
               <CustomDatePicker 
                 onChangeHandler={(date) => {setEndSelectedDate(date)}}
@@ -244,7 +259,9 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
               />
             </div>
           </div>
+          {/* Remaining input fields */}
           <div className="create-event-form--input-group create-event-form--input-grid">
+            {/* Event categories select menu */}
             <div className="create-event-form--input" style={{gridRow: '1 / span 1', gridColumn: '1', paddingRight: '5px'}}>
               <span className="create-event-form--input-prepend flex-center">
                 <Tag />
@@ -255,15 +272,18 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
                 ))}
               </select>
             </div>
+            {/* Event description textarea */}
             <div className="create-event-form--input" style={{gridRow: '2 / span 2', gridColumn: '1', paddingRight: '5px', paddingLeft: '0px'}}>
               <textarea className="" name="description" placeholder="Description..." onChange={onChangeHandler} value={event.description}></textarea>
             </div>
+            {/* Event capacity input field */}
             <div className="create-event-form--input" style={{gridRow: '1', gridColumn: '2', paddingRight: '0', paddingLeft: '5px'}}>
               <span className="create-event-form--input-prepend flex-center">
                 <People />
               </span>
               <input type="number" name="capacity" placeholder="Capacity" onChange={onChangeHandler} value={event.capacity} />
             </div>
+            {/* Event fee and free checkbox */}
             <div className="create-event-form--input create-event-form--checkbox" style={{gridRow: '2', gridColumn: '2', paddingRight: '0'}}>
               <span className="create-event-form--input-prepend flex-center" style={{padding: '9px 8px'}}>
                 <CashStack />
@@ -275,6 +295,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
                 </label>
               </span>
             </div>
+            {/* Event refund before input field */}
             <div className="create-event-form--input create-event-form--checkbox" style={{gridRow: '3', gridColumn: '2', paddingRight: '0px'}}>
               <input type="number" name="refund_days" placeholder="Refund before" onChange={onChangeHandler} style={{paddingLeft: '16px'}} min="0" disabled={edit}/>
               <span className="create-event-form--input-append">
@@ -284,6 +305,7 @@ const EventForm = ({ dismissHandler, startDate, edit, editInfo}) => {
               </span>
             </div>
           </div>
+          {/* Form button component import from customized button */}
           <div className="create-event-form--input-group" style={{paddingBottom: '20px', marginLeft: 'auto'}}>
             <FormButton content={edit ? "edit" : "Create"} clickHandler={edit ? editHandler : submitHandler}/>
           </div>

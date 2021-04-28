@@ -1,7 +1,8 @@
+// Footer component used in every Pages
 import { Github } from 'react-bootstrap-icons'
 import '../styles/components/Footer.css';
 
-
+// Main component
 const Footer = () => {
   return (
     <div className="footer">
