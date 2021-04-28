@@ -1,3 +1,4 @@
+/* CSS for Header component */
 .header {
   display: flex;
   justify-content: flex-end;
@@ -34,30 +35,28 @@
 }
 
 .header-items:hover {
-  /* color: #FFFFFF; */
   color: #282828;
-  /* background-color: #000000; */
-  /* box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 0.15); */
-  /* transform: translateY(-5px); */
   text-decoration: none;
 }
 
+/* header items hovering underline animation */
 .header-items:hover::after {
   transform: scaleX(1);
 }
 
+/* redeem box animation classes */
 .add-value-box--enter-active .add-value--container,  .add-value-box--enter-done .add-value--container{
   transform: translateY(0px);
   opacity: 1;
 }
 
+/* Styling of redeem box */
 .add-value--background {
   position: absolute;
   top: 0;
   left: 0;
   height: 100vh;
   width: 100%;
-  /* background-color: rgba(0, 0, 0, 0.4); */
   z-index: 100;
 }
 
@@ -74,16 +73,13 @@
   transform: translateY(30px);
   text-align: center;
   opacity: 0;
-  /* z-index: 101; */
 }
 
 #redeem-form {
-  /* text-align: center; */
   padding: 0 5px;
 }
 
 .add-value--container input {
-  /* width: 90%; */
   border: none;
   background-color: #EFEFEF;
   padding: 5px 16px;

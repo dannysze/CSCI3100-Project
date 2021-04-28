@@ -1,5 +1,5 @@
+// A set of customized buttons with CSS and changeable  
 import { ArrowRightCircle, X, CaretLeftFill, CaretRightFill, ArrowRepeat } from 'react-bootstrap-icons'
-import { Link } from 'react-router-dom'
 import '../styles/components/CustomButton.css'
 
 const CustomButton = () => {

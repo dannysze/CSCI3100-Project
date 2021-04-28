@@ -1,17 +1,22 @@
+// Private Schedule component in My Page
+// showing only the events craeted by users or joined events
 import React, { useState, useEffect, useContext } from 'react';
 import { CalendarButton } from '../CustomButton';
 import EventForm from '../Event/EventForm';
-import { getDate, getDay, getMonth, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes, getMinutes, getHours, addHours, differenceInMinutes } from 'date-fns';
+import { getDate, getDay, getMonth, startOfWeek, endOfWeek, startOfDay, addDays, differenceInCalendarDays, addWeeks, subWeeks, addMinutes, getMinutes, getHours, differenceInMinutes } from 'date-fns';
 import { CSSTransition } from 'react-transition-group';
 import useToken from '../../useToken';
 import getaddr from '../getaddr';
 import { UserContext } from '../../UserContext';
 import '../../styles/components/Calendars/Schedule.css';
 
+// constant names used for the schedule
 const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const monthNames = ['January', 'Feburay', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const box = [...Array(48).keys()];
 
+// getting the days in the specified week
+// params: the start date of the week (default: today)
 const takeWeek = (date = new Date()) => {
   let days = [];
   let start = startOfWeek(startOfDay(date));
@@ -20,6 +25,7 @@ const takeWeek = (date = new Date()) => {
   let scheduleObj = {};
   let day = start;
   while (day < end) {
+    // obj in each day
     scheduleObj = {
       'day': day,
       'disabled': false,
@@ -27,13 +33,15 @@ const takeWeek = (date = new Date()) => {
       'sunday': false,
       'frequency': 0
     };
+    // disabling the days before today
     if (day < startOfDay(new Date())) {
-      // console.log(day)
       scheduleObj.disabled = true;
     }
+    // coloring sunday to red
     if (getDay(day) === 0) {
       scheduleObj.sunday = true;
     }
+    // styling today's col
     if (differenceInCalendarDays(day, new Date()) == 0) {
       scheduleObj.today = true;
     }
@@ -43,6 +51,7 @@ const takeWeek = (date = new Date()) => {
   return days;
 }
 
+// sqlToJsDate convert the date from format in sql db (YYYY-MM-DD) to js Date obj
 const sqlToJsDate = (sqlDate, sqlTime) => {
 
   var sqlDateArr1 = sqlDate.split("-");
@@ -55,7 +64,9 @@ const sqlToJsDate = (sqlDate, sqlTime) => {
   return new Date(sYear,sMonth,sDay,sqlTimeArr[0],sqlTimeArr[1],sqlTimeArr[2]);
 }
 
+// Main component
 const Schedule = () => {
+  // Initializing the states
   const today = startOfDay(new Date());
   const initialInfo = {
     'weekStart': startOfWeek(today),
@@ -96,33 +107,36 @@ const Schedule = () => {
   }
 
   let eventRecord = {};
+  // stick the events on the displayed week
   const stickScheduleEvents = () => {
     eventRecord = {};
-    // console.log(events)
+    
+    // filtering the events that only between the displayed week
     const thisWeekEvents = events.filter(thisWeekEvent => {
+
       let start_date = sqlToJsDate(thisWeekEvent.start_date, thisWeekEvent.start_time);
-      // let end_date = new Date(2021, 3, 12, 22, 30, 0)
       let end_date = sqlToJsDate(thisWeekEvent.end_date, thisWeekEvent.end_time);
+
       if (differenceInCalendarDays(end_date, start_date) > 0) {
       } else if (start_date > scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day || end_date < scheduleInfo['weekStart']) {
       } else return thisWeekEvent;
     })
+
+    // positioning the events to the corresponding positions
     const scheduleEventBlocks = thisWeekEvents.map((scheduleEvent, index) => {
-    // const scheduleEventBlocks = [...Array(3)].map((scheduleEvent, index) => {
       
-      // let start_date = new Date(2021, 3, 12, 9, 0, 0);
       let start_date = sqlToJsDate(scheduleEvent.start_date, scheduleEvent.start_time);
-      // let end_date = new Date(2021, 3, 12, 22, 30, 0)
       let end_date = sqlToJsDate(scheduleEvent.end_date, scheduleEvent.end_time);
 
+      // get the details of the events
       let colNum = getDay(start_date) + 2;
-      // console.log(`${start} - ${end}`)
       let minutesDiff = differenceInMinutes(end_date, start_date)
-      // console.log(`${minutesDiff} - ${minutesDiff}`)
       let startMinute = getMinutes(start_date);
       let startHour = getHours(start_date)
       let endMinute = getMinutes(end_date);
       let endHour = getHours(end_date);
+
+      // finding the correct row to be displayed
       let rowStart;
       if (startMinute <= 30 && startMinute > 0) {
         rowStart = startHour * 2 + 2;
@@ -131,18 +145,17 @@ const Schedule = () => {
       } else {
         rowStart = startMinute * 2 + 2;
       }
+      // calculate the correct row span basic on the duration of events
       let rowSpan;
-      // if (endMinute <= 30 && endMinute > 0)
       rowSpan = Math.floor(minutesDiff / 30);
+      // no rounding in each box
+      // let extrapx = minutesDiff % 30;
       
-      let extrapx = minutesDiff % 30;
-      
+      // return the styled component
       let style = {
         gridColumn: `${colNum}`,
         gridRow: `${rowStart} / span ${rowSpan}`,
       }
-      console.log(scheduleEvent)
-      console.log(scheduleEvent.category)
       return (
         <section className={`block--events task task--${scheduleEvent.category.split(' ')[0]}`} style={style}>
           <div className="block--events-title">{scheduleEvent.name}</div>
@@ -153,29 +166,29 @@ const Schedule = () => {
     return scheduleEventBlocks;
   }
 
-  // let allDayEventRecord = {};
+  // stick the all day event bar
   const stickAllDayEvent = () => {
-    // console.log(scheduleInfo)
-    // let allDayEventRecord = scheduleInfo.scheduleArr.slice(0, 7);
+    // copy the schedule array of the schedule 
     const allDayEventRecord = scheduleInfo.scheduleArr.slice(0, 7).map((item, index) => {
       item.frequency = 0;
       return item;
     })
 
+    // positioning the events to the corresponding positions
     const allDayEventBar = events.map((allDayEvent, index) => {
-    // const allDayEventBar = [...Array(2)].map((allDayEvent, index) => {
-      // let start = startOfDay(new Date());
-      // let end = startOfDay(new Date(2021, 3, 12));
-      // console.log(allDayEvent);
+      
       let start = startOfDay(sqlToJsDate(allDayEvent.start_date, allDayEvent.start_time));
       let end = startOfDay(sqlToJsDate(allDayEvent.end_date, allDayEvent.end_time));
+      // filter events that start and end in the same day
       if (differenceInCalendarDays(end, start) === 0) {
         return
       } 
+      // filtler events that not in the correct range 
       if (end < scheduleInfo['weekStart'] || start > scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day) {
         return 
       }
 
+      // trim the start and end date
       if (start < scheduleInfo['weekStart']) {
         start = scheduleInfo['weekStart']
       }
@@ -183,12 +196,12 @@ const Schedule = () => {
         end = scheduleInfo.scheduleArr[scheduleInfo.scheduleArr.length - 1].day
       }
       
+      // calculating the correct col span and row number
       let colNum = getDay(start) + 1;
       let colSpan = differenceInCalendarDays(end, start) + 1;
       
       let max = 1;
       let rangeStart = false;
-      // console.log(allDayEventRecord)
       for (let i = 0; i < allDayEventRecord.length; i++) {
         if (rangeStart) {
           allDayEventRecord[i].frequency++;
@@ -209,13 +222,10 @@ const Schedule = () => {
         gridColumn: `${colNum} / span ${colSpan}`,
         gridRow: `${row}`,
       }
-      // console.log(style);
-      // console.log(allDayEventRecord)
       return (
         <section className={`task task--${allDayEvent.category.split(' ')[0]} all-day-events--bar`} style={style}>{allDayEvent.name}</section>
       )
     })
-    // console.log(scheduleInfo)
     return allDayEventBar;
   }
 
@@ -253,6 +263,7 @@ const Schedule = () => {
 
   return (
     <div className="schedule-container">
+      {/* Event form for creating private events */}
       <CSSTransition
         in={eventForm['show']}
         timeout={300}
@@ -262,6 +273,7 @@ const Schedule = () => {
         <EventForm dismissHandler={() => setEventForm({'show': false, 'startDateTime': eventForm['startDateTime']})} startDate={eventForm['startDateTime']}/>
       </CSSTransition>
       <div className="schedule-header">
+        {/* 3 buttons for viewing scheudle */}
         <div className="timeslots timeslots-button">
           <span id="schedule--month">{monthNames[getMonth(scheduleInfo.weekStart)]}</span>
           <CalendarButton classes="calendar-button-left" clickHandler={previousWeek}/>
@@ -280,6 +292,7 @@ const Schedule = () => {
           )
         })}
       </div>
+      {/* All day events container */}
       <div className="schedule-week">
         <div className="timeslots all-day-events--title">All-day</div>
         <div className="all-day-events--grid">
@@ -287,8 +300,11 @@ const Schedule = () => {
           {stickAllDayEvent()}
         </div>
       </div>
+      {/* Daily events container */}
       <div className="schedule-body">
+        {/* setting the time label */}
         {box.map((item, index) => (index % 2 == 0 && index != 0 ? <div className="timeslots" key={index}>{`${item / 2 % 12 == 0 ? 12 : item / 2 % 12} ${item/2 < 12 ? 'am' : 'pm'}`}</div> : <div className="timeslots" key={index}></div>))}
+        {/* creating the schedule slots */}
         {scheduleInfo.scheduleArr.map((day, col) => {
           return box.map((_, row) => {
             let style = {
@@ -300,8 +316,10 @@ const Schedule = () => {
             )
           })
         })}
+        {/* stick the events blocks */}
         {stickScheduleEvents()}
       </div>
+      {/* schedule guides */}
       <div style={{textAlign:'right', fontWeight: "350", fontStyle:"oblique"}}>*<b>Click</b> to create event (Private for normal user/Public for organizer).</div>
     </div>
   )

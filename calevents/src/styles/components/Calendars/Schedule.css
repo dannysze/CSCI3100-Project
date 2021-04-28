@@ -1,3 +1,4 @@
+/* CSS doc for the scheudle in My Page*/
 .schedule-header, .schedule-body, .schedule-week {
   display: grid;
   grid-template-columns: 100px repeat(7, 1fr);
@@ -11,11 +12,9 @@
 }
 
 .schedule-day-name {
-  /* text-transform: uppercase; */
   line-height: 29px;
   padding-left: 3px;
   color: #282828;
-  /* color:rgba(152, 160, 166, 1); */
 }
 
 .schedule-day-name--disabled {
@@ -80,11 +79,10 @@
   top: -.5em;
   color: #282828;
   font-size: 1.2em;
-  /* right: 0; */
 }
 
+/* positioning the scehdule slots */
 .all-day-events--slots {
-  /* change with js */
   grid-row: 1 / span 9;
 }
 

@@ -86,7 +86,7 @@ const SearchPage = () => {
     params.append('start_date', startSelectedDate.toJSON().split('T')[0]);
     params.append('end_date', endSelectedDate.toJSON().split('T')[0]);
     params.append('category', JSON.stringify(searchInfo['category']));
-    console.log(params.toString());
+    // console.log(params.toString());
 
     fetch(getaddr() + 'filter_events/?' + params.toString(), {
       headers: {
