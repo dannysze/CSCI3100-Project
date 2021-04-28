@@ -303,7 +303,7 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
                 });
             }
             else{
-                res.send("The user id is invalid");
+                res.status(400).send("The user id is invalid");
             }
         });
     })
@@ -418,7 +418,7 @@ app.post('/join_event', function(req, res){
             });
         }
         else{
-            res.send({error:"Invalid User"});
+            res.status(400).send({error:"Invalid User"});
             console.log("Invalid User");
         }
     });    
@@ -546,7 +546,7 @@ app.post('/event_pic', upload.single('img'),function(req, res){
             });
         }
         else{
-            res.send("Invalid Event");
+            res.status(400).send("Invalid Event");
             console.log("Invalid Event");
         }
     });
@@ -818,18 +818,23 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
         con.query(sql, [u_ID], function(err, result){
             if (err) throw err;
             var oldpath = result[0].img_loc;
-            sql = `UPDATE csci3100.User SET img_loc = ? WHERE user_id = ?;`;
-            con.query(sql, [req.file.path, u_ID], function(err, result){
-                if (err) throw err;
-                res.status(200).send("ok");
-                //remove old file
-                if(oldpath){
-                    fs.unlink(oldpath, (err) => {
-                    console.log(err);
-                    });
-                }
- 
-            });
+            if(result.length > 0){
+                sql = `UPDATE csci3100.User SET img_loc = ? WHERE user_id = ?;`;
+                con.query(sql, [req.file.path, u_ID], function(err, result){
+                    if (err) throw err;
+                    res.status(200).send("ok");
+                    //remove old file
+                    if(oldpath){
+                        fs.unlink(oldpath, (err) => {
+                        console.log(err);
+                        });
+                    }
+    
+                });
+            }
+            else{
+                res.status(400).send("Invalid User");
+            }
         });
     })
 });

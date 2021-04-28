@@ -215,7 +215,7 @@ describe('test http requests', ()=>{
         });
 
         // pending changes
-        it('It should return error because the user_id is invalid', (done) => {
+        it('It should return error because the user_id did not create any events', (done) => {
             const user_id = 65;
             chai.request(server).get('/user_events/' + user_id).end((err, response) => {
                 response.should.have.status(400);
@@ -252,7 +252,7 @@ describe('test http requests', ()=>{
             const form = {
                 user_id: 65,
                 card_id: 1000,
-                input_pw: "127843193423"
+                card_pw: "127843193423"
             }
             chai.request(server).post('/add_value').send(form).end((err, response) => {
                 // console.log(response);
@@ -265,7 +265,7 @@ describe('test http requests', ()=>{
             const form = {
                 user_id: 65,
                 card_id: 1,
-                input_pw: "1234567890"
+                card_pw: "1234567890"
             }
             chai.request(server).post('/add_value').send(form).end((err, response) => {
                 // console.log(response);
@@ -279,7 +279,7 @@ describe('test http requests', ()=>{
             const form = {
                 user_id: 65,
                 card_id: 3,
-                input_pw: "876876256256"
+                card_pw: "876876256256"
             }
             chai.request(server).post('/add_value').send(form).end((err, response) => {
                 // console.log(response);
@@ -293,7 +293,7 @@ describe('test http requests', ()=>{
             const form = {
                 user_id: 1000,
                 card_id: 3,
-                input_pw: "876876256256"
+                card_pw: "876876256256"
             }
             chai.request(server).post('/add_value').send(form).end((err, response) => {
                 // console.log(response);
