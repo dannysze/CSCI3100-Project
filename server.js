@@ -1,6 +1,4 @@
-  
 // Node server
-// import {con} from './calevents/src/db';
 const con = require('./calevents/src/db');
 var express = require('express');
 var app = express();
@@ -9,23 +7,23 @@ const fs = require('fs');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
-const saltedRounds = 10;
 const crypto = require('crypto');
+var nodemailer = require('nodemailer');
+
+//for salting password
+const saltedRounds = 10;
+
 const jwt = require('jsonwebtoken');
 //secret key for jwt.sign
 const config = {
     secret:'somerandomstuff',
 }
+
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use(cors());
 
-var nodemailer = require('nodemailer');
-
-
-
-
-// Configure Mailer for email notification
+// Mailbox config
 var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -34,18 +32,14 @@ var transporter = nodemailer.createTransport({
     }
 });
 
-// send_email('calevents3100@gmail.com', 'Welcome', '<h1>Welcome to Calevents</h1> We are Calevents admin');
+// Email notification;
 function send_email(receiver, subject, content){
-    // The content is set to html format for better appearance
-    // If there is no need to change the appearance, we can change html into text instead
-
     var mailOptions = {
         from: 'calevents3100@gmail.com',
         to: receiver,
         subject: subject,
         html: content
     };
-
 
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
@@ -130,6 +124,7 @@ app.post('/login', function(req, res) {
     });
 }
 );
+
 //for signup. return jwt token with payload being userid after successful signup.
 //modify from /createuser
 // tested
@@ -303,7 +298,7 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
                 });
             }
             else{
-                res.send("The user id is invalid");
+                res.status(400).send("The user id is invalid");
             }
         });
     })
@@ -418,7 +413,7 @@ app.post('/join_event', function(req, res){
             });
         }
         else{
-            res.send({error:"Invalid User"});
+            res.status(400).send({error:"Invalid User"});
             console.log("Invalid User");
         }
     });    
@@ -546,7 +541,7 @@ app.post('/event_pic', upload.single('img'),function(req, res){
             });
         }
         else{
-            res.send("Invalid Event");
+            res.status(400).send("Invalid Event");
             console.log("Invalid Event");
         }
     });
@@ -818,18 +813,23 @@ app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
         con.query(sql, [u_ID], function(err, result){
             if (err) throw err;
             var oldpath = result[0].img_loc;
-            sql = `UPDATE csci3100.User SET img_loc = ? WHERE user_id = ?;`;
-            con.query(sql, [req.file.path, u_ID], function(err, result){
-                if (err) throw err;
-                res.status(200).send("ok");
-                //remove old file
-                if(oldpath){
-                    fs.unlink(oldpath, (err) => {
-                    console.log(err);
-                    });
-                }
- 
-            });
+            if(result.length > 0){
+                sql = `UPDATE csci3100.User SET img_loc = ? WHERE user_id = ?;`;
+                con.query(sql, [req.file.path, u_ID], function(err, result){
+                    if (err) throw err;
+                    res.status(200).send("ok");
+                    //remove old file
+                    if(oldpath){
+                        fs.unlink(oldpath, (err) => {
+                        console.log(err);
+                        });
+                    }
+    
+                });
+            }
+            else{
+                res.status(400).send("Invalid User");
+            }
         });
     })
 });
@@ -840,23 +840,28 @@ app.post('/refund/:eID', function(req, res){
     var sql2 = `SELECT * FROM csci3100.Event WHERE event_id = ?;`;
     con.query(sql1, [req.body['user_id'], req.params['eID']], function(err, result1){
         if (err) throw err;
+		//check whether the user has joined this event
         if (result1.length > 0)
             con.query(sql2, [req.params['eID']], function(err, result2){
                 if (err) throw err;
                 if (result2.length > 0){
                     let current_datetime = new Date();
                     let start_datetime = new Date(result2[0].start_date + ' ' + result2[0].start_time);
-                    if (result2[0].allow_refund && (result2[0].days_for_refund > 0) && (current_datetime <= start_datetime)){
+                    // check whether the event allows refund and the deadline of refund is not passed
+					if (result2[0].allow_refund && (result2[0].days_for_refund > 0) && (current_datetime <= start_datetime)){
                         var sql3 = `DELETE FROM csci3100.Event_Join WHERE user_id = ? AND event_id = ?`;
                         con.query(sql3, [req.body['user_id'], req.params['eID']], function(err, result3){
                             if (err) throw err;
+							// update event capacity
                             var sql4 = `UPDATE csci3100.Event SET capacity = ? WHERE event_id = ?`;
                             con.query(sql4, [(result2[0].capacity + 1), req.params['eID']], function(err, result4){
                                 if (err) throw err;
-                                var sql5 = `UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id = ?`;
+                                // refund to user account
+								var sql5 = `UPDATE csci3100.User SET account_balance = account_balance + ? WHERE user_id = ?`;
                                 con.query(sql5, [result2[0].ticket, req.body['user_id']], function(err, result5){
                                     if (err) throw err;
-                                    var sql6 = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = ?`;
+                                    // deduct refunded amount from organizer account
+									var sql6 = `UPDATE csci3100.User SET account_balance = account_balance - ? WHERE user_id = ?`;
                                     con.query(sql6, [result2[0].ticket, result2[0].organizer], function(err, result6){
                                         if (err) throw err;
                                         res.status(200).send('Refunded. Your account balance has been updated.');
@@ -886,16 +891,16 @@ app.post('/reset_password', function(req, res){
                 // delete token if it exists
                 if (result2.length > 0 )
                     con.query(sql3, [result2[0].user_id], function(err, result){if (err) throw err;});
-                let resetToken = crypto.randomBytes(32).toString("hex");
+                // generate reset password token/link which expires in 10 mins
+				let resetToken = crypto.randomBytes(32).toString("hex");
                 const hash = bcrypt.hashSync(resetToken, saltedRounds);
                 var sql4 = `INSERT INTO csci3100.Password_Recovery (user_id, token, expires_at) VALUES(?, ?, ?);`;
-                // token/reset password link expire in 10 minutes
                 let current_datetime = new Date();
                 let expire_datetime = new Date();
                 expire_datetime.setTime(current_datetime.getTime() + 10 * 60000);
                 con.query(sql4, [result1[0].user_id, hash, expire_datetime], function(err, result2){
                     if (err) throw err;
-                    //send email with password reset link
+                    // send email with password reset link
                     const link = 'localhost:3000/reset_password?token=' + resetToken + '&user_id=' + result1[0].user_id;
                     var subject = "CalEvents Password Reset";
                     var content = `<p>Dear ` + result1[0].username + `,</p>
@@ -907,7 +912,6 @@ app.post('/reset_password', function(req, res){
                                     <br>
                                     <p>Yours Sincerely,<br>CalEvents Admins</p>`;
                     send_email(req.body['email'], subject, content);
-                    res.send({link});
                 });
             })
         }else{
@@ -922,11 +926,13 @@ app.put('/reset_password', function(req, res){
     sql1 = `SELECT * FROM csci3100.Password_Recovery WHERE user_id = `+ req.query['user_id'] + `;`;
     con.query(sql1, function(err, result1){
         if (err) throw err;
+		// check whether the token is valid
         if (result1.length > 0){
             let expire_time = new Date(result1[0].expires_at);
             if ((bcrypt.compareSync(req.query['token'], result1[0].token)) && (current_datetime <= expire_time)){
                     bcrypt.hash(req.body['password'], saltedRounds, function(err, hash){
-                        var sql2 = `UPDATE csci3100.User SET password = '` + hash + `' WHERE user_id = ` + req.query['user_id'] +`;`;
+                        // reset new password
+						var sql2 = `UPDATE csci3100.User SET password = '` + hash + `' WHERE user_id = ` + req.query['user_id'] +`;`;
                         con.query(sql2, function (err, result2) {
                             if (err) throw err;
                             else{
@@ -934,6 +940,7 @@ app.put('/reset_password', function(req, res){
                                 con.query(sql3, [req.query['user_id']], function(err, result3){
                                     if (err) throw err;
                                     res.status(200).send('Password reset successfully.');
+									// email notification for succesful password change
                                     var subject = "CalEvents Password Changed";
                                     var content = `<p>Dear ` + result3[0].username + `,</p>
                                                     <br>
@@ -974,7 +981,6 @@ app.delete('/user_events/:eID', function(req, res){
                 
                 // construct the list of participant user_id
                 no_of_parti = result.length
-                // console.log(no_of_parti);
                 for(let i in result){
                     parti += result[i].user_id + ',';
                 }
@@ -1057,8 +1063,7 @@ app.delete('/user_events/:eID', function(req, res){
 //     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
 // });
 
-//var server = app.listen(3000);
+// listen to port 5000
 var server = app.listen(5000);
 
-// module.exports = app
 module.exports = server;
