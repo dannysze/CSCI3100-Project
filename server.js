@@ -70,28 +70,6 @@ const checkAuth = (req, res, next) => {
     });
 };
 
-// app.get('/test', function(req, res){
-//     var u_ID = 13;
-//     var sql = `SELECT user_id,username,img_loc, email,type,account_balance FROM csci3100.User where user_id = ?;`;
-//     con.query(sql, [u_ID], function(err, result){
-//         if(err) throw err;
-//         //check if user with the user exists
-//         if(result.length > 0){
-//             var result = result[0];
-//             //send base64 url for the image
-//             try{
-//                 var imageAsBase64 = 'data:image/' + pwd.extname(result.img_loc).substr(1) + ';base64,' + fs.readFileSync(result.img_loc, 'base64');
-//                 result.img_loc = imageAsBase64;
-//             }catch{
-//                 result.img_loc = "";
-//             }
-//             res.status(200).send(result);
-//         }else{
-//             res.status(400).send({error: 'User does not exist'});
-//         }
-//     });
-// });
-
 //for login.return jwt token with payload being userid after successful login.
 // tested
 app.post('/login', function(req, res) {
@@ -126,7 +104,6 @@ app.post('/login', function(req, res) {
 );
 
 //for signup. return jwt token with payload being userid after successful signup.
-//modify from /createuser
 // tested
 app.post('/signup', function(req, res) {
     // variables from the request
@@ -134,9 +111,6 @@ app.post('/signup', function(req, res) {
     var email = req.body['email'];
     var type = req.body['type'];
     
-    //hashedPassword = bcrypt.hashSync(req.body.password, 8);
-    //password = hashPassword
-
     var sql1 = `SELECT * FROM csci3100.User where username = '`+ username +`';`;
     var sql2 = `SELECT * FROM csci3100.User where email = '`+ email +`';`;
  
@@ -174,27 +148,6 @@ app.post('/signup', function(req, res) {
         });
     });
 })
-
-// // insert user
-// // password hashing, img_loc and type to be implement
-// app.post('/create_user', function(req, res) {
-//     // variables from the request
-//     var username = req.body['username'];
-//     var password = req.body['password'];
-//     var email = req.body['email'];
-//     var type = req.body['type'];
-    
-  
-//     var sql = `INSERT INTO csci3100.User (user_id, username, password, email, type, img_loc, account_balance) VALUES
-//     ( default , '` + username + `', '`+ password + `' , '`+ email +`' , ` + type + `, NULL, ` + 0 + `)`;
-//     con.query(sql, function (err, result) {
-//         if (err) throw err;
-
-//         console.log("1 record inserted");
-//         res.send(result);
-//     });
-// });
-
 
 // file uploading
 // https://www.youtube.com/watch?v=ysS4sL6lLDU
@@ -246,7 +199,6 @@ const upload = multer({
 // time format: HH:MM:SS
 app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
     // variables from the request
-    // var user_id = req.body['user_id'];
     var token = req.headers['auth'];
     jwt.verify(token, config.secret, function(err, decoded){
         var user_id = decoded.user_id;
@@ -287,11 +239,8 @@ app.post('/create_event', checkAuth ,upload.single('img'), function(req, res) {
                             , img_loc, organizer, ticket, allow_refund, days_for_refund, category) VALUES (`+ event_id +`, '`+ event_name +`', '`+ start_date +`', '`+ start_time +`', '`+ end_date +`', '`+ end_time +`',`+ 
                             visible +`,`+ repeat +`, '`+ venue +`',`+ capacity +`, '`+ desc + `', '`+ img_loc +`', `+ user_id +`,`+ ticket +`,`+ refund +`, `+ refund_days +`,'`+ category +`');
                             INSERT INTO csci3100.Event_Join (user_id, event_id) VALUES(`+ user_id +`, `+ event_id +`);`;
-                        // console.log(sql);
                         con.query(sql, function (err, result){
                             if (err) throw err;
-                            //res.send(result);
-                            
                             res.status(200).send("ok");
                         });
                     }
@@ -315,11 +264,9 @@ app.get('/joined_events/:uID', function(req, res){
         
         if(result.length > 0){
             res.status(200).send(result);
-            // console.log(result);
         }
         else{
             res.status(400).send("No events Found");
-            // console.log(result);
         }
 
     });
@@ -385,18 +332,15 @@ app.post('/join_event', function(req, res){
                                         con.query(sql, function (err, result){
                                             if (err) throw err;
                                             res.status(200).send({success:"Joined Activity, transaction done"});
-                                            // console.log("Joined Activity, transaction done");
                                         });
                                     }
                                     else{
                                         if(usr_bal<cost) res.status(400).send({error:"Not enough account balance.You may redeem gift cards to top up."});
-                                        if(old_capacity<=0) res.status(400).send({error:"The event is full"});
-                                        // console.log("Cannot join activity");                        
+                                        if(old_capacity<=0) res.status(400).send({error:"The event is full"});                     
                                     }
                                 }
                                 else{
-                                    res.status(400).send({error:"You have already enrolled in this event"});
-                                    // console.log("Cannot join You have already enrolled in this event"); 
+                                    res.status(400).send({error:"You have already enrolled in this event"}); 
                                 }
                             });
                         }
@@ -408,7 +352,6 @@ app.post('/join_event', function(req, res){
                 }
                 else{
                     res.status(400).send({error:"No such event or the event is not public"});
-                    // console.log("No such event or the event is not public");
                 } 
             });
         }
@@ -454,7 +397,6 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
         // if the user is valid
         if(result.length > 0){
             sql = `SELECT * FROM csci3100.Event where event_id = `+ event_id +`;`;
-            // console.log(sql);
             con.query(sql, function (err, result){
                 if (err) throw err;
                 
@@ -463,26 +405,19 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
                     old_capacity = result[0].capacity;
 
                     
-                        // find the number of participants
+                    // find the number of participants
                     sql = `SELECT COUNT(user_id) AS count FROM csci3100.Event_Join WHERE event_id = ?`;
 
                     con.query(sql, [event_id], function(err, result){
                         if (err) throw err;
-
                         if(result.length > 0){
                             parti_no = result[0].count;
-                            // console.log(parti_no);
                             if(org_id == user_id){
                                 if(capacity >= parti_no){
                                     sql = `UPDATE csci3100.Event SET name = ?, start_date = ?,start_time = ?, end_date = ?, end_time = ?, visible = ?, repeat_every_week = ?, venue = ?, capacity = ?, description = ?, allow_refund = ?, days_for_refund = ?, category = ? WHERE event_id = ?`;
-                                    
-                                    // console.log(sql);
-                                    // console.log(capacity - parti_no);
                                     con.query(sql, [event_name, start_date, start_time, end_date, end_time, visible, repeat, venue, capacity - parti_no, desc, refund, refund_days, category, event_id], function (err, result){
-                                        if (err) throw err;
-        
+                                        if (err) throw err;        
                                         res.status(200).send("ok");
-                                        // console.log(result);
                                     });
                                 }
                                 else{
@@ -490,8 +425,7 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
                                 }
                             }
                             else{
-                                res.status(403).send("You are not allowed to edit this event");
-                                // console.log("You are not allowed to edit this event");                            
+                                res.status(403).send("You are not allowed to edit this event");                          
                             }
                         }
                         else{
@@ -502,7 +436,6 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
                 }
                 else{
                     res.status(404).send("This event does not exist");
-                    // console.log("This event does not exist");
                 }
             });
         }
@@ -517,7 +450,6 @@ app.post('/edit_event', textOnly.none(), function(req, res) {
 app.post('/event_pic', upload.single('img'),function(req, res){
     var event_id = req.body['event_id'];
     var oldpath;
-    // console.log(event_id);
     sql = `SELECT img_loc from csci3100.Event WHERE event_id = ?;`;
     con.query(sql, [req.body['event_id']], function(err, result){
         if (err) throw err;
@@ -525,10 +457,9 @@ app.post('/event_pic', upload.single('img'),function(req, res){
         if(result.length > 0){
             oldpath = result[0].img_loc;
             sql = `UPDATE csci3100.Event SET img_loc = ? WHERE event_id = ?;`;
-            // console.log(req.file.filename);
             con.query(sql, [req.file.filename, event_id], function(err, result){
                 if (err) throw err;
-                // console.log(oldpath);
+
                 //remove old file
                 if(oldpath){
                     fs.unlink('uploads/' + oldpath, (err) => {
@@ -552,10 +483,6 @@ app.post('/event_pic', upload.single('img'),function(req, res){
 app.post('/add_value', function(req, res) {
 //app.post('/add_value', checkAuth, function(req, res) {
     
-    //var token = req.headers['token'];
-    //jwt.verify(token, config.secret, function(err, decoded){
-        // variables from the request
-        //var user_id = decoded.user_id;
         var user_id = req.body['user_id'];
         var card_id = req.body['card_id'];
         var input_pw = req.body['card_pw'];
@@ -581,7 +508,6 @@ app.post('/add_value', function(req, res) {
                     //Check if card number exists
                     if(result.length > 0){
 
-                        // console.log(result[0]);
                         actual_pw = result[0].card_password;
                         card_val = result[0].value;
 
@@ -608,21 +534,20 @@ app.post('/add_value', function(req, res) {
                                 res.status(400).send({error:"The password is incorrect"});
                                 console.log("The password of the card is incorrect")
                             }
-                            //res.status(400).send("Failed to add value")
+                            res.status(400).send("Failed to add value")
                             console.log("Failed to add value");
                         }
                     }else{
                         res.status(400).send({error:"Card number does not exist"});
-                        // console.log("Card number does not exist");
+                        console.log("Card number does not exist");
                     }
                 });
             }
             else{      
                 res.status(400).send("Invalid User");
-                // console.log("Invalid User");
+                console.log("Invalid User");
             }
         });
-    //});
 });
 
 // Retrieve all public events
@@ -640,12 +565,9 @@ app.get('/search_events', function(req, res){
                 }catch{
                     result[i].img_loc = 'data:image/' + pwd.extname('uploads/empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
                 }
-                // console.log(result[i])
-                // console.log("______________________________________________________________-");
+
             }
-            // console.log(result);
-            
-            
+                   
             res.status(200).send(result);
         }
         else{
@@ -664,7 +586,6 @@ app.get('/filter_events', function(req, res){
     var end_date = req.query['end_date'];
     var name = req.query['name'];
 
-    // console.log(category);
     var arr = JSON.parse(req.query.category);
     console.log(arr);
     var str = '('
@@ -674,9 +595,9 @@ app.get('/filter_events', function(req, res){
         }
         str = str.substring(0, str.length - 1);
         str += ')'; 
-        // console.log(str);
+
         var sql = `SELECT * FROM csci3100.Event INNER JOIN (SELECT user_id, username FROM csci3100.User) AS User ON Event.organizer = User.user_id WHERE ticket >= ? AND ticket <= ? AND start_date >= ? AND end_date <= ? AND name LIKE '%`+ name +`%' AND category IN `+str+` AND visible = 1 ORDER BY start_date ASC;`;
-        // console.log(sql);
+
         con.query(sql, [min_cost, max_cost, start_date, end_date, str], function (err, result) {
             if (err) throw err;
     
@@ -688,11 +609,8 @@ app.get('/filter_events', function(req, res){
                     }catch{
                         result[i].img_loc = 'data:image/' + pwd.extname('uploads/empty.png').substr(1) + ';base64,' + fs.readFileSync('uploads/empty.png', 'base64');
                     }
-                    // console.log(result[i])
-                    // console.log("______________________________________________________________-");
                 }
                 res.status(200).send(result);
-                // console.log(result);
             }
             else{
                 res.status(404).send("No events");
@@ -728,7 +646,6 @@ app.get('/event/:eID',function(req, res){
         else{
             res.status(401).send("Invalid event id");
         }
-        // console.log(result);
     });
 });
 
@@ -766,7 +683,6 @@ app.get('/user_info/:uID', function(req, res){
 
         if(result.length > 0){
             res.status(200).send(result);
-            // console.log(result);
         }
         else{
             res.status(400).send("User does not exist");
@@ -804,8 +720,6 @@ app.get('/user', function(req, res) {
 
 //update profile pic
 app.post('/updatepfp', checkAuth, upload.single('pfp'),function(req, res){
-    // console.log(req.body);
-    // console.log(req.file.path);
     var token = req.headers['auth'];
     jwt.verify(token, config.secret, function(err, decoded){
         var u_ID = decoded.user_id;
@@ -1058,10 +972,6 @@ app.delete('/user_events/:eID', function(req, res){
         }
     });
 });
-
-// app.get('/', function(req, res) {
-//     res.sendFile(pwd.join(__dirname + "/calevents/src/index.js"));
-// });
 
 // listen to port 5000
 var server = app.listen(5000);
