@@ -1,3 +1,4 @@
+// The App component of CalEvents which routes different links
 import React from 'react';
 import {useState, useEffect} from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
@@ -54,7 +55,9 @@ function App() {
 
   return (
     <div className="App">
+      {/* Route page with different address */}
       <Router>
+        {/* Protected route requires authentication */}
         <UserContext.Provider value={{user,setUser}}>
           <Route path="/login" exact component={Login} />
           <ProtectedRoute path="/" exact component={Home} />

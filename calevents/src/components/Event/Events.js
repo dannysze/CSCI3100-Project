@@ -1,3 +1,4 @@
+// Component including the event cards at the main page and event modal
 import { useState, useContext} from 'react'
 import { Container, Row, Col, Modal, ListGroup, Button, ListGroupItem } from 'react-bootstrap'
 import EventCard from './EventCard'
@@ -7,7 +8,7 @@ import {UserContext} from '../../UserContext'
 import useToken from '../../useToken'
 import getaddr from '../../components/getaddr'
 
-
+// sqlToJsDate convert the date from format in sql db (YYYY-MM-DD) to js Date obj
 const sqlToJsDate = (sqlDate, sqlTime) => {
   if(!sqlDate||!sqlTime) return;
   var sqlDateArr1 = sqlDate.split("-");
@@ -20,6 +21,10 @@ const sqlToJsDate = (sqlDate, sqlTime) => {
   return new Date(sYear, sMonth, sDay, sqlTimeArr[0], sqlTimeArr[1], sqlTimeArr[2]);
 }
 
+// main component
+// Props:
+// events: the array of filtered events
+// title: title of the container
 function Events({ height, events, title}) {
   const [showEvent, setShow] = useState({ toggle: false, event: {} });
 
@@ -28,11 +33,13 @@ function Events({ height, events, title}) {
       <div className="outer" style={{ width: "100%" }}>
         <h1>{title}</h1>
         <div className='events' style={{ height: `${height - 61}px` }}>
+          {/* generating the event cards */}
           {events.map((event, idx) => (
             <EventCard key={idx} event={event} onClick={() => setShow({ toggle: true, event: event })} />
             ))}
         </div>
       </div>
+      {/* modal pop up which show the details of selected event */}
       <EventModal showEvent={showEvent} setShow={setShow}/>
     </div>
   )
@@ -40,7 +47,7 @@ function Events({ height, events, title}) {
 
 export default Events;  
 
-
+// Modal pop up with selected event details
 const EventModal = ({ showEvent, setShow }) => {
   const {user, setUser} = useContext(UserContext);
   const {token, setToken} = useToken();
@@ -62,6 +69,7 @@ const EventModal = ({ showEvent, setShow }) => {
       return clashedEvents;
   };
 
+  // POST request for joining event
   const joinEvent = async () => {
     try{
         let res = await fetch(getaddr()+'join_event', {
@@ -76,6 +84,7 @@ const EventModal = ({ showEvent, setShow }) => {
         if (!res.ok){
               alert(body['error']);
         }else{
+          // generate a time clashing warning to user
             let clashes = await checkTimeClash();
             console.log(clashes);
             clashes.length>0

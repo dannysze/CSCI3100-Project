@@ -1,20 +1,22 @@
+// Login page component
 import React, { useEffect, useState } from 'react';
 import { LoginButton, SignUpButton, CloseButton } from '../components/CustomButton';
-import { Link } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import getaddr from '../components/getaddr'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/pages/Login.css';
 import useToken from '../useToken'
 
-
+// Main component
 const Login = () => {
   const {token, setToken} = useToken();
 
+  // change the doc title depending on the current page
   useEffect(() => {
     document.title = showSignUp ? 'Login' : 'Sign Up';
   })
 
+  // used for simple validation check (format)
   var checkValid = {
     'username': true,
     'password': true,
@@ -22,11 +24,13 @@ const Login = () => {
     'email': true,
   }
 
+  // error messgae shown under the fields which failed the validation check
   var defaultResult = {
     'errorMsg':'',
     'alert':false,
   }
 
+  // initialize form value
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -38,10 +42,12 @@ const Login = () => {
   const [signupResult, setSignupResult] = useState(defaultResult);
   const [resetResult, setResetResult] = useState(defaultResult);
 
+  // login form change handler
   const loginChangeHandler = (event) => {
     event.target.name === 'username' ? setUsername(event.target.value) : setPassword(event.target.value);
     setLoginResult(defaultResult);
   }
+
 
   const signUpChangeHandler = (event) => {
     setSignupResult(defaultResult);
@@ -60,10 +66,10 @@ const Login = () => {
       setEmail(event.target.value);
     } else if (event.target.name === 'type') {
       setUserType(event.target.value);
-      //console.log(userType);
     }
   }
 
+  // click handler for the reset button on the sign up page (erase the whole form)
   const resetChangeHandler = (event) => {
     event.preventDefault();
     setResetResult(defaultResult);
@@ -72,16 +78,14 @@ const Login = () => {
       setEmail(event.target.value);
   }
 
+  // click event for transit to the reset password form and clear the sign in and sign up form
   const resetPasswordHandler = (event) => {
     event.preventDefault();
     clearForm();
     setResetPassword(!resetPassword);
   }
 
-  const validationCheck = () => {
-    
-  }
-
+  // Login submit handler
   const login = async (event) => {
     event.preventDefault();
     if(!username||!password){
@@ -104,13 +108,13 @@ const Login = () => {
         //temporily use user_id as token
         setToken({'token':body['token']});
         window.location.replace("/");
-        //console.log(token)
       }
     }catch(err){
       console.log(err);
     }
   }
 
+  // sign up submit handler
   const signup = async (event) => {
     event.preventDefault();
     if(!username||!password||!email){
@@ -139,13 +143,13 @@ const Login = () => {
         //temporily use user_id as token
         setToken({'token':body['token']});
         window.location.replace("/");
-        //console.log(token)
       }
     }catch(err){
       console.log(err);
     }
   }
 
+  // reset password submit handler
   const resetpassword = async event => {
     event.preventDefault();
     if(!email){
@@ -174,8 +178,9 @@ const Login = () => {
       console.log(err);
     }
   }
-  const forms = document.getElementsByTagName('form'); //
 
+  const forms = document.getElementsByTagName('form'); 
+  // clear all input in the form and state
   const clearForm = () => {
     setUsername('');
     setPassword('');
@@ -189,11 +194,11 @@ const Login = () => {
     setValid(checkValid);
   }
   
+  // sign up form input fields
   const signUpFields = [{ 
     'name': 'username_register',
     'placeholder': 'Username',
     'type': 'text',
-    // onBlurHandler: () => {checking if the username is used?}
     'errorMsg': 'The username has been used',
     'alert': valid.username
   }, { 
@@ -216,6 +221,7 @@ const Login = () => {
     'alert': valid.password_double
   }]
   
+  // sign in form input fields
   const signInFields = [{
     'name': 'username',
     'placeholder': 'Username',
@@ -226,6 +232,7 @@ const Login = () => {
     'type': 'password',
   }]
   
+  // page gradient overlay transition state
   const move = () => {
     clearForm();
     setResetPassword(false);
@@ -244,6 +251,7 @@ const Login = () => {
     >
       <div className="login flex-center">
         <div className="login-form-container">
+          {/* Gradient overlay with css transition */}
           <CSSTransition
             in={!showSignUp}
             timeout={700}
@@ -267,6 +275,7 @@ const Login = () => {
               </div>
             </div>
           </CSSTransition>
+          {/* SIgn up form */}
           <div className="signup-form">
             <h2>Sign Up</h2>
             <form action="auth" nethod="POST">
@@ -291,6 +300,7 @@ const Login = () => {
               <LoginButton type="submit" onClick={signup} content='Sign up' />
             </form>
           </div>
+          {/* sign in form with css transition */}
           <CSSTransition
             in={!resetPassword}
             timeout={350}
@@ -308,6 +318,7 @@ const Login = () => {
               </form>
             </div>
           </CSSTransition>
+          {/* password reset form with css transition */}
           <CSSTransition
             in={resetPassword}
             timeout={800}

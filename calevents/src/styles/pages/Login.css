@@ -1,3 +1,5 @@
+/* CSS file for login page */
+/* Positioning of the container */
 .login {
   height: 100vh;
   color: #222222;
@@ -31,6 +33,7 @@
   transform: translateX(20%);
 }
 
+/* Styling the gradient overlay */
 .login-overlay {
   position: absolute;
   height: 75vh;
@@ -50,6 +53,7 @@
   transition: transform 0.7s ease-in-out;
 }
 
+/* transition animation class */
 .signup-show {
   transform: translateX(200%);
 }
@@ -82,23 +86,13 @@
   opacity: 0;
 }
 
-.login-overlay-exit-active .login-show , .login-overlay-exit-done .login-show  {
-  /* transform: translateX(0%); */
-}
-
 .login-overlay-enter-active .login-show , .login-overlay-enter-done .login-show  {
   transform: translateX(-200%);
-}
-
-.login-overlay-exit-active .signup-show , .login-overlay-exit-done .signup-show  {
-  /* transform: translateX(200%); */
 }
 
 .login-overlay-enter-active .signup-show , .login-overlay-enter-done .signup-show  {
   transform: translateX(0%);
 }
-
-/* .login-overlay-enter-done .login-show , .login-overlay-exit-done .signup-show { visibility: hidden; } */
 
 .login-overlay-enter-active ~ .signup-form, .login-overlay-enter-done ~ .signup-form {
   transform: translateX(0%);
@@ -134,9 +128,7 @@
   width: 80%;
   margin: -6px auto;
   visibility: hidden;
-  /* position: absolute; */
   color: #FF0000;
-  /* left: 0; */
   font-size: .8em;
 }
 
@@ -203,19 +195,11 @@
   background-color: #fff;
 }
 
+/* password reset form animatio class */
 .reset-login-form-exit-active, .reset-login-form-exit-done {
   transform: translateY(-40%);
   transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out !important;
   opacity: 0;
-}
-
-.reset-form {
-  /* position: absolute; */
-  margin: auto;
-  transform: translateX(-100%) translateY(50%);
-  opacity: 0;
-  visibility: hidden;
-  transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out;
 }
 
 .reset-form-enter-active, .reset-form-enter-done {
@@ -223,9 +207,17 @@
   opacity: 1;
   visibility: visible;
   transition-delay: 0.35s !important;
-  /* transition: transform 0.35s ease-in-out, opacity 0.35s ease-in-out; */
 }
 
 .reset-form-exit-active {
   visibility: visible;
+}
+
+/* styling of passwrod reset form */
+.reset-form {
+  margin: auto;
+  transform: translateX(-100%) translateY(50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out;
 }

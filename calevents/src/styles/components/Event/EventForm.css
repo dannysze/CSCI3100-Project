@@ -1,3 +1,5 @@
+/* CSS file for the event form */
+/* Drop back of the event form */
 .create-event-form--background {
   position: fixed;
   top: 0;
@@ -8,6 +10,7 @@
   background-color: rgba(0, 0, 0, 0.4)
 }
 
+/* Positioning the event form container */
 .create-event-form--container {
   background-color: rgba(255, 255, 255);
   width: 645px;
@@ -17,6 +20,7 @@
   transition: all 0.3s ease-in-out;
 }
 
+/* Image upload container and preview container */
 .create-event-form--image-upload-container {
   position: relative;
   text-align: center;
@@ -46,6 +50,26 @@ input[type="file"] {
   height: auto;
 }
 
+.create-event-form--image-upload-container {
+  text-align: center;
+  height: 200px;
+}
+
+.create-event-form--image-upload {
+  color: #AAAAAA;
+  width: 100%;
+  padding: 2em;
+  margin: auto;
+  border: 3px dashed #aaaaaa;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.create-event-form--image-upload-container:hover .create-event-form--image-upload {
+  background-color: #cdcdcd;
+}
+
+/* Sytling of the event forms */
 .create-event-form--title {
   width: 80%;
   margin: 45px auto 10px;
@@ -57,6 +81,7 @@ input[type="file"] {
   letter-spacing: .1em;
 }
 
+/* formatting the input rows and groups */
 .create-event-form--input-group {
   display: flex;
   align-items: center;
@@ -65,6 +90,7 @@ input[type="file"] {
   margin: auto;
 }
 
+/* the second part of the events form */
 .create-event-form--input-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -73,13 +99,13 @@ input[type="file"] {
   width: 80%;
 }
 
+/* styling the datepicker classes */
 .create-event-form--container .react-datepicker-wrapper, .react-datepicker-wrapper * {
   width: 100%;
 }
 
 .create-event-form--container .react-datepicker-wrapper input {
   padding: 5px 16px !important;
-  /* z-index: 5; */
 }
 
 .create-event-form--container .react-datepicker__month-container {
@@ -97,11 +123,11 @@ input[type="file"] {
   top: 20%;
 }
 
+/* styling and positioning of the input fields */
 .create-event-form--input-group input:not([type="checkbox"]), .create-event-form--input-group select {
   flex: 1;
   width: 100%;
   border: 1px solid #dedede;
-  /* background-color: #EFEFEF; */
   padding: 5px 4px;
   margin: 5px auto;
 }
@@ -124,32 +150,11 @@ input[type="file"] {
   text-align: center;
 }
 
-.create-event-form--image-upload-container {
-  text-align: center;
-  height: 200px;
-}
-
-.create-event-form--image-upload {
-  color: #AAAAAA;
-  width: 100%;
-  padding: 2em;
-  margin: auto;
-  border: 3px dashed #aaaaaa;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.create-event-form--image-upload-container:hover .create-event-form--image-upload {
-  background-color: #cdcdcd;
-}
-
 .create-event-form--input textarea {
   width: 100%;
   height: calc(40px * 2);
   padding: 5px 16px;
   border: 1px solid #dedede;
-  /* border: none; */
-  /* background-color: #EFEFEF; */
   resize: none;
   overflow-y: scroll;
 }
@@ -157,22 +162,19 @@ input[type="file"] {
 .create-event-form--checkbox {
   display: flex;
   align-items: center;
-  /* justify-content: space-between; */
-  /* text-align: left !important; */
   padding-left: 5px;
-}
-
-.create-event-form--checkbox > span {
-  white-space: nowrap;
 }
 
 .create-event-form--checkbox input[type="number"] {
   margin: 5px 0 !important;
-  /* width: 60% !important; */
+}
+
+/* Icon prepend and append */
+.create-event-form--checkbox > span {
+  white-space: nowrap;
 }
 
 .create-event-form--input-append, .create-event-form--input-prepend { 
-  /* background-color: #efefef; */
   border: 1px solid #dedede;
   margin: 5px 0;
   padding: 5px 8px;
@@ -193,7 +195,6 @@ input[type="file"] {
 }
 
 .create-event-form--input-label {
-  /* display: flex; */
   margin: 0;
 }
 

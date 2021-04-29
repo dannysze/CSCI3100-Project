@@ -1,3 +1,4 @@
+// Search page component
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
@@ -12,7 +13,7 @@ import getaddr from '../components/getaddr'
 
 
 const SearchPage = () => {
-  // const priceRange = ['Free', '$1 - $50', '$51 - $150', '$151 - $500', '$500+'];
+  // price range objects
   const priceRange = [{
     'name': 'Free',
     'min': 0,
@@ -35,12 +36,14 @@ const SearchPage = () => {
     'max': 1000
   }]
 
+  // initial search state
   const initialSearchInfo = {
     'event_name': '',
     'min': 0,
     'max': 0,
     'category': []
   }
+  // posssible categories for checkbox
   const categories = ['Academic', 'Sport', 'Music', 'Health', 'Festival', 'Career', 'Others']
 
   const [startSelectedDate, setStartSelectedDate] = useState(new Date());
@@ -49,14 +52,13 @@ const SearchPage = () => {
   const history = useHistory();
 
   const [searchResult, setSearchResult] = useState([]); 
+
   useEffect(() => {
     document.title = 'Search Page';
-    
   }, [searchInfo, history, searchResult]);
 
-
+  // search input change handler
   const onChangeHandler = (event) => {
-    // console.log(event.target.value);
     if (event.target.type === 'radio') {
       setSearchInfo({...searchInfo, 'min': parseInt(event.target.value.split('-')[0]), 'max': parseInt(event.target.value.split('-')[1])});
     } else if (event.target.type === 'checkbox') { 
@@ -75,7 +77,9 @@ const SearchPage = () => {
     }
   }
 
+  // search submit handler
   const submitSearch = async (event) => {
+    // creating url queries
     const params = new URLSearchParams();
 
     params.append('name', searchInfo['event_name']);
@@ -84,8 +88,8 @@ const SearchPage = () => {
     params.append('start_date', startSelectedDate.toJSON().split('T')[0]);
     params.append('end_date', endSelectedDate.toJSON().split('T')[0]);
     params.append('category', JSON.stringify(searchInfo['category']));
-    // console.log(params.toString());
 
+    // get request
     fetch(getaddr()+'filter_events/?'+params.toString(), {
       headers: {
         'content-type': 'application/json',
@@ -94,7 +98,6 @@ const SearchPage = () => {
     }).then(response => {
       return response.json();
     }).then(data => {
-      // console.log(JSON.stringify(data));
       setSearchResult(data);
     })
   }
@@ -104,13 +107,16 @@ const SearchPage = () => {
     <Container className="home" fluid>
       <Header />
       <Navbar />
+      {/* search box container */}
       <Row className="Search-box-container">
+        {/* search bar */}
         <div className="Search-bar-container">
           <Col className="Search-bar">
             <input type="text" name="event_name" placeholder="Search Events..." onChange={onChangeHandler}></input>
             <button className="Search-button" onClick={submitSearch}><Search /></button>
           </Col>
         </div>
+        {/* price range radio buttons */}
         <Row className="Price-container">
           <Col xs={1} className="p-tag">Price:&nbsp;</Col>
           {priceRange.map((price, index) => (
@@ -120,6 +126,7 @@ const SearchPage = () => {
             </Col>
           ))}
         </Row>
+        {/* datepicker */}
         <Row className="Date-container">
           <Col xs={6} className="Datepicker-container">
             <div className="d-tag">Start Date:&nbsp;</div>
@@ -145,6 +152,7 @@ const SearchPage = () => {
             </div>
           </Col>
         </Row>
+        {/* categories checkbox */}
         <Row className="Category-container">
           <Col xs={1} className="c-tag">Type:&nbsp;</Col>
           {categories.map((category, index) => (
@@ -155,6 +163,7 @@ const SearchPage = () => {
           ))}
         </Row>
       </Row>
+      {/* saerch result container */}
       <Row className="Search-results">
         {searchResult.length === 0 ? <h1>No matching results</h1> : 
           searchResult.map((event, index) => (

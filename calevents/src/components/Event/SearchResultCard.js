@@ -6,7 +6,9 @@ import { FormButton } from "../CustomButton.js";
 import { Container, Row, Col, Modal, ListGroup, Button, ListGroupItem } from 'react-bootstrap'
 import { EventModal } from './Events'
 
-
+// Main component
+// props: 
+// event: default value is empty for all fields -> prevent errors
 const SearchResultCard = ({ event = {
     user_id: '',
     event_name: '',
@@ -26,8 +28,6 @@ const SearchResultCard = ({ event = {
   }, onClick }) => {
 
     const [showMore, setShowMore] = useState({ 'toggle': false , 'event': {}});
-
-    // console.log(event.start_time, event.end_time);
 
     return (
         <>

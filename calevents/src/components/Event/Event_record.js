@@ -22,13 +22,13 @@ const Eventrecord = ({ event, onClick, index }) => {
         setHeight(document.getElementsByClassName('record-info')[index].scrollHeight)
     }, [])
 
-    // const [edit, toggleEdit] = useState(false)
     const [editForm, setEditForm] = useState({
         show: false, 
         start_date: event.start_date,
         end_date: event.end_date,
     });
     
+    // event info that could be passed to edit event form which reduce the time of user input
     const formInfo = {
         show: true,
         // event.start_date: event.start_date,
@@ -50,10 +50,6 @@ const Eventrecord = ({ event, onClick, index }) => {
     const { token } = useToken();
     const { user, setUser } = useContext(UserContext);
 
-    useEffect(() => {
-        // getUser();
-    }, [])
-
     // DELETE events API 
     const deleteEvent = async () => {
         let r = window.confirm("Are you sure to delete this event?");
@@ -73,7 +69,6 @@ const Eventrecord = ({ event, onClick, index }) => {
     // Edit event API
     const editEvent = (e) => {
         e.preventDefault();
-
     }
 
     // User request for refunding
@@ -96,6 +91,7 @@ const Eventrecord = ({ event, onClick, index }) => {
 
     }
 
+    // show the edit event form
     const toggleEditForm = (event) => {
         setEditForm(formInfo);
     }

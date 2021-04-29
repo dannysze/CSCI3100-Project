@@ -1,3 +1,4 @@
+/* Positioning of the body */
 .App {
   height: 100vh;
   min-width: 1250px;
@@ -9,10 +10,7 @@
   align-items: center;
 }
 
-.container-fluid {
-  /* padding: 0 !important; */
-}
-
+/* cutomized scroll bar */
 ::-webkit-scrollbar {
   width: 4px;
 }
@@ -22,7 +20,6 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  /* border-radius: 5px; */
   background: #DFDFDF;
 }
 

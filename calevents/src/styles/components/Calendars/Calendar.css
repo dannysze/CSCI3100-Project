@@ -1,3 +1,5 @@
+/* CSS file for the calendar obj at the main page */
+/* define the calendar */
 .calendar {
   display: grid;
   width: 100%;
@@ -15,6 +17,7 @@
   max-width: 1350px;
 }
 
+/* calendar header showing the week name */
 .calendar-header {
   text-align: center;
   padding: 15px 0;
