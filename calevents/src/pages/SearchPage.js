@@ -13,7 +13,7 @@ import getaddr from '../components/getaddr'
 
 
 const SearchPage = () => {
-  // price range objects
+  // different price range
   const priceRange = [{
     'name': 'Free',
     'min': 0,
@@ -43,7 +43,7 @@ const SearchPage = () => {
     'max': 0,
     'category': []
   }
-  // posssible categories for checkbox
+  // different event category
   const categories = ['Academic', 'Sport', 'Music', 'Health', 'Festival', 'Career', 'Others']
 
   const [startSelectedDate, setStartSelectedDate] = useState(new Date());
@@ -51,17 +51,17 @@ const SearchPage = () => {
   const [searchInfo, setSearchInfo] = useState(initialSearchInfo);
   const history = useHistory();
 
-  const [searchResult, setSearchResult] = useState([]); 
-
+  const [searchResult, setSearchResult] = useState([]);
   useEffect(() => {
     document.title = 'Search Page';
+
   }, [searchInfo, history, searchResult]);
 
   // search input change handler
   const onChangeHandler = (event) => {
     if (event.target.type === 'radio') {
-      setSearchInfo({...searchInfo, 'min': parseInt(event.target.value.split('-')[0]), 'max': parseInt(event.target.value.split('-')[1])});
-    } else if (event.target.type === 'checkbox') { 
+      setSearchInfo({ ...searchInfo, 'min': parseInt(event.target.value.split('-')[0]), 'max': parseInt(event.target.value.split('-')[1]) });
+    } else if (event.target.type === 'checkbox') {
       let categoryArr = searchInfo.category.slice();
       if (event.target.checked) {
         categoryArr.push(event.target.value);
@@ -71,9 +71,9 @@ const SearchPage = () => {
           categoryArr.splice(index, 1);
         }
       }
-      setSearchInfo({...searchInfo, 'category': categoryArr});
+      setSearchInfo({ ...searchInfo, 'category': categoryArr });
     } else {
-      setSearchInfo({...searchInfo, [event.target.name]: event.target.value});
+      setSearchInfo({ ...searchInfo, [event.target.name]: event.target.value });
     }
   }
 
@@ -105,19 +105,23 @@ const SearchPage = () => {
 
   return (
     <Container className="home" fluid>
+      {/* the header of the website */}
       <Header />
+      {/* the navigation bar */}
       <Navbar />
-      {/* search box container */}
+      {/* this is the outer container for the search bar, and also box that includes searching category */}
       <Row className="Search-box-container">
-        {/* search bar */}
+        {/* this is the container to create specific space for the search bar */}
         <div className="Search-bar-container">
+          {/* The search bar */}
           <Col className="Search-bar">
             <input type="text" name="event_name" placeholder="Search Events..." onChange={onChangeHandler}></input>
             <button className="Search-button" onClick={submitSearch}><Search /></button>
           </Col>
         </div>
-        {/* price range radio buttons */}
+        {/* the container for the price category in the category box */}
         <Row className="Price-container">
+          {/* the input row for the price category */}
           <Col xs={1} className="p-tag">Price:&nbsp;</Col>
           {priceRange.map((price, index) => (
             <Col xs key={index}>
@@ -126,8 +130,9 @@ const SearchPage = () => {
             </Col>
           ))}
         </Row>
-        {/* datepicker */}
+        {/* the container for the date category in the category box */}
         <Row className="Date-container">
+          {/* the datepicker for picking event starting date*/}
           <Col xs={6} className="Datepicker-container">
             <div className="d-tag">Start Date:&nbsp;</div>
             <div >
@@ -139,6 +144,7 @@ const SearchPage = () => {
               />
             </div>
           </Col>
+          {/* the datepicker for picking event ending date */}
           <Col xs={6} className="Datepicker-container">
             <div className="d-tag">End Date:&nbsp;</div>
             <div>
@@ -152,8 +158,9 @@ const SearchPage = () => {
             </div>
           </Col>
         </Row>
-        {/* categories checkbox */}
+        {/* the container for the area for choosing event category */}
         <Row className="Category-container">
+          {/* the checkbox for picking event category for searching */}
           <Col xs={1} className="c-tag">Type:&nbsp;</Col>
           {categories.map((category, index) => (
             <Col xs key={index}>
@@ -163,11 +170,12 @@ const SearchPage = () => {
           ))}
         </Row>
       </Row>
-      {/* saerch result container */}
+      {/* the area to show search result */}
       <Row className="Search-results">
-        {searchResult.length === 0 ? <h1>No matching results</h1> : 
+        {searchResult.length === 0 ? <h1>No matching results</h1> :
           searchResult.map((event, index) => (
             <Col xs={6} md={4}>
+              {/* the card to show the result event */}
               <SearchResultCard event={event} key={index} />
             </Col>
           ))}
