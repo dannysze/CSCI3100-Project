@@ -1,3 +1,4 @@
+//for getting address for backend
 //return local address if true
 //return remote address if false
 const getaddr = (isLocal=true) => {

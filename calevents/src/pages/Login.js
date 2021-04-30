@@ -140,7 +140,6 @@ const Login = () => {
       if (!res.ok){
             setSignupResult({'errorMsg':body['error'], 'alert':true});
       }else{
-        //temporily use user_id as token
         setToken({'token':body['token']});
         window.location.replace("/");
       }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 //from web
 //for saving and getting token for authentication
+//will store token in local storage of browser
 
 export default function useToken() {
   const getToken = () => {

@@ -61,6 +61,7 @@ const EventModal = ({ showEvent, setShow }) => {
       return true;
   };
 
+  //check for time clashes with joined events
   const checkTimeClash = async () => {
       let joinedEvents = await (await fetch(getaddr()+'joined_events/' + user.user_id)).json();
       let clashedEvents  = joinedEvents.filter(
@@ -96,7 +97,7 @@ const EventModal = ({ showEvent, setShow }) => {
       }
   };
 
-
+  //check whether the event is joinable: the event is not started yet and user is not organizer 
   const checkJoinable = () => {
     return sqlToJsDate(showEvent.event.start_date, showEvent.event.start_time) >= new Date()&&user.type===0;
   };
@@ -162,6 +163,7 @@ const EventModal = ({ showEvent, setShow }) => {
             <Col sm={1}>
               {/* <button className="pop-button">Join</button> */}
               {/* the button for joining event */}
+              {/* only show when the event is not started yet and user is not organizer */}
               {checkJoinable()&&<FormButton content="Join" clickHandler={joinEvent}/>}
             </Col>
             <Col sm={3}>
