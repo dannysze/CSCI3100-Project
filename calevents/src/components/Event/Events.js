@@ -73,6 +73,8 @@ const EventModal = ({ showEvent, setShow }) => {
   // POST request for joining event
   const joinEvent = async () => {
     try{
+        let clashes = await checkTimeClash();
+        //console.log(clashes);
         let res = await fetch(getaddr()+'join_event', {
           method: 'POST',
           headers: {
@@ -86,8 +88,6 @@ const EventModal = ({ showEvent, setShow }) => {
               alert(body['error']);
         }else{
           // generate a time clashing warning to user
-            let clashes = await checkTimeClash();
-            console.log(clashes);
             clashes.length>0
             ? alert('You has successfully joined the event but please note that the event coincides in time with some of the joined events.\nYou can check in schedule.')
             : alert('You has successfully joined the event.');
